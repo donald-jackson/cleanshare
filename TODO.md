@@ -159,7 +159,7 @@
   - Done: Both files exist with the required directives.
   - Refs: PLAN.md §12.2.
 
-- [ ] **1.12** Write Config/Debug.xcconfig + Config/Release.xcconfig
+- [x] **1.12** Write Config/Debug.xcconfig + Config/Release.xcconfig
   - `Config/Debug.xcconfig`:
     ```
     #include "Shared.xcconfig"
