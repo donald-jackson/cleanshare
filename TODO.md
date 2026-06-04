@@ -1674,7 +1674,7 @@
   - Done: All tests pass.
   - Refs: PLAN.md §8, §11.1.
 
-- [ ] **8.03** Local rehearsal: `make verify-strip` is green
+- [x] **8.03** Local rehearsal: `make verify-strip` is green
   - Run `make verify-strip`. This cleans every fixture and runs the external exiftool/ffprobe audit.
   - If any fixture fails the audit, that's a privacy bug — fix the cleaner; do not loosen the audit.
   - Test: `make verify-strip` exits 0.

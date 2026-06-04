@@ -90,14 +90,35 @@ verify_image() {
     echo "OK $file"
 }
 
+# Container/codec tags that AVAssetWriter passthrough regenerates or preserves as
+# structural, and that carry no user PII. PLAN.md §4.3 ("writer sets fresh" mvhd
+# time; format description preserved byte-for-byte) and §4.4 (codec format
+# description is structural, kept by design). Anything outside this list — GPS
+# `location`/`location-eng`, `com.apple.quicktime.content.identifier`, capture
+# `make`/`model`, XMP, etc. — is still a leak.
+#   major_brand/minor_version/compatible_brands : ftyp brands the writer emits.
+#   creation_time : writer stamps a fresh build-time value; the original capture
+#                   timestamp is gone (verified: cleaned != source time).
+#   handler_name  : writer default ("Core Media Video"); not the source's.
+#   language      : track language code (e.g. "und"); not identifying.
+#   vendor_id, encoder : part of the codec sample description carried via
+#                   sourceFormatHint; structural per §4.4, no user PII.
+VIDEO_STRUCTURAL_ALLOW='[
+  "major_brand","minor_version","compatible_brands","creation_time",
+  "handler_name","language","vendor_id","encoder"
+]'
+
 verify_video() {
     local file="$1"
     need ffprobe
     local json leaks
     json="$(ffprobe -v error -show_format -show_streams -of json "$file")"
-    leaks="$(printf '%s' "$json" | jq -r '
-        [ (.format.tags // {}) | to_entries[] | "format." + .key ]
-        + [ (.streams // [])[] | (.tags // {}) | to_entries[] | "stream." + .key ]
+    leaks="$(printf '%s' "$json" | jq -r \
+        --argjson allow "$VIDEO_STRUCTURAL_ALLOW" '
+        ([ (.format.tags // {}) | to_entries[] | {scope: "format", key: .key} ]
+         + [ (.streams // [])[] | (.tags // {}) | to_entries[] | {scope: "stream", key: .key} ])
+        | map(select(. as $e | ($allow | index($e.key)) == null))
+        | map(.scope + "." + .key)
         | .[]
     ')"
     if [ -n "$leaks" ]; then
