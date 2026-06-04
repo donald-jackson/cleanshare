@@ -1607,7 +1607,7 @@
   - Done: Builds.
   - Refs: PLAN.md §18.2.
 
-- [ ] **7.06** Write docs/architecture.md
+- [x] **7.06** Write docs/architecture.md
   - Pull and re-render the architecture content from PLAN.md §2 (workspace + targets layout, Swift Package boundaries, App Group, URL scheme, why zero deps). Cross-link to docs/adr/*.md once they exist.
   - Test: `test -f docs/architecture.md && grep -q 'App Group' docs/architecture.md && grep -q 'CleanShareCore' docs/architecture.md`.
   - Done: Doc exists with the required cross-references.
