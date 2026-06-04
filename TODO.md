@@ -482,7 +482,7 @@
   - Done: All three files present; dependabot YAML parses.
   - Refs: PLAN.md §17.
 
-- [ ] **1.33** Write .github/pull_request_template.md
+- [x] **1.33** Write .github/pull_request_template.md
   - Use the template from PLAN.md §17.3 verbatim (What / Why / How / Test plan checklist / Checklist).
   - Test: `test -f .github/pull_request_template.md && grep -q '## What' .github/pull_request_template.md && grep -q '## Test plan' .github/pull_request_template.md && grep -q 'verify-metadata-stripped' .github/pull_request_template.md`.
   - Done: Template present with all required sections.
