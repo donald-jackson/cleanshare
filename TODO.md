@@ -846,7 +846,7 @@
   - Done: Extension target builds — `** BUILD SUCCEEDED **`.
   - Refs: PLAN.md §3.1, §6.
 
-- [ ] **3.16** Wire HandoffRouter (real flow) + ShareSheetCoordinator
+- [x] **3.16** Wire HandoffRouter (real flow) + ShareSheetCoordinator
   - Replace the stub `HandoffRouter.handle` from 1.15. New behaviour:
     - Parse the token via `URL.handoffToken(from:)`.
     - Read the manifest via `ManifestReader.read(from: appGroup/inbox/<token>/manifest.json)`. If the file doesn't exist or parsing fails, return `false` silently (user-visible error in `RootView` via a transient banner — not a crash).
