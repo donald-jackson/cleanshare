@@ -879,7 +879,7 @@
 
 ## Phase 4: UI polish
 
-- [ ] **4.01** Implement CleaningPreferencesStore (ObservableObject backing Settings + onboarding)
+- [x] **4.01** Implement CleaningPreferencesStore (ObservableObject backing Settings + onboarding)
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Stores/CleaningPreferencesStore.swift` — `@MainActor public final class CleaningPreferencesStore: ObservableObject`. Uses `UserDefaults(suiteName: "group.dev.cleanshare.app")` as backing store. `@Published` properties matching `CleaningPreferences` fields. Provides a `var current: CleaningPreferences { get set }` computed property that synthesizes a snapshot from the published values.
   - Also store `onboardingCompletedV1: Bool` and `LivePhotoDefaultMode: LivePhotoMode?` as backing keys.
   - Test: `cd Packages/CleanShareUI && swift build && swift test --filter CleaningPreferencesStoreTests` (one test: init, mutate a flag, re-init from same suite, observe the value persisted).
