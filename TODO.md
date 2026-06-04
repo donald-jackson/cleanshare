@@ -1376,7 +1376,7 @@
   - Done: Script is executable and parseable; references the override env vars.
   - Refs: PLAN.md §13.3.
 
-- [ ] **6.02** Capture iPhone screenshot 01 — hero (RootView with "Clean photos…" CTA)
+- [x] **6.02** Capture iPhone screenshot 01 — hero (RootView with "Clean photos…" CTA)
   - Run `scripts/screenshots.sh iphone-01-hero` (the script's first arg selects a single shot for incremental testing).
   - Expected output: `screenshots/iPhone-6.9/01-hero.png`, 1320×2868 PNG showing RootView with the wordmark + "Clean photos…" button prominently displayed.
   - Visual Check:
