@@ -1365,7 +1365,7 @@
 
 ## Phase 6: App Store submission prep
 
-- [ ] **6.01** Write scripts/screenshots.sh (the capture engine)
+- [x] **6.01** Write scripts/screenshots.sh (the capture engine)
   - File: `scripts/screenshots.sh` (chmod +x). Adapt from marklens reference. Behaviour:
     - Resolves iPhone UDID via `xcrun simctl list devices available -j` looking for an iPhone whose name matches a 6.9"-class device. Preferred order: `iPhone 17 Pro Max`, `iPhone 16 Pro Max`, `iPhone 16 Plus`, `iPhone 15 Pro Max`. Use the first match. Allow override via `$IPHONE_UDID`.
     - Same lookup for iPad — preferred: `iPad Pro 13-inch (M5)`, `iPad Pro 13-inch (M4)`, `iPad Pro (12.9-inch) (6th generation)`. `$IPAD_UDID` override.
