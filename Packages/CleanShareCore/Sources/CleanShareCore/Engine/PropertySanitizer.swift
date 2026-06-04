@@ -1,9 +1,9 @@
 import ImageIO
 
-/// Builds the property dictionaries handed to `CGImageDestinationAddImage` /
-/// `CGImageDestinationSetProperties`. Every PII-bearing dictionary is explicitly
-/// deleted via `kCFNull` (omission would mean "inherit from source"); only the
-/// keys the user opted into are added back. See PLAN.md §4.2 and §4.4.
+// Builds the property dictionaries handed to `CGImageDestinationAddImage` /
+// `CGImageDestinationSetProperties`. Every PII-bearing dictionary is explicitly
+// deleted via `kCFNull` (omission would mean "inherit from source"); only the
+// keys the user opted into are added back. See PLAN.md §4.2 and §4.4.
 
 /// Per-frame properties: nulls every known metadata dictionary, then adds back
 /// orientation and/or capture date if the preferences allow it.
@@ -46,7 +46,7 @@ func sanitizedFrameProperties(
     // Add-back allowlist.
     if prefs.keepOrientation,
        let orientation = srcProps?[kCGImagePropertyOrientation] {
-        out[kCGImagePropertyOrientation] = orientation  // root-level — NOT inside TIFF/EXIF subdicts
+        out[kCGImagePropertyOrientation] = orientation // root-level — NOT inside TIFF/EXIF subdicts
     }
     if prefs.keepCaptureDate,
        let exif = srcProps?[kCGImagePropertyExifDictionary] as? [CFString: Any],
@@ -63,7 +63,7 @@ func sanitizedFrameProperties(
 /// nothing structural to carry over.
 func sanitizedContainerProperties(
     from src: CGImageSource,
-    prefs: CleaningPreferences
+    prefs _: CleaningPreferences
 ) -> [CFString: Any]? {
     guard let containerProps = CGImageSourceCopyProperties(src, nil) as? [CFString: Any] else {
         return nil

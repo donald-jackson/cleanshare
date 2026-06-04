@@ -15,16 +15,16 @@ public struct SettingsView: View {
 
     public var body: some View {
         Form {
-            metadataSection
-            locationSection
-            livePhotosSection
-            diagnosticsSection
-            aboutSection
+            self.metadataSection
+            self.locationSection
+            self.livePhotosSection
+            self.diagnosticsSection
+            self.aboutSection
         }
         .navigationTitle("Settings")
-        .alert("Keep GPS in shared photos?", isPresented: $showGPSConfirmation) {
+        .alert("Keep GPS in shared photos?", isPresented: self.$showGPSConfirmation) {
             Button("Cancel", role: .cancel) {}
-            Button("Enable") { prefsStore.keepGPS = true }
+            Button("Enable") { self.prefsStore.keepGPS = true }
         } message: {
             Text("Photos with GPS coordinates reveal where they were taken. Are you sure?")
         }
@@ -32,22 +32,22 @@ public struct SettingsView: View {
 
     private var metadataSection: some View {
         Section("Metadata to keep") {
-            Toggle("Keep orientation", isOn: $prefsStore.keepOrientation)
-            Toggle("Keep ICC color profile", isOn: $prefsStore.keepICCProfile)
-            Toggle("Keep capture date", isOn: $prefsStore.keepCaptureDate)
-            Toggle("Keep camera make & model", isOn: $prefsStore.keepCameraMakeModel)
+            Toggle("Keep orientation", isOn: self.$prefsStore.keepOrientation)
+            Toggle("Keep ICC color profile", isOn: self.$prefsStore.keepICCProfile)
+            Toggle("Keep capture date", isOn: self.$prefsStore.keepCaptureDate)
+            Toggle("Keep camera make & model", isOn: self.$prefsStore.keepCameraMakeModel)
         }
     }
 
     private var locationSection: some View {
         Section("Location (GPS)") {
             Toggle("Keep location (GPS)", isOn: Binding(
-                get: { prefsStore.keepGPS },
+                get: { self.prefsStore.keepGPS },
                 set: { newValue in
                     if newValue {
-                        showGPSConfirmation = true
+                        self.showGPSConfirmation = true
                     } else {
-                        prefsStore.keepGPS = false
+                        self.prefsStore.keepGPS = false
                     }
                 }
             ))
@@ -56,9 +56,9 @@ public struct SettingsView: View {
 
     private var livePhotosSection: some View {
         Section("Live Photos") {
-            Picker("When sharing Live Photos", selection: $prefsStore.livePhotoMode) {
+            Picker("When sharing Live Photos", selection: self.$prefsStore.livePhotoMode) {
                 ForEach(LivePhotoMode.allCases, id: \.self) { mode in
-                    Text(label(for: mode)).tag(mode)
+                    Text(self.label(for: mode)).tag(mode)
                 }
             }
         }
@@ -67,9 +67,9 @@ public struct SettingsView: View {
     private var diagnosticsSection: some View {
         Section {
             Toggle("Help improve CleanShare", isOn: Binding(
-                get: { diagnosticsEnabled },
+                get: { self.diagnosticsEnabled },
                 set: { newValue in
-                    diagnosticsEnabled = newValue
+                    self.diagnosticsEnabled = newValue
                     #if canImport(MetricKit)
                     if newValue {
                         MetricKitCollector.subscribe()
@@ -83,7 +83,10 @@ public struct SettingsView: View {
         } header: {
             Text("Diagnostics")
         } footer: {
-            Text("When enabled, MetricKit crash reports are stored on-device only. Open the reports screen to export. No automatic upload.")
+            Text(
+                "When enabled, MetricKit crash reports are stored on-device only. "
+                    + "Open the reports screen to export. No automatic upload."
+            )
         }
     }
 
@@ -95,10 +98,10 @@ public struct SettingsView: View {
 
     private func label(for mode: LivePhotoMode) -> String {
         switch mode {
-        case .prompt: return "Ask every time"
-        case .downgradeToStill: return "Share as still photo"
-        case .preservePairing: return "Keep Live Photo"
-        case .repairWithFreshID: return "Keep Live Photo (fresh ID)"
+        case .prompt: "Ask every time"
+        case .downgradeToStill: "Share as still photo"
+        case .preservePairing: "Keep Live Photo"
+        case .repairWithFreshID: "Keep Live Photo (fresh ID)"
         }
     }
 }

@@ -7,9 +7,9 @@ struct CleanShareApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
-                .environmentObject(coordinator)
+                .environmentObject(self.coordinator)
                 .onOpenURL { url in
-                    HandoffRouter.handle(url, coordinator: coordinator)
+                    HandoffRouter.handle(url, coordinator: self.coordinator)
                 }
         }
     }

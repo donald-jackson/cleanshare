@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 final class ManifestTests: XCTestCase {
     func testRoundTrip() throws {

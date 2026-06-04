@@ -26,17 +26,16 @@ public enum DiagnosticsStore {
     /// needed. Falls back to a temp directory when the App Group container is
     /// unavailable (e.g. unit tests without the entitlement), mirroring `Workspace`.
     public static func reportsFileURL() -> URL? {
-        let fm = FileManager.default
-        let base: URL
-        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
-            base = container
+        let fileManager = FileManager.default
+        let base: URL = if let container = fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
+            container
         } else {
-            base = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
                 .appendingPathComponent("CleanShareDiagnostics", isDirectory: true)
         }
         let dir = base.appendingPathComponent("Diagnostics", isDirectory: true)
         do {
-            try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+            try fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         } catch {
             return nil
         }
@@ -45,7 +44,7 @@ public enum DiagnosticsStore {
 
     /// Returns true when at least one report has been persisted.
     public static func hasReports() -> Bool {
-        !recentReports().isEmpty
+        !self.recentReports().isEmpty
     }
 
     /// Parses the persisted JSON array into display summaries, newest first.
@@ -60,8 +59,8 @@ public enum DiagnosticsStore {
             let dict = element as? [String: Any] ?? [:]
             return DiagnosticReport(
                 id: index,
-                date: parseDate(dict),
-                summary: summarize(dict)
+                date: self.parseDate(dict),
+                summary: self.summarize(dict)
             )
         }
     }

@@ -5,16 +5,20 @@ import Foundation
 /// See PLAN.md §6.
 public extension URL {
     static func handoff(token: String) -> URL {
-        var c = URLComponents()
-        c.scheme = "cleanshare"
-        c.host = "handoff"
-        c.queryItems = [URLQueryItem(name: "t", value: token)]
-        return c.url!
+        var components = URLComponents()
+        components.scheme = "cleanshare"
+        components.host = "handoff"
+        components.queryItems = [URLQueryItem(name: "t", value: token)]
+        guard let url = components.url else {
+            preconditionFailure("cleanshare://handoff components are always a valid URL")
+        }
+        return url
     }
 
     static func handoffToken(from url: URL) -> String? {
         guard url.scheme == "cleanshare", url.host == "handoff" else { return nil }
-        return URLComponents(url: url, resolvingAgainstBaseURL: false)?
-            .queryItems?.first(where: { $0.name == "t" })?.value
+        let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first { $0.name == "t" }
+        return token?.value
     }
 }

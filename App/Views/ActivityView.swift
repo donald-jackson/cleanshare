@@ -7,14 +7,14 @@ struct ActivityView: UIViewControllerRepresentable {
     let activityItems: [Any]
     let onComplete: () -> Void
 
-    func makeUIViewController(context: Context) -> UIActivityViewController {
+    func makeUIViewController(context _: Context) -> UIActivityViewController {
         let controller = UIActivityViewController(
             activityItems: activityItems,
             applicationActivities: nil
         )
-        controller.completionWithItemsHandler = { _, _, _, _ in onComplete() }
+        controller.completionWithItemsHandler = { _, _, _, _ in self.onComplete() }
         return controller
     }
 
-    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }

@@ -7,7 +7,7 @@ public struct CleaningPreferences: Sendable, Equatable, Codable {
     public var keepOrientation: Bool = true
     public var keepICCProfile: Bool = true
     public var keepCaptureDate: Bool = false
-    public var keepGPS: Bool = false                  // hard NO by default
+    public var keepGPS: Bool = false // hard NO by default
     public var keepCameraMakeModel: Bool = false
     public var keepCustomXMP: Bool = false
     public var preserveVideoCreationDate: Bool = false
@@ -39,27 +39,27 @@ public struct CleaningPreferences: Sendable, Equatable, Codable {
     public func allowedKeys() -> Set<String> {
         var keys: Set<String> = []
 
-        if keepOrientation {
+        if self.keepOrientation {
             keys.insert(kCGImagePropertyOrientation as String)
             keys.insert(kCGImagePropertyTIFFOrientation as String)
         }
-        if keepICCProfile {
+        if self.keepICCProfile {
             keys.insert(kCGImagePropertyProfileName as String)
             keys.insert(kCGImagePropertyColorModel as String)
         }
-        if keepCaptureDate {
+        if self.keepCaptureDate {
             keys.insert(kCGImagePropertyExifDateTimeOriginal as String)
             keys.insert(kCGImagePropertyExifDateTimeDigitized as String)
             keys.insert(kCGImagePropertyTIFFDateTime as String)
         }
-        if keepGPS {
+        if self.keepGPS {
             keys.insert(kCGImagePropertyGPSDictionary as String)
         }
-        if keepCameraMakeModel {
+        if self.keepCameraMakeModel {
             keys.insert(kCGImagePropertyTIFFMake as String)
             keys.insert(kCGImagePropertyTIFFModel as String)
         }
-        if keepCustomXMP {
+        if self.keepCustomXMP {
             keys.insert(kCGImagePropertyIPTCDictionary as String)
         }
 

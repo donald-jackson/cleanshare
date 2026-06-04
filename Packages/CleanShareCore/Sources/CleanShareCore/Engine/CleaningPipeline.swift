@@ -30,14 +30,14 @@ public actor CleaningPipeline {
 
     /// Appends items to the pending queue. Call before `run()`.
     public func enqueue(_ items: [InputItem]) {
-        queue.append(contentsOf: items)
+        self.queue.append(contentsOf: items)
     }
 
     /// Requests cancellation: stops scheduling new items and cancels the
     /// in-flight processing task so ongoing cleaners hit `Task.checkCancellation()`.
     public func cancel() async {
-        isCancelled = true
-        processingTask?.cancel()
+        self.isCancelled = true
+        self.processingTask?.cancel()
     }
 
     /// Drains the queue, emitting a `CleanEvent` per state transition. The stream
@@ -47,22 +47,22 @@ public actor CleaningPipeline {
         let (stream, continuation) = AsyncThrowingStream<CleanEvent, Error>.makeStream()
         let task = Task { await self.process(yielding: continuation) }
         continuation.onTermination = { _ in task.cancel() }
-        processingTask = task
+        self.processingTask = task
         return stream
     }
 
     private func process(yielding continuation: AsyncThrowingStream<CleanEvent, Error>.Continuation) async {
         do {
             let job = try await workspace.newJob()
-            let items = queue
+            let items = self.queue
             // iOS 17 (the shipping target) always takes the discarding path, which
             // reaps finished children eagerly. The plain-group fallback only exists
             // for the macOS 13 host-test build, where DiscardingTaskGroup is absent.
             if #available(iOS 17.0, macOS 14.0, *) {
                 await withDiscardingTaskGroup { group in
                     for item in items {
-                        if isCancelled || Task.isCancelled { break }
-                        await acquireSlot()
+                        if self.isCancelled || Task.isCancelled { break }
+                        await self.acquireSlot()
                         group.addTask {
                             await self.processItem(item, outDir: job.outDir, yielding: continuation)
                             await self.releaseSlot()
@@ -72,8 +72,8 @@ public actor CleaningPipeline {
             } else {
                 await withTaskGroup(of: Void.self) { group in
                     for item in items {
-                        if isCancelled || Task.isCancelled { break }
-                        await acquireSlot()
+                        if self.isCancelled || Task.isCancelled { break }
+                        await self.acquireSlot()
                         group.addTask {
                             await self.processItem(item, outDir: job.outDir, yielding: continuation)
                             await self.releaseSlot()
@@ -98,7 +98,7 @@ public actor CleaningPipeline {
             let output = outDir.appendingPathComponent("\(item.id.uuidString)-\(item.sourceURL.lastPathComponent)")
 
             continuation.yield(.progress(itemID: item.id, fraction: 0))
-            let receipt = try await cleaner.clean(input: item.sourceURL, output: output, prefs: prefs)
+            let receipt = try await cleaner.clean(input: item.sourceURL, output: output, prefs: self.prefs)
             continuation.yield(.progress(itemID: item.id, fraction: 1))
             continuation.yield(.completed(itemID: item.id, receipt: receipt))
         } catch let error as CleanerError {
@@ -124,18 +124,18 @@ public actor CleaningPipeline {
     // MARK: - Slot gate
 
     private func acquireSlot() async {
-        if availableSlots > 0 {
-            availableSlots -= 1
+        if self.availableSlots > 0 {
+            self.availableSlots -= 1
             return
         }
-        await withCheckedContinuation { slotWaiters.append($0) }
+        await withCheckedContinuation { self.slotWaiters.append($0) }
     }
 
     private func releaseSlot() {
-        if slotWaiters.isEmpty {
-            availableSlots += 1
+        if self.slotWaiters.isEmpty {
+            self.availableSlots += 1
         } else {
-            slotWaiters.removeFirst().resume()
+            self.slotWaiters.removeFirst().resume()
         }
     }
 }

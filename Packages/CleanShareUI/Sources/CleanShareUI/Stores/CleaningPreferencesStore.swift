@@ -1,5 +1,5 @@
-import Combine
 import CleanShareCore
+import Combine
 import Foundation
 
 /// `ObservableObject` backing the Settings and onboarding screens. Persists the
@@ -54,14 +54,18 @@ public final class CleaningPreferencesStore: ObservableObject {
         self.keepICCProfile = store.object(forKey: Key.keepICCProfile) as? Bool ?? fallback.keepICCProfile
         self.keepCaptureDate = store.object(forKey: Key.keepCaptureDate) as? Bool ?? fallback.keepCaptureDate
         self.keepGPS = store.object(forKey: Key.keepGPS) as? Bool ?? fallback.keepGPS
-        self.keepCameraMakeModel = store.object(forKey: Key.keepCameraMakeModel) as? Bool ?? fallback.keepCameraMakeModel
+        self.keepCameraMakeModel = store.object(forKey: Key.keepCameraMakeModel) as? Bool ?? fallback
+            .keepCameraMakeModel
         self.keepCustomXMP = store.object(forKey: Key.keepCustomXMP) as? Bool ?? fallback.keepCustomXMP
-        self.preserveVideoCreationDate = store.object(forKey: Key.preserveVideoCreationDate) as? Bool ?? fallback.preserveVideoCreationDate
-        self.livePhotoMode = (store.string(forKey: Key.livePhotoMode)).flatMap(LivePhotoMode.init(rawValue:)) ?? fallback.livePhotoMode
+        self.preserveVideoCreationDate = store.object(forKey: Key.preserveVideoCreationDate) as? Bool ?? fallback
+            .preserveVideoCreationDate
+        self.livePhotoMode = (store.string(forKey: Key.livePhotoMode))
+            .flatMap(LivePhotoMode.init(rawValue:)) ?? fallback.livePhotoMode
         self.onboardingCompletedV1 = store.bool(forKey: Key.onboardingCompletedV1)
-        self.livePhotoDefaultMode = (store.string(forKey: Key.livePhotoDefaultMode)).flatMap(LivePhotoMode.init(rawValue:))
+        self.livePhotoDefaultMode = (store.string(forKey: Key.livePhotoDefaultMode))
+            .flatMap(LivePhotoMode.init(rawValue:))
 
-        bindPersistence()
+        self.bindPersistence()
     }
 
     /// A snapshot of the current toggle values as a `CleaningPreferences`.
@@ -69,45 +73,52 @@ public final class CleaningPreferencesStore: ObservableObject {
     public var current: CleaningPreferences {
         get {
             CleaningPreferences(
-                keepOrientation: keepOrientation,
-                keepICCProfile: keepICCProfile,
-                keepCaptureDate: keepCaptureDate,
-                keepGPS: keepGPS,
-                keepCameraMakeModel: keepCameraMakeModel,
-                keepCustomXMP: keepCustomXMP,
-                preserveVideoCreationDate: preserveVideoCreationDate,
-                livePhotoMode: livePhotoMode
+                keepOrientation: self.keepOrientation,
+                keepICCProfile: self.keepICCProfile,
+                keepCaptureDate: self.keepCaptureDate,
+                keepGPS: self.keepGPS,
+                keepCameraMakeModel: self.keepCameraMakeModel,
+                keepCustomXMP: self.keepCustomXMP,
+                preserveVideoCreationDate: self.preserveVideoCreationDate,
+                livePhotoMode: self.livePhotoMode
             )
         }
         set {
-            keepOrientation = newValue.keepOrientation
-            keepICCProfile = newValue.keepICCProfile
-            keepCaptureDate = newValue.keepCaptureDate
-            keepGPS = newValue.keepGPS
-            keepCameraMakeModel = newValue.keepCameraMakeModel
-            keepCustomXMP = newValue.keepCustomXMP
-            preserveVideoCreationDate = newValue.preserveVideoCreationDate
-            livePhotoMode = newValue.livePhotoMode
+            self.keepOrientation = newValue.keepOrientation
+            self.keepICCProfile = newValue.keepICCProfile
+            self.keepCaptureDate = newValue.keepCaptureDate
+            self.keepGPS = newValue.keepGPS
+            self.keepCameraMakeModel = newValue.keepCameraMakeModel
+            self.keepCustomXMP = newValue.keepCustomXMP
+            self.preserveVideoCreationDate = newValue.preserveVideoCreationDate
+            self.livePhotoMode = newValue.livePhotoMode
         }
     }
 
     private func bindPersistence() {
-        let store = defaults
-        $keepOrientation.dropFirst().sink { store.set($0, forKey: Key.keepOrientation) }.store(in: &cancellables)
-        $keepICCProfile.dropFirst().sink { store.set($0, forKey: Key.keepICCProfile) }.store(in: &cancellables)
-        $keepCaptureDate.dropFirst().sink { store.set($0, forKey: Key.keepCaptureDate) }.store(in: &cancellables)
-        $keepGPS.dropFirst().sink { store.set($0, forKey: Key.keepGPS) }.store(in: &cancellables)
-        $keepCameraMakeModel.dropFirst().sink { store.set($0, forKey: Key.keepCameraMakeModel) }.store(in: &cancellables)
-        $keepCustomXMP.dropFirst().sink { store.set($0, forKey: Key.keepCustomXMP) }.store(in: &cancellables)
-        $preserveVideoCreationDate.dropFirst().sink { store.set($0, forKey: Key.preserveVideoCreationDate) }.store(in: &cancellables)
-        $livePhotoMode.dropFirst().sink { store.set($0.rawValue, forKey: Key.livePhotoMode) }.store(in: &cancellables)
-        $onboardingCompletedV1.dropFirst().sink { store.set($0, forKey: Key.onboardingCompletedV1) }.store(in: &cancellables)
-        $livePhotoDefaultMode.dropFirst().sink { mode in
+        let store = self.defaults
+        self.$keepOrientation.dropFirst().sink { store.set($0, forKey: Key.keepOrientation) }
+            .store(in: &self.cancellables)
+        self.$keepICCProfile.dropFirst().sink { store.set($0, forKey: Key.keepICCProfile) }
+            .store(in: &self.cancellables)
+        self.$keepCaptureDate.dropFirst().sink { store.set($0, forKey: Key.keepCaptureDate) }
+            .store(in: &self.cancellables)
+        self.$keepGPS.dropFirst().sink { store.set($0, forKey: Key.keepGPS) }.store(in: &self.cancellables)
+        self.$keepCameraMakeModel.dropFirst().sink { store.set($0, forKey: Key.keepCameraMakeModel) }
+            .store(in: &self.cancellables)
+        self.$keepCustomXMP.dropFirst().sink { store.set($0, forKey: Key.keepCustomXMP) }.store(in: &self.cancellables)
+        self.$preserveVideoCreationDate.dropFirst().sink { store.set($0, forKey: Key.preserveVideoCreationDate) }
+            .store(in: &self.cancellables)
+        self.$livePhotoMode.dropFirst().sink { store.set($0.rawValue, forKey: Key.livePhotoMode) }
+            .store(in: &self.cancellables)
+        self.$onboardingCompletedV1.dropFirst().sink { store.set($0, forKey: Key.onboardingCompletedV1) }
+            .store(in: &self.cancellables)
+        self.$livePhotoDefaultMode.dropFirst().sink { mode in
             if let mode {
                 store.set(mode.rawValue, forKey: Key.livePhotoDefaultMode)
             } else {
                 store.removeObject(forKey: Key.livePhotoDefaultMode)
             }
-        }.store(in: &cancellables)
+        }.store(in: &self.cancellables)
     }
 }

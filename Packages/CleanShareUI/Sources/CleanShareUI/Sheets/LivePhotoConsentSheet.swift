@@ -23,24 +23,24 @@ public struct LivePhotoConsentSheet: View {
                 .font(.title2.bold())
 
             VStack(spacing: 12) {
-                modeButton(
+                self.modeButton(
                     .downgradeToStill,
                     title: "Share as still photo",
                     detail: "Drops the paired video for the strongest privacy."
                 )
-                modeButton(
+                self.modeButton(
                     .preservePairing,
                     title: "Keep Live Photo",
                     detail: "Cleans both, but keeps the original pairing token."
                 )
-                modeButton(
+                self.modeButton(
                     .repairWithFreshID,
                     title: "Keep Live Photo (fresh ID)",
                     detail: "Cleans both and re-pairs with a new, uncorrelatable ID."
                 )
             }
 
-            Toggle("Don't ask again", isOn: $dontAskAgain)
+            Toggle("Don't ask again", isOn: self.$dontAskAgain)
         }
         .padding()
     }
@@ -51,7 +51,7 @@ public struct LivePhotoConsentSheet: View {
         detail: String
     ) -> some View {
         Button {
-            choose(mode)
+            self.choose(mode)
         } label: {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
@@ -67,9 +67,9 @@ public struct LivePhotoConsentSheet: View {
     }
 
     private func choose(_ mode: LivePhotoMode) {
-        if dontAskAgain {
-            prefsStore.livePhotoDefaultMode = mode
+        if self.dontAskAgain {
+            self.prefsStore.livePhotoDefaultMode = mode
         }
-        onChoose(mode)
+        self.onChoose(mode)
     }
 }

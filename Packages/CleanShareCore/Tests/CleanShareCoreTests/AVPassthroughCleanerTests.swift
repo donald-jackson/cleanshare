@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 /// Coverage for `AVPassthroughCleaner`: the H.264 dirty fixture must clean to
 /// leak-free output while remaining a lossless passthrough (no re-encode, size
@@ -46,7 +46,7 @@ final class AVPassthroughCleanerTests: XCTestCase {
         // reorganises atoms, which can shift the container size slightly.
         let ratio = Double(receipt.bytesOut) / Double(receipt.bytesIn)
         XCTAssert(
-            (0.85...1.15).contains(ratio),
+            (0.85 ... 1.15).contains(ratio),
             "size drifted beyond ±15%: in=\(receipt.bytesIn) out=\(receipt.bytesOut) ratio=\(ratio)"
         )
     }

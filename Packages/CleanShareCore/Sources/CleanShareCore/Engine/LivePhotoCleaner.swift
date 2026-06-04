@@ -41,11 +41,11 @@ public struct LivePhotoCleaner: Sendable {
 
         case .preservePairing:
             // Reuse the original shared UUID on both sides.
-            var originalID = readStillIdentifier(from: still)
+            var originalID = self.readStillIdentifier(from: still)
             if originalID == nil {
-                originalID = try await readVideoIdentifier(from: video)
+                originalID = try await self.readVideoIdentifier(from: video)
             }
-            return try await cleanPair(
+            return try await self.cleanPair(
                 still: still, stillOut: stillOut,
                 video: video, videoOut: videoOut,
                 identifier: originalID ?? UUID().uuidString, prefs: prefs
@@ -54,7 +54,7 @@ public struct LivePhotoCleaner: Sendable {
         case .repairWithFreshID:
             // Sever correlation with the source assets via a brand-new shared UUID.
             let freshID = UUID().uuidString
-            return try await cleanPair(
+            return try await self.cleanPair(
                 still: still, stillOut: stillOut,
                 video: video, videoOut: videoOut,
                 identifier: freshID, prefs: prefs
@@ -69,10 +69,10 @@ public struct LivePhotoCleaner: Sendable {
         prefs: CleaningPreferences
     ) async throws -> (still: CleanReceipt, video: CleanReceipt?) {
         let stillReceipt = try await ImageIOCleaner().clean(input: still, output: stillOut, prefs: prefs)
-        try injectStillIdentifier(identifier, into: stillOut)
+        try self.injectStillIdentifier(identifier, into: stillOut)
 
         let videoReceipt = try await AVPassthroughCleaner().clean(input: video, output: videoOut, prefs: prefs)
-        try injectContentIdentifier(identifier, into: videoOut)
+        try self.injectContentIdentifier(identifier, into: videoOut)
 
         return (stillReceipt, videoReceipt)
     }
@@ -82,7 +82,8 @@ public struct LivePhotoCleaner: Sendable {
     private func readStillIdentifier(from still: URL) -> String? {
         guard let src = CGImageSourceCreateWithURL(still as CFURL, nil),
               let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any],
-              let maker = props[kCGImagePropertyMakerAppleDictionary] as? [AnyHashable: Any] else {
+              let maker = props[kCGImagePropertyMakerAppleDictionary] as? [AnyHashable: Any]
+        else {
             return nil
         }
         for (key, value) in maker where String(describing: key) == "17" {
@@ -106,7 +107,7 @@ public struct LivePhotoCleaner: Sendable {
     /// fresh `MakerApple` dictionary containing only key `"17"`. The base file was
     /// already verified clean by `ImageIOCleaner`; this re-introduces a single
     /// allowed key. See PLAN.md §4.5.
-    internal func injectStillIdentifier(_ id: String, into stillURL: URL) throws {
+    func injectStillIdentifier(_ id: String, into stillURL: URL) throws {
         let srcOpts = [kCGImageSourceShouldCache: false] as CFDictionary
         guard let src = CGImageSourceCreateWithURL(stillURL as CFURL, srcOpts) else {
             throw CleanerError.unreadable
@@ -138,7 +139,7 @@ public struct LivePhotoCleaner: Sendable {
     /// through `AVAssetExportSession` passthrough (no re-encode) with the identifier
     /// in the container metadata, then atomically replacing the original. The
     /// passthrough preset preserves the compressed streams losslessly. See PLAN.md §4.5.
-    internal func injectContentIdentifier(_ id: String, into videoURL: URL) throws {
+    func injectContentIdentifier(_ id: String, into videoURL: URL) throws {
         let asset = AVURLAsset(url: videoURL)
         guard let export = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
             throw CleanerError.avFailed(reason: "could not create passthrough export session")

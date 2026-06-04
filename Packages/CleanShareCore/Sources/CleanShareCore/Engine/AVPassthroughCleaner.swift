@@ -20,11 +20,11 @@ public struct AVPassthroughCleaner: Cleaner {
         let input: AVAssetWriterInput
     }
 
-    public func clean(input: URL, output: URL, prefs: CleaningPreferences) async throws -> CleanReceipt {
+    public func clean(input: URL, output: URL, prefs _: CleaningPreferences) async throws -> CleanReceipt {
         let start = DispatchTime.now()
 
         let asset = AVURLAsset(url: input, options: [
-            AVURLAssetPreferPreciseDurationAndTimingKey: true,
+            AVURLAssetPreferPreciseDurationAndTimingKey: true
         ])
         let tracks = try await asset.load(.tracks)
 
@@ -89,8 +89,8 @@ public struct AVPassthroughCleaner: Cleaner {
             inputURL: input,
             outputURL: output,
             kind: kind,
-            bytesIn: fileSize(at: input),
-            bytesOut: fileSize(at: output),
+            bytesIn: self.fileSize(at: input),
+            bytesOut: self.fileSize(at: output),
             durationMS: elapsedMS,
             reencoded: false,
             leakedKeys: []

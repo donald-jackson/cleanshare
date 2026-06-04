@@ -12,27 +12,30 @@ final class NetworkRecorder: URLProtocol {
     nonisolated(unsafe) static var recordedRequests: [URL] = []
 
     static func reset() {
-        lock.lock()
-        recordedRequests = []
-        lock.unlock()
+        self.lock.lock()
+        self.recordedRequests = []
+        self.lock.unlock()
     }
 
     static func snapshot() -> [URL] {
-        lock.lock()
+        self.lock.lock()
         defer { lock.unlock() }
-        return recordedRequests
+        return self.recordedRequests
     }
 
     override class func canInit(with request: URLRequest) -> Bool {
         if let url = request.url {
-            lock.lock()
-            recordedRequests.append(url)
-            lock.unlock()
+            self.lock.lock()
+            self.recordedRequests.append(url)
+            self.lock.unlock()
         }
         return false
     }
 
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
+
     override func startLoading() {}
     override func stopLoading() {}
 }
@@ -43,31 +46,31 @@ final class NetworkRecorder: URLProtocol {
 final class NetworkSilenceTests: XCTestCase {
     private var app: XCUIApplication!
 
-    func testNoNetworkAccessAcrossFlows() throws {
+    func testNoNetworkAccessAcrossFlows() {
         continueAfterFailure = false
         URLProtocol.registerClass(NetworkRecorder.self)
         defer { URLProtocol.unregisterClass(NetworkRecorder.self) }
         NetworkRecorder.reset()
-        app = XCUIApplication()
-        app.launch()
+        self.app = XCUIApplication()
+        self.app.launch()
 
-        dismissOnboardingIfPresent()
-        assertSilent(phase: "launch + onboarding")
+        self.dismissOnboardingIfPresent()
+        self.assertSilent(phase: "launch + onboarding")
 
-        runSamplePhotoFlow()
-        assertSilent(phase: "sample photo")
+        self.runSamplePhotoFlow()
+        self.assertSilent(phase: "sample photo")
 
-        runCleanPhotosFlow()
-        assertSilent(phase: "clean photos + share")
+        self.runCleanPhotosFlow()
+        self.assertSilent(phase: "clean photos + share")
     }
 
     // MARK: - Flows
 
     private func dismissOnboardingIfPresent() {
-        let getStarted = app.buttons["Get started"]
+        let getStarted = self.app.buttons["Get started"]
         guard getStarted.waitForExistence(timeout: 5) else { return }
         // Onboarding is a paged TabView; swipe to the final page if needed.
-        for _ in 0..<4 where !getStarted.isHittable {
+        for _ in 0 ..< 4 where !getStarted.isHittable {
             app.swipeLeft()
         }
         if getStarted.isHittable {
@@ -76,27 +79,27 @@ final class NetworkSilenceTests: XCTestCase {
     }
 
     private func runSamplePhotoFlow() {
-        let sample = app.buttons["Try it on a sample photo"]
+        let sample = self.app.buttons["Try it on a sample photo"]
         XCTAssertTrue(sample.waitForExistence(timeout: 10), "Main screen did not appear")
         sample.tap()
         // The BEFORE / AFTER diff sheet renders the column headers.
-        let beforeHeader = app.staticTexts["Before"]
+        let beforeHeader = self.app.staticTexts["Before"]
         _ = beforeHeader.waitForExistence(timeout: 10)
         // Dismiss the sheet by swiping it down.
-        app.swipeDown()
+        self.app.swipeDown()
         // Wait for the main screen to be interactive again.
         _ = sample.waitForExistence(timeout: 5)
     }
 
     private func runCleanPhotosFlow() {
-        let cleanButton = app.buttons["Clean photos…"]
+        let cleanButton = self.app.buttons["Clean photos…"]
         XCTAssertTrue(cleanButton.waitForExistence(timeout: 10), "Clean photos button missing")
         cleanButton.tap()
 
-        selectFirstPhotoInPicker()
+        self.selectFirstPhotoInPicker()
 
         // Cleaning runs, then the system share sheet appears. Cancel it.
-        cancelShareSheet()
+        self.cancelShareSheet()
     }
 
     /// Picks the first available media item from the system photo picker. The
@@ -134,7 +137,7 @@ final class NetworkSilenceTests: XCTestCase {
     /// allow generous time for the activity controller to present.
     private func cancelShareSheet() {
         let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
-        for source in [app, springboard] {
+        for source in [self.app, springboard] {
             guard let source else { continue }
             let cancel = source.buttons["Cancel"]
             if cancel.waitForExistence(timeout: 12) {

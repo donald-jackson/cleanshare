@@ -17,10 +17,10 @@ struct PhotoPicker: UIViewControllerRepresentable {
         return controller
     }
 
-    func updateUIViewController(_ controller: PHPickerViewController, context: Context) {}
+    func updateUIViewController(_: PHPickerViewController, context _: Context) {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onPicked: onPicked)
+        Coordinator(onPicked: self.onPicked)
     }
 
     final class Coordinator: NSObject, PHPickerViewControllerDelegate {
@@ -32,7 +32,7 @@ struct PhotoPicker: UIViewControllerRepresentable {
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.dismiss(animated: true)
-            onPicked(results)
+            self.onPicked(results)
         }
     }
 }

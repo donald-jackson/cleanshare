@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 /// Nightly-only fuzz coverage. For each fixture we generate bit-flipped variants
 /// and feed them through the matching cleaner. A cleaner may legitimately reject
@@ -23,13 +23,16 @@ final class FuzzTests: XCTestCase {
     /// re-run byte-for-byte from its seed.
     private struct SplitMix64: RandomNumberGenerator {
         private var state: UInt64
-        init(seed: UInt64) { state = seed }
+        init(seed: UInt64) {
+            self.state = seed
+        }
+
         mutating func next() -> UInt64 {
-            state &+= 0x9E37_79B9_7F4A_7C15
-            var z = state
-            z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
-            z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
-            return z ^ (z >> 31)
+            self.state &+= 0x9E37_79B9_7F4A_7C15
+            var mixed = self.state
+            mixed = (mixed ^ (mixed >> 30)) &* 0xBF58_476D_1CE4_E5B9
+            mixed = (mixed ^ (mixed >> 27)) &* 0x94D0_49BB_1331_11EB
+            return mixed ^ (mixed >> 31)
         }
     }
 
@@ -50,7 +53,7 @@ final class FuzzTests: XCTestCase {
         var bytes = original
         if bytes.count > 16 {
             let offset = 16 + Int(rng.next() % UInt64(bytes.count - 16))
-            bytes[offset] ^= UInt8(rng.next() & 0xFF) | 1   // ensure a real change
+            bytes[offset] ^= UInt8(rng.next() & 0xFF) | 1 // ensure a real change
         }
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString)
@@ -81,10 +84,10 @@ final class FuzzTests: XCTestCase {
         seed: UInt64,
         clean: (URL, URL) async throws -> CleanReceipt
     ) async throws {
-        let original = try Data(contentsOf: try fixtureURL(name, ext))
+        let original = try Data(contentsOf: fixtureURL(name, ext))
         var rng = SplitMix64(seed: seed)
 
-        for i in 0..<variantsPerFixture {
+        for variantIndex in 0 ..< self.variantsPerFixture {
             let input = try makeVariant(from: original, ext: ext, rng: &rng)
             let output = FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)
@@ -99,43 +102,43 @@ final class FuzzTests: XCTestCase {
                 try assertLeakFree(receipt, output: output, kind: kind)
             } catch {
                 // Rejected the malformed input — acceptable. (See doc comment.)
-                XCTAssertNotNil(error, "variant \(i) of \(name).\(ext)")
+                XCTAssertNotNil(error, "variant \(variantIndex) of \(name).\(ext)")
             }
         }
     }
 
     func testFuzzJPEGiPhoneSample() async throws {
-        try await fuzz("iphone_sample", "jpg", kind: .jpeg, seed: 0x1) { input, output in
+        try await self.fuzz("iphone_sample", "jpg", kind: .jpeg, seed: 0x1) { input, output in
             try await ImageIOCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }
 
     func testFuzzJPEGPixelSample() async throws {
-        try await fuzz("pixel_sample", "jpg", kind: .jpeg, seed: 0x2) { input, output in
+        try await self.fuzz("pixel_sample", "jpg", kind: .jpeg, seed: 0x2) { input, output in
             try await ImageIOCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }
 
     func testFuzzJPEGLightroom() async throws {
-        try await fuzz("lightroom", "jpg", kind: .jpeg, seed: 0x3) { input, output in
+        try await self.fuzz("lightroom", "jpg", kind: .jpeg, seed: 0x3) { input, output in
             try await ImageIOCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }
 
     func testFuzzPNGTransparent() async throws {
-        try await fuzz("transparent", "png", kind: .png, seed: 0x4) { input, output in
+        try await self.fuzz("transparent", "png", kind: .png, seed: 0x4) { input, output in
             try await ImageIOCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }
 
     func testFuzzGIFAnimated() async throws {
-        try await fuzz("animated", "gif", kind: .gif, seed: 0x5) { input, output in
+        try await self.fuzz("animated", "gif", kind: .gif, seed: 0x5) { input, output in
             try await ImageIOCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }
 
     func testFuzzH264Video() async throws {
-        try await fuzz("h264_short", "mp4", kind: .mp4, seed: 0x6) { input, output in
+        try await self.fuzz("h264_short", "mp4", kind: .mp4, seed: 0x6) { input, output in
             try await AVPassthroughCleaner().clean(input: input, output: output, prefs: CleaningPreferences())
         }
     }

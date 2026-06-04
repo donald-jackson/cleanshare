@@ -33,11 +33,11 @@ public struct AboutView: View {
 
     public var body: some View {
         List {
-            headerSection
-            privacySection
-            formatsSection
-            openSourceSection
-            legalSection
+            self.headerSection
+            self.privacySection
+            self.formatsSection
+            self.openSourceSection
+            self.legalSection
         }
         .navigationTitle("About")
     }
@@ -48,7 +48,7 @@ public struct AboutView: View {
                 Text("CleanShare")
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
-                Text("Version \(version) (\(build))")
+                Text("Version \(self.version) (\(self.build))")
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.85))
             }
@@ -61,17 +61,17 @@ public struct AboutView: View {
 
     private var privacySection: some View {
         Section {
-            privacyRow(
+            self.privacyRow(
                 systemImage: "person.slash.fill",
                 title: "No accounts",
                 caption: "There's no sign-up, no login, no identity."
             )
-            privacyRow(
+            self.privacyRow(
                 systemImage: "chart.bar.xaxis.ascending",
                 title: "No analytics",
                 caption: "We don't track what you do or what you share."
             )
-            privacyRow(
+            self.privacyRow(
                 systemImage: "wifi.slash",
                 title: "No network",
                 caption: "Everything happens on your device, offline."
@@ -136,7 +136,7 @@ public struct AboutView: View {
                 Text("Powered entirely by Apple ImageIO and AVFoundation. Zero third-party SDKs.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Link("View source on GitHub", destination: sourceURL)
+                Link("View source on GitHub", destination: self.sourceURL)
             }
             .padding(.vertical, 4)
         }

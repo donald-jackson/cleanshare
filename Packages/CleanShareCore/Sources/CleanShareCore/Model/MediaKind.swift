@@ -19,17 +19,17 @@ public enum MediaKind: String, Sendable, CaseIterable, Codable {
     /// suitable for ImageIO / CoreMedia APIs.
     public var cfType: CFString {
         switch self {
-        case .jpeg: return "public.jpeg" as CFString
-        case .heic: return "public.heic" as CFString
-        case .heif: return "public.heif" as CFString
-        case .png: return "public.png" as CFString
-        case .gif: return "com.compuserve.gif" as CFString
-        case .webp: return "org.webmproject.webp" as CFString
-        case .tiff: return "public.tiff" as CFString
-        case .dng: return "com.adobe.raw-image" as CFString
-        case .mp4: return "public.mpeg-4" as CFString
-        case .mov: return "com.apple.quicktime-movie" as CFString
-        case .livePhoto: return "com.apple.live-photo" as CFString
+        case .jpeg: "public.jpeg" as CFString
+        case .heic: "public.heic" as CFString
+        case .heif: "public.heif" as CFString
+        case .png: "public.png" as CFString
+        case .gif: "com.compuserve.gif" as CFString
+        case .webp: "org.webmproject.webp" as CFString
+        case .tiff: "public.tiff" as CFString
+        case .dng: "com.adobe.raw-image" as CFString
+        case .mp4: "public.mpeg-4" as CFString
+        case .mov: "com.apple.quicktime-movie" as CFString
+        case .livePhoto: "com.apple.live-photo" as CFString
         }
     }
 

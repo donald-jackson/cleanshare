@@ -1,7 +1,7 @@
 import AVFoundation
+@testable import CleanShareCore
 import ImageIO
 import XCTest
-@testable import CleanShareCore
 
 /// Coverage for `LivePhotoCleaner` against a synthetic still+video pair sharing
 /// the content identifier `ABC-123-DEADBEEF`. Each resolved mode is verified for
@@ -29,7 +29,8 @@ final class LivePhotoCleanerTests: XCTestCase {
     private func stillIdentifier(_ url: URL) -> String? {
         guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
               let props = CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any],
-              let maker = props[kCGImagePropertyMakerAppleDictionary] as? [AnyHashable: Any] else {
+              let maker = props[kCGImagePropertyMakerAppleDictionary] as? [AnyHashable: Any]
+        else {
             return nil
         }
         for (key, value) in maker where String(describing: key) == "17" {
@@ -47,12 +48,12 @@ final class LivePhotoCleanerTests: XCTestCase {
     }
 
     func testDowngradeProducesOnlyStillAndDropsUUID() async throws {
-        let outDir = makeOutDir()
+        let outDir = self.makeOutDir()
         defer { try? FileManager.default.removeItem(at: outDir) }
 
         let result = try await LivePhotoCleaner().clean(
-            still: try fixtureURL("livephoto", "heic"),
-            video: try fixtureURL("livephoto", "mov"),
+            still: self.fixtureURL("livephoto", "heic"),
+            video: self.fixtureURL("livephoto", "mov"),
             outDir: outDir,
             mode: .downgradeToStill,
             prefs: CleaningPreferences()
@@ -64,18 +65,18 @@ final class LivePhotoCleanerTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: stillOut.path), "still output missing")
         XCTAssertFalse(FileManager.default.fileExists(atPath: videoOut.path), "video must not be produced")
 
-        XCTAssertNil(stillIdentifier(stillOut), "MakerApple identifier must be dropped")
+        XCTAssertNil(self.stillIdentifier(stillOut), "MakerApple identifier must be dropped")
         let leaks = try MetadataAuditor.audit(url: stillOut, kind: .heic, allowing: [])
         XCTAssertEqual(leaks, [], "auditor leaked: \(leaks)")
     }
 
     func testPreservePairingKeepsUUIDInBoth() async throws {
-        let outDir = makeOutDir()
+        let outDir = self.makeOutDir()
         defer { try? FileManager.default.removeItem(at: outDir) }
 
         let result = try await LivePhotoCleaner().clean(
-            still: try fixtureURL("livephoto", "heic"),
-            video: try fixtureURL("livephoto", "mov"),
+            still: self.fixtureURL("livephoto", "heic"),
+            video: self.fixtureURL("livephoto", "mov"),
             outDir: outDir,
             mode: .preservePairing,
             prefs: CleaningPreferences()
@@ -85,9 +86,9 @@ final class LivePhotoCleanerTests: XCTestCase {
         let stillOut = outDir.appendingPathComponent("livephoto.heic")
         let videoOut = outDir.appendingPathComponent("livephoto.mov")
 
-        XCTAssertEqual(stillIdentifier(stillOut), originalID, "still must keep the original UUID")
+        XCTAssertEqual(self.stillIdentifier(stillOut), self.originalID, "still must keep the original UUID")
         let videoID = try await videoIdentifier(videoOut)
-        XCTAssertEqual(videoID, originalID, "video must keep the original UUID")
+        XCTAssertEqual(videoID, self.originalID, "video must keep the original UUID")
 
         // The shared content identifier is the only metadata allowed to survive.
         let stillLeaks = try MetadataAuditor.audit(url: stillOut, kind: .heic, allowing: ["{MakerApple}"])
@@ -99,12 +100,12 @@ final class LivePhotoCleanerTests: XCTestCase {
     }
 
     func testRepairWithFreshIDInjectsNewUUID() async throws {
-        let outDir = makeOutDir()
+        let outDir = self.makeOutDir()
         defer { try? FileManager.default.removeItem(at: outDir) }
 
         let result = try await LivePhotoCleaner().clean(
-            still: try fixtureURL("livephoto", "heic"),
-            video: try fixtureURL("livephoto", "mov"),
+            still: self.fixtureURL("livephoto", "heic"),
+            video: self.fixtureURL("livephoto", "mov"),
             outDir: outDir,
             mode: .repairWithFreshID,
             prefs: CleaningPreferences()
@@ -114,10 +115,10 @@ final class LivePhotoCleanerTests: XCTestCase {
         let stillOut = outDir.appendingPathComponent("livephoto.heic")
         let videoOut = outDir.appendingPathComponent("livephoto.mov")
 
-        let stillID = stillIdentifier(stillOut)
+        let stillID = self.stillIdentifier(stillOut)
         let videoID = try await videoIdentifier(videoOut)
         XCTAssertNotNil(stillID, "still must carry the fresh UUID")
         XCTAssertEqual(stillID, videoID, "both sides must share the fresh UUID")
-        XCTAssertNotEqual(stillID, originalID, "fresh UUID must differ from the original")
+        XCTAssertNotEqual(stillID, self.originalID, "fresh UUID must differ from the original")
     }
 }

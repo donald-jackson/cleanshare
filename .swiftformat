@@ -6,3 +6,4 @@
 --ifdef no-indent
 --self insert
 --patternlet inline
+--disable wrapMultilineStatementBraces

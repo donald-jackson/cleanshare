@@ -1649,7 +1649,7 @@
   - Done: ADR-0004 exists.
   - Refs: PLAN.md §18.2.
 
-- [ ] **7.13** Commit Phase 7
+- [x] **7.13** Commit Phase 7
   - Stage: `git add Packages/ CleanShareUITests/ docs/architecture.md docs/threat-model.md docs/metadata-reference.md docs/adr/ scripts/make-perf-fixtures.sh tests/fixtures/perf/.gitkeep`.
   - (Performance fixtures themselves go in `tests/fixtures/perf/`; keep them out of git via `.gitignore` rule `tests/fixtures/perf/*.{jpg,heic,mp4}` and commit only `.gitkeep`.)
   - Commit message: `feat(quality): phase 7 — fuzz + network-silence + perf + MetricKit + docs + ADRs`.
@@ -1661,7 +1661,7 @@
 
 ## Phase 8: Final verification + RC tag
 
-- [ ] **8.01** Local rehearsal: `make lint` is green
+- [x] **8.01** Local rehearsal: `make lint` is green
   - Run `make lint`. Resolve any SwiftFormat / SwiftLint complaints in-scope (do NOT add suppressions; either fix the code or update the config if the rule is genuinely wrong — and document the rationale in commit message).
   - Test: `make lint` exits 0.
   - Done: Lint passes.

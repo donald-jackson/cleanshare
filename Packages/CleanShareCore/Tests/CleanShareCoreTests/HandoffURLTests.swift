@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 final class HandoffURLTests: XCTestCase {
     func testRoundTrip() {
@@ -8,8 +8,8 @@ final class HandoffURLTests: XCTestCase {
         XCTAssertEqual(URL.handoffToken(from: url), token)
     }
 
-    func testRejectsForeignScheme() {
-        let url = URL(string: "https://evil.com")!
+    func testRejectsForeignScheme() throws {
+        let url = try XCTUnwrap(URL(string: "https://evil.com"))
         XCTAssertNil(URL.handoffToken(from: url))
     }
 }

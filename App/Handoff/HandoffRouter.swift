@@ -18,19 +18,19 @@ enum HandoffRouter {
         guard let token = URL.handoffToken(from: url),
               let root = containerRoot() else { return false }
 
-        let manifestURL = inboxDir(root: root, token: token)
+        let manifestURL = self.inboxDir(root: root, token: token)
             .appendingPathComponent("manifest.json")
         guard let manifest = try? ManifestReader.read(from: manifestURL) else {
             return false
         }
 
         coordinator.pendingURLs = manifest.receipts.map(\.outputURL)
-        scheduleCleanup(token: token, root: root)
+        self.scheduleCleanup(token: token, root: root)
         return true
     }
 
     private static func containerRoot() -> URL? {
-        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)
+        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupID)
     }
 
     private static func inboxDir(root: URL, token: String) -> URL {
@@ -40,12 +40,12 @@ enum HandoffRouter {
 
     private static func scheduleCleanup(token: String, root: URL) {
         Task {
-            try? await Task.sleep(nanoseconds: UInt64(cleanupDelay * 1_000_000_000))
-            let fm = FileManager.default
-            try? fm.removeItem(at: inboxDir(root: root, token: token))
+            try? await Task.sleep(nanoseconds: UInt64(self.cleanupDelay * 1_000_000_000))
+            let fileManager = FileManager.default
+            try? fileManager.removeItem(at: self.inboxDir(root: root, token: token))
             let jobDir = root.appendingPathComponent("tmp", isDirectory: true)
                 .appendingPathComponent("job-\(token)", isDirectory: true)
-            try? fm.removeItem(at: jobDir)
+            try? fileManager.removeItem(at: jobDir)
         }
     }
 }

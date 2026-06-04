@@ -2,8 +2,8 @@ import Foundation
 
 /// A footprint threshold crossing observed by the ``MemoryWatchdog``.
 public enum MemoryEvent: Sendable, Equatable {
-    case warning(mb: Int)
-    case critical(mb: Int)
+    case warning(megabytes: Int)
+    case critical(megabytes: Int)
 }
 
 /// Polls the process's resident memory footprint and emits threshold-crossing
@@ -41,15 +41,15 @@ public actor MemoryWatchdog {
         AsyncStream { continuation in
             let task = Task {
                 while !Task.isCancelled {
-                    let mb = await footprintMB()
-                    if mb > 90, !criticalEmitted {
-                        criticalEmitted = true
-                        continuation.yield(.critical(mb: mb))
-                    } else if mb > 80, !warned {
-                        warned = true
-                        continuation.yield(.warning(mb: mb))
+                    let megabytes = await footprintMB()
+                    if megabytes > 90, !self.criticalEmitted {
+                        self.criticalEmitted = true
+                        continuation.yield(.critical(megabytes: megabytes))
+                    } else if megabytes > 80, !self.warned {
+                        self.warned = true
+                        continuation.yield(.warning(megabytes: megabytes))
                     }
-                    try? await Task.sleep(for: pollInterval)
+                    try? await Task.sleep(for: self.pollInterval)
                 }
                 continuation.finish()
             }
@@ -62,7 +62,7 @@ public actor MemoryWatchdog {
 
     /// Cancels the polling task started by ``start()``.
     public func stop() {
-        pollingTask?.cancel()
-        pollingTask = nil
+        self.pollingTask?.cancel()
+        self.pollingTask = nil
     }
 }

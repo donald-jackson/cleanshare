@@ -25,34 +25,34 @@ public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubsc
     /// Registers the shared collector with `MXMetricManager`. Idempotent — calling
     /// it more than once registers the subscriber exactly once.
     public static func subscribe() {
-        shared.startIfNeeded()
+        self.shared.startIfNeeded()
     }
 
     /// Removes the shared collector from `MXMetricManager`. No-op if not subscribed.
     public static func unsubscribe() {
-        shared.stopIfNeeded()
+        self.shared.stopIfNeeded()
     }
 
     private func startIfNeeded() {
-        guard !isSubscribed else { return }
+        guard !self.isSubscribed else { return }
         MXMetricManager.shared.add(self)
-        isSubscribed = true
+        self.isSubscribed = true
     }
 
     private func stopIfNeeded() {
-        guard isSubscribed else { return }
+        guard self.isSubscribed else { return }
         MXMetricManager.shared.remove(self)
-        isSubscribed = false
+        self.isSubscribed = false
     }
 
     // MARK: - MXMetricManagerSubscriber
 
     public func didReceive(_ payloads: [MXMetricPayload]) {
-        persist(payloads.map { $0.jsonRepresentation() })
+        self.persist(payloads.map { $0.jsonRepresentation() })
     }
 
     public func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        persist(payloads.map { $0.jsonRepresentation() })
+        self.persist(payloads.map { $0.jsonRepresentation() })
     }
 
     // MARK: - Persistence
@@ -63,7 +63,7 @@ public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubsc
         let incoming = newReports.compactMap { try? JSONSerialization.jsonObject(with: $0) }
         guard !incoming.isEmpty else { return }
 
-        var reports = loadReports(at: url)
+        var reports = self.loadReports(at: url)
         reports.insert(contentsOf: incoming, at: 0)
         if reports.count > Self.maxReports {
             reports = Array(reports.prefix(Self.maxReports))

@@ -23,16 +23,16 @@ public struct OnboardingView: View {
     }
 
     public var body: some View {
-        pagedTabView
+        self.pagedTabView
             .ignoresSafeArea()
     }
 
     @ViewBuilder
     private var pagedTabView: some View {
         let tabs = TabView(selection: $selection) {
-            welcomePage.tag(0)
-            howPage.tag(1)
-            privacyPage.tag(2)
+            self.welcomePage.tag(0)
+            self.howPage.tag(1)
+            self.privacyPage.tag(2)
         }
         #if os(iOS)
         tabs
@@ -44,7 +44,7 @@ public struct OnboardingView: View {
     }
 
     private var welcomePage: some View {
-        page {
+        self.page {
             Image(systemName: "lock.shield.fill")
                 .font(.system(size: 84))
                 .foregroundStyle(Color(red: 0.098, green: 0.706, blue: 0.690))
@@ -63,32 +63,32 @@ public struct OnboardingView: View {
     }
 
     private var howPage: some View {
-        page {
+        self.page {
             Text("How it works")
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
             VStack(alignment: .leading, spacing: 28) {
-                step(number: 1, symbol: "square.and.arrow.up", text: "Share from Photos")
-                step(number: 2, symbol: "wand.and.stars", text: "CleanShare cleans")
-                step(number: 3, symbol: "paperplane.fill", text: "Share to anyone")
+                self.step(number: 1, symbol: "square.and.arrow.up", text: "Share from Photos")
+                self.step(number: 2, symbol: "wand.and.stars", text: "CleanShare cleans")
+                self.step(number: 3, symbol: "paperplane.fill", text: "Share to anyone")
             }
         }
     }
 
     private var privacyPage: some View {
-        page {
+        self.page {
             Text("Private by design")
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
             VStack(alignment: .leading, spacing: 16) {
-                bullet("No accounts.")
-                bullet("No analytics.")
-                bullet("No network.")
-                bullet("Source open at github.com/<placeholder>/cleanshare.")
+                self.bullet("No accounts.")
+                self.bullet("No analytics.")
+                self.bullet("No network.")
+                self.bullet("Source open at github.com/<placeholder>/cleanshare.")
             }
             Button {
-                prefsStore.onboardingCompletedV1 = true
-                dismiss()
+                self.prefsStore.onboardingCompletedV1 = true
+                self.dismiss()
             } label: {
                 Text("Get started")
                     .font(.headline)
@@ -121,7 +121,7 @@ public struct OnboardingView: View {
         .foregroundStyle(.white)
     }
 
-    private func page<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+    private func page(@ViewBuilder _ content: () -> some View) -> some View {
         ZStack {
             Self.brandGradient.ignoresSafeArea()
             VStack(spacing: 28) {

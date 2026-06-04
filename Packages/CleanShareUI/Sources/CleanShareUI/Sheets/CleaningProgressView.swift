@@ -26,8 +26,8 @@ public struct CleaningProgressView: View {
         VStack(spacing: 16) {
             Text("Cleaning your media…")
                 .font(.headline)
-            ProgressView(value: progress.fraction)
-            Text(progress.currentFile ?? "Preparing…")
+            ProgressView(value: self.progress.fraction)
+            Text(self.progress.currentFile ?? "Preparing…")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             if let onCancel {

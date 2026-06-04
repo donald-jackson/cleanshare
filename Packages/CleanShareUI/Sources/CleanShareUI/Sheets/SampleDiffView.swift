@@ -16,7 +16,7 @@ public struct SampleDiffView: View {
         "{Exif}", "{ExifAux}", "{GPS}", "{IPTC}", "{IPTCXMP}", "{XMP}",
         "{Photoshop}", "{TIFF}", "{MakerApple}", "{MakerNikon}",
         "{MakerCanon}", "{MakerFuji}", "{MakerOlympus}", "{MakerPentax}",
-        "{MakerSony}",
+        "{MakerSony}"
     ]
 
     public init(beforeURL: URL, afterURL: URL?) {
@@ -26,9 +26,9 @@ public struct SampleDiffView: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            column(title: "Before", url: beforeURL)
+            self.column(title: "Before", url: self.beforeURL)
             Divider()
-            column(title: "After cleaning", url: afterURL)
+            self.column(title: "After cleaning", url: self.afterURL)
         }
     }
 
@@ -58,13 +58,13 @@ public struct SampleDiffView: View {
     }
 
     private static func lines(for url: URL?) -> [Entry] {
-        properties(for: url)
+        self.properties(for: url)
             .sorted { $0.key < $1.key }
             .map { key, value in
                 Entry(
                     key: key,
                     value: String(describing: value),
-                    sensitive: sensitiveKeys.contains(key)
+                    sensitive: self.sensitiveKeys.contains(key)
                 )
             }
     }

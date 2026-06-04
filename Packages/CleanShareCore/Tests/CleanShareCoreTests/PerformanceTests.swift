@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 /// Wall-clock performance coverage for the engine on large synthetic media.
 /// Baselines are loosened ~3× over the PLAN.md §5.2 targets to absorb CI and
@@ -43,26 +43,26 @@ final class PerformanceTests: XCTestCase {
     /// Times a single async run and asserts it stays under `baseline` seconds.
     private func assertUnder(_ baseline: TimeInterval, _ work: @escaping @Sendable () async throws -> Void) {
         let start = Date()
-        runBlocking(timeout: baseline * 4 + 5, work)
+        self.runBlocking(timeout: baseline * 4 + 5, work)
         let elapsed = Date().timeIntervalSince(start)
         XCTAssertLessThan(elapsed, baseline, "took \(elapsed)s, baseline \(baseline)s")
     }
 
     func testPerfJPEG12MP_under500ms() throws {
         let input = try fixtureURL("jpeg_12mp", "jpg")
-        measure { runBlocking(timeout: 30) { try await Self.cleanImage(input) } }
-        assertUnder(0.5) { try await Self.cleanImage(input) }
+        measure { self.runBlocking(timeout: 30) { try await Self.cleanImage(input) } }
+        self.assertUnder(0.5) { try await Self.cleanImage(input) }
     }
 
     func testPerfHEIC12MP_under400ms() throws {
         let input = try fixtureURL("heic_12mp", "heic")
-        measure { runBlocking(timeout: 30) { try await Self.cleanImage(input) } }
-        assertUnder(0.4) { try await Self.cleanImage(input) }
+        measure { self.runBlocking(timeout: 30) { try await Self.cleanImage(input) } }
+        self.assertUnder(0.4) { try await Self.cleanImage(input) }
     }
 
     func testPerf4KH264_under5s() throws {
         let input = try fixtureURL("h264_4k_10s", "mp4")
-        measure { runBlocking(timeout: 60) { try await Self.cleanVideo(input) } }
-        assertUnder(5.0) { try await Self.cleanVideo(input) }
+        measure { self.runBlocking(timeout: 60) { try await Self.cleanVideo(input) } }
+        self.assertUnder(5.0) { try await Self.cleanVideo(input) }
     }
 }

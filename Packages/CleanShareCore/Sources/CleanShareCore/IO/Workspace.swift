@@ -15,7 +15,7 @@ public struct JobURLs: Sendable {
 /// Group container so it survives the extension → host handoff (PLAN.md §3.1).
 public actor Workspace {
     private let root: URL
-    private let fm = FileManager.default
+    private let fileManager = FileManager.default
 
     /// Resolves the App Group container via
     /// `FileManager.containerURL(forSecurityApplicationGroupIdentifier:)`. When
@@ -25,26 +25,31 @@ public actor Workspace {
         if let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
         ) {
-            root = container
+            self.root = container
         } else {
-            root = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            self.root = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
                 .appendingPathComponent("CleanShareWorkspace", isDirectory: true)
         }
     }
 
-    private var tmpDir: URL { root.appendingPathComponent("tmp", isDirectory: true) }
-    private var inboxDir: URL { root.appendingPathComponent("inbox", isDirectory: true) }
+    private var tmpDir: URL {
+        self.root.appendingPathComponent("tmp", isDirectory: true)
+    }
+
+    private var inboxDir: URL {
+        self.root.appendingPathComponent("inbox", isDirectory: true)
+    }
 
     /// Creates a fresh `tmp/job-<uuid>/` directory tree (with `in/` and `out/`
     /// subdirectories) and returns the resolved URLs.
     public func newJob() throws -> JobURLs {
         let id = UUID()
-        let jobDir = tmpDir.appendingPathComponent("job-\(id.uuidString)", isDirectory: true)
+        let jobDir = self.tmpDir.appendingPathComponent("job-\(id.uuidString)", isDirectory: true)
         let inDir = jobDir.appendingPathComponent("in", isDirectory: true)
         let outDir = jobDir.appendingPathComponent("out", isDirectory: true)
 
-        try fm.createDirectory(at: inDir, withIntermediateDirectories: true)
-        try fm.createDirectory(at: outDir, withIntermediateDirectories: true)
+        try self.fileManager.createDirectory(at: inDir, withIntermediateDirectories: true)
+        try self.fileManager.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         return JobURLs(
             id: id,
@@ -57,16 +62,16 @@ public actor Workspace {
     /// Creates `inbox/<token>/` (if needed) and returns the URL where that job's
     /// `manifest.json` should be written for the host app to pick up. See PLAN.md §6.
     public func inboxManifestURL(token: String) throws -> URL {
-        let dir = inboxDir.appendingPathComponent(token, isDirectory: true)
-        try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        let dir = self.inboxDir.appendingPathComponent(token, isDirectory: true)
+        try self.fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir.appendingPathComponent("manifest.json")
     }
 
     /// Removes `tmp/job-<id>` recursively. No-op if it does not exist.
     public func cleanup(jobID: UUID) throws {
-        let jobDir = tmpDir.appendingPathComponent("job-\(jobID.uuidString)", isDirectory: true)
-        if fm.fileExists(atPath: jobDir.path) {
-            try fm.removeItem(at: jobDir)
+        let jobDir = self.tmpDir.appendingPathComponent("job-\(jobID.uuidString)", isDirectory: true)
+        if self.fileManager.fileExists(atPath: jobDir.path) {
+            try self.fileManager.removeItem(at: jobDir)
         }
     }
 
@@ -74,8 +79,8 @@ public actor Workspace {
     /// older than `Date().addingTimeInterval(-ttl)`.
     public func cleanupExpired(olderThan ttl: TimeInterval) throws {
         let cutoff = Date().addingTimeInterval(-ttl)
-        for dir in [tmpDir, inboxDir] {
-            guard let entries = try? fm.contentsOfDirectory(
+        for dir in [self.tmpDir, self.inboxDir] {
+            guard let entries = try? fileManager.contentsOfDirectory(
                 at: dir,
                 includingPropertiesForKeys: [.creationDateKey],
                 options: []
@@ -83,7 +88,7 @@ public actor Workspace {
             for entry in entries {
                 let created = try entry.resourceValues(forKeys: [.creationDateKey]).creationDate
                 if let created, created < cutoff {
-                    try fm.removeItem(at: entry)
+                    try self.fileManager.removeItem(at: entry)
                 }
             }
         }

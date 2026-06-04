@@ -12,23 +12,23 @@ public struct DiagnosticsView: View {
 
     public var body: some View {
         List {
-            reportsSection
-            exportSection
+            self.reportsSection
+            self.exportSection
         }
         .navigationTitle("Diagnostics")
-        .onAppear { reports = DiagnosticsStore.recentReports() }
+        .onAppear { self.reports = DiagnosticsStore.recentReports() }
     }
 
     private var reportsSection: some View {
         Section {
-            if reports.isEmpty {
+            if self.reports.isEmpty {
                 Text("No reports yet.")
                     .foregroundStyle(.secondary)
             } else {
-                ForEach(reports) { report in
+                ForEach(self.reports) { report in
                     VStack(alignment: .leading, spacing: 2) {
                         Text(report.summary)
-                        Text(dateLabel(for: report))
+                        Text(self.dateLabel(for: report))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -37,19 +37,22 @@ public struct DiagnosticsView: View {
         } header: {
             Text("Recent reports")
         } footer: {
-            Text("Up to the five most recent crash and performance reports collected by MetricKit, stored on this device only.")
+            Text(
+                "Up to the five most recent crash and performance reports "
+                    + "collected by MetricKit, stored on this device only."
+            )
         }
     }
 
     private var exportSection: some View {
         Section {
             Button("Export Last 5 Crash Reports") {
-                isExporting = true
+                self.isExporting = true
             }
-            .disabled(reports.isEmpty)
+            .disabled(self.reports.isEmpty)
         }
         #if canImport(UIKit)
-        .sheet(isPresented: $isExporting) {
+        .sheet(isPresented: self.$isExporting) {
             if let url = DiagnosticsStore.reportsFileURL() {
                 DiagnosticsShareSheet(items: [url])
             }
@@ -71,10 +74,10 @@ import UIKit
 struct DiagnosticsShareSheet: UIViewControllerRepresentable {
     let items: [Any]
 
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    func makeUIViewController(context _: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: self.items, applicationActivities: nil)
     }
 
-    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }
 #endif

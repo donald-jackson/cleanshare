@@ -1,12 +1,12 @@
-import XCTest
 import CleanShareCore
 @testable import CleanShareUI
+import XCTest
 
 @MainActor
 final class CleaningPreferencesStoreTests: XCTestCase {
-    func testPersistenceRoundTrip() {
+    func testPersistenceRoundTrip() throws {
         let suiteName = "CleaningPreferencesStoreTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: suiteName)!
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defer { defaults.removePersistentDomain(forName: suiteName) }
 
         let store = CleaningPreferencesStore(defaults: defaults)

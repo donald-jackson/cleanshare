@@ -12,7 +12,7 @@ public enum MetadataAuditor {
     static let alwaysSensitive: Set<String> = [
         "{ExifAux}", "{GPS}", "{IPTC}", "{IPTCXMP}", "{XMP}", "{Photoshop}",
         "{MakerApple}", "{MakerNikon}", "{MakerCanon}", "{MakerFuji}",
-        "{MakerOlympus}", "{MakerPentax}", "{MakerSony}",
+        "{MakerOlympus}", "{MakerPentax}", "{MakerSony}"
     ]
 
     /// Mixed dictionaries that ImageIO unavoidably regenerates from the pixel
@@ -30,7 +30,7 @@ public enum MetadataAuditor {
         "{PNG}": ["InterlaceType", "Gamma", "sRGBIntent", "Chromaticities",
                   "PixelAspectRatio", "XPixelsPerMeter", "YPixelsPerMeter"],
         "{HEICS}": ["LoopCount", "DelayTime", "UnclampedDelayTime",
-                    "CanvasPixelWidth", "CanvasPixelHeight"],
+                    "CanvasPixelWidth", "CanvasPixelHeight"]
     ]
 
     /// Re-opens `url` and returns the sorted list of sensitive metadata keys
@@ -46,7 +46,7 @@ public enum MetadataAuditor {
         "mdta/com.apple.quicktime.model",
         "mdta/com.apple.quicktime.software",
         "mdta/com.apple.quicktime.content.identifier",
-        "udta/\u{00A9}xyz",
+        "udta/\u{00A9}xyz"
     ]
 
     public static func audit(url: URL, kind: MediaKind, allowing allowlist: Set<String>) throws -> [String] {
@@ -68,11 +68,11 @@ public enum MetadataAuditor {
                 let key = String(describing: rawKey)
                 if allowlist.contains(key) { continue }
 
-                if alwaysSensitive.contains(key) {
+                if self.alwaysSensitive.contains(key) {
                     leaks.append(key)
                 } else if let safe = structuralSafeKeys[key] {
                     guard let dict = value as? [CFString: Any] else {
-                        leaks.append(key)   // unexpected shape — fail closed
+                        leaks.append(key) // unexpected shape — fail closed
                         continue
                     }
                     let subKeys = Set(dict.keys.map { String(describing: $0) })
@@ -111,7 +111,7 @@ public enum MetadataAuditor {
             }
         }
 
-        var leaks = sensitiveVideoIdentifiers
+        var leaks = self.sensitiveVideoIdentifiers
             .intersection(identifiers)
             .subtracting(allowlist)
 

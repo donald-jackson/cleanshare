@@ -33,13 +33,13 @@ public struct ImageIOCleaner: Cleaner {
             CGImageDestinationSetProperties(dest, containerProps as CFDictionary)
         }
 
-        for i in 0..<frameCount {
+        for frameIndex in 0 ..< frameCount {
             try Task.checkCancellation()
-            guard let cgImage = CGImageSourceCreateImageAtIndex(src, i, srcOpts) else {
-                throw CleanerError.frameDecodeFailed(index: i)
+            guard let cgImage = CGImageSourceCreateImageAtIndex(src, frameIndex, srcOpts) else {
+                throw CleanerError.frameDecodeFailed(index: frameIndex)
             }
-            let props = sanitizedFrameProperties(from: src, frameIndex: i, prefs: prefs, kind: kind)
-            CGImageDestinationAddImage(dest, cgImage, props as CFDictionary)   // NOT AddImageFromSource
+            let props = sanitizedFrameProperties(from: src, frameIndex: frameIndex, prefs: prefs, kind: kind)
+            CGImageDestinationAddImage(dest, cgImage, props as CFDictionary) // NOT AddImageFromSource
         }
 
         guard CGImageDestinationFinalize(dest) else { throw CleanerError.writeFailed }
@@ -47,8 +47,8 @@ public struct ImageIOCleaner: Cleaner {
         let leaked = try MetadataAuditor.audit(url: output, kind: kind, allowing: prefs.allowedKeys())
         guard leaked.isEmpty else { throw CleanerError.leakDetected(keys: leaked) }
 
-        let bytesIn = fileSize(at: input)
-        let bytesOut = fileSize(at: output)
+        let bytesIn = self.fileSize(at: input)
+        let bytesOut = self.fileSize(at: output)
         let elapsedMS = Int((DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000)
 
         return CleanReceipt(

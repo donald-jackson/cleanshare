@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareUI
+import XCTest
 
 final class PlaceholderTests: XCTestCase {
     func testVersionIsNonEmpty() {

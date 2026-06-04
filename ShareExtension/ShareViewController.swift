@@ -16,8 +16,8 @@ final class ShareViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        installProgressView()
-        workTask = Task { [weak self] in await self?.runCleaning() }
+        self.installProgressView()
+        self.workTask = Task { [weak self] in await self?.runCleaning() }
     }
 
     private func installProgressView() {
@@ -45,7 +45,7 @@ final class ShareViewController: UIViewController {
 
             var items: [CleaningPipeline.InputItem] = []
             var names: [UUID: String] = [:]
-            for provider in attachments() {
+            for provider in self.attachments() {
                 guard let (url, kind) = try await loadFile(from: provider, into: job.inDir) else { continue }
                 let id = UUID()
                 items.append((id: id, sourceURL: url, kind: kind))
@@ -66,11 +66,11 @@ final class ShareViewController: UIViewController {
             let events = await pipeline.run()
             for try await event in events {
                 switch event {
-                case let .progress(itemID, _):
-                    progressModel.currentFile = names[itemID]
-                case let .completed(_, receipt):
+                case .progress(let itemID, _):
+                    self.progressModel.currentFile = names[itemID]
+                case .completed(_, let receipt):
                     receipts.append(receipt)
-                    progressModel.fraction = Double(receipts.count) / total
+                    self.progressModel.fraction = Double(receipts.count) / total
                 case .failed:
                     break
                 }
@@ -83,7 +83,7 @@ final class ShareViewController: UIViewController {
             let manifestURL = try await workspace.inboxManifestURL(token: token)
             try ManifestWriter.write(manifest, to: manifestURL)
 
-            handOff(token: token, cleanedURLs: receipts.map(\.outputURL))
+            self.handOff(token: token, cleanedURLs: receipts.map(\.outputURL))
         } catch is CancellationError {
             // Cancellation already finished the request via cancel().
         } catch {
@@ -157,13 +157,13 @@ final class ShareViewController: UIViewController {
                     return
                 }
                 let dest = inDir.appendingPathComponent(url.lastPathComponent)
-                let fm = FileManager.default
-                try? fm.removeItem(at: dest)
+                let fileManager = FileManager.default
+                try? fileManager.removeItem(at: dest)
                 do {
                     do {
-                        try fm.linkItem(at: url, to: dest)
+                        try fileManager.linkItem(at: url, to: dest)
                     } catch {
-                        try fm.copyItem(at: url, to: dest)
+                        try fileManager.copyItem(at: url, to: dest)
                     }
                     continuation.resume(returning: dest)
                 } catch {
@@ -192,11 +192,11 @@ final class ShareViewController: UIViewController {
 }
 
 extension ShareViewController: UIDocumentPickerDelegate {
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt _: [URL]) {
         extensionContext?.completeRequest(returningItems: nil)
     }
 
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+    func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
         extensionContext?.completeRequest(returningItems: nil)
     }
 }

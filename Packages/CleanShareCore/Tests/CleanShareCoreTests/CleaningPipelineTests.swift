@@ -1,5 +1,5 @@
-import XCTest
 @testable import CleanShareCore
+import XCTest
 
 /// Verifies that `CleaningPipeline` routes a batch of image items through the
 /// correct cleaner and emits exactly one `.completed` event per item, with no
@@ -16,10 +16,10 @@ final class CleaningPipelineTests: XCTestCase {
         let workspace = try Workspace(appGroupID: "group.dev.cleanshare.app")
         let pipeline = CleaningPipeline(workspace: workspace, prefs: CleaningPreferences())
 
-        let items: [CleaningPipeline.InputItem] = [
-            (id: UUID(), sourceURL: try fixtureURL("iphone_sample", "jpg"), kind: .jpeg),
-            (id: UUID(), sourceURL: try fixtureURL("pixel_sample", "jpg"), kind: .jpeg),
-            (id: UUID(), sourceURL: try fixtureURL("transparent", "png"), kind: .png),
+        let items: [CleaningPipeline.InputItem] = try [
+            (id: UUID(), sourceURL: self.fixtureURL("iphone_sample", "jpg"), kind: .jpeg),
+            (id: UUID(), sourceURL: self.fixtureURL("pixel_sample", "jpg"), kind: .jpeg),
+            (id: UUID(), sourceURL: self.fixtureURL("transparent", "png"), kind: .png)
         ]
         await pipeline.enqueue(items)
 

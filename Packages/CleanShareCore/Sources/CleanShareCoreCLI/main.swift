@@ -15,7 +15,7 @@ guard let command = args.first else { usage() }
 guard command == "clean" else { fail("unknown command: \(command)") }
 
 var positional: [String] = []
-var requestedKind: String? = nil
+var requestedKind: String?
 for arg in args.dropFirst() {
     if arg.hasPrefix("--kind=") {
         requestedKind = String(arg.dropFirst("--kind=".count))

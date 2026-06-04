@@ -23,21 +23,21 @@ struct RootView: View {
                     .foregroundStyle(.secondary)
 
                 Button(String(localized: "Try it on a sample photo")) {
-                    cleanSamplePhoto()
+                    self.cleanSamplePhoto()
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button(String(localized: "Clean photos…")) {
-                    showPhotoPicker = true
+                    self.showPhotoPicker = true
                 }
                 .buttonStyle(.borderedProminent)
 
                 Button(String(localized: "Try it on a Live Photo (sample)")) {
-                    livePhotoOnChoose = { mode in
-                        showLivePhotoSheet = false
-                        cleanSampleLivePhoto(mode: mode)
+                    self.livePhotoOnChoose = { mode in
+                        self.showLivePhotoSheet = false
+                        self.cleanSampleLivePhoto(mode: mode)
                     }
-                    showLivePhotoSheet = true
+                    self.showLivePhotoSheet = true
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -45,7 +45,7 @@ struct RootView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showSettings = true
+                        self.showSettings = true
                     } label: {
                         Image(systemName: "gearshape")
                     }
@@ -53,32 +53,32 @@ struct RootView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: onboardingBinding) {
-            OnboardingView(prefsStore: prefsStore)
+        .fullScreenCover(isPresented: self.onboardingBinding) {
+            OnboardingView(prefsStore: self.prefsStore)
         }
-        .sheet(isPresented: $showSettings) {
+        .sheet(isPresented: self.$showSettings) {
             NavigationStack {
-                SettingsView(prefsStore: prefsStore)
+                SettingsView(prefsStore: self.prefsStore)
             }
         }
-        .sheet(item: $sampleDiff) { pair in
+        .sheet(item: self.$sampleDiff) { pair in
             SampleDiffView(beforeURL: pair.beforeURL, afterURL: pair.afterURL)
         }
-        .sheet(isPresented: $showPhotoPicker) {
+        .sheet(isPresented: self.$showPhotoPicker) {
             PhotoPicker { results in
-                showPhotoPicker = false
-                cleanPicked(results)
+                self.showPhotoPicker = false
+                self.cleanPicked(results)
             }
             .ignoresSafeArea()
         }
-        .sheet(isPresented: $showLivePhotoSheet) {
-            LivePhotoConsentSheet(prefsStore: prefsStore, onChoose: $livePhotoOnChoose)
+        .sheet(isPresented: self.$showLivePhotoSheet) {
+            LivePhotoConsentSheet(prefsStore: self.prefsStore, onChoose: self.$livePhotoOnChoose)
                 .presentationDetents([.medium])
         }
-        .sheet(isPresented: shareSheetBinding) {
+        .sheet(isPresented: self.shareSheetBinding) {
             if let urls = coordinator.pendingURLs {
                 ActivityView(activityItems: urls) {
-                    coordinator.pendingURLs = nil
+                    self.coordinator.pendingURLs = nil
                 }
             }
         }
@@ -90,7 +90,7 @@ struct RootView: View {
             return
         }
 
-        let prefs = prefsStore.current
+        let prefs = self.prefsStore.current
         Task {
             do {
                 let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
@@ -100,7 +100,7 @@ struct RootView: View {
                 let output = job.outDir.appendingPathComponent(sample.lastPathComponent)
 
                 let receipt = try await ImageIOCleaner().clean(input: input, output: output, prefs: prefs)
-                sampleDiff = SampleDiffPair(beforeURL: input, afterURL: receipt.outputURL)
+                self.sampleDiff = SampleDiffPair(beforeURL: input, afterURL: receipt.outputURL)
             } catch {
                 // The sample demo is best-effort; failures leave the UI idle.
             }
@@ -114,7 +114,7 @@ struct RootView: View {
         let providers = results.map(\.itemProvider)
         guard !providers.isEmpty else { return }
 
-        let prefs = prefsStore.current
+        let prefs = self.prefsStore.current
         Task {
             do {
                 let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
@@ -133,12 +133,12 @@ struct RootView: View {
 
                 var cleaned: [URL] = []
                 for try await event in await pipeline.run() {
-                    if case let .completed(_, receipt) = event {
+                    if case .completed(_, let receipt) = event {
                         cleaned.append(receipt.outputURL)
                     }
                 }
                 guard !cleaned.isEmpty else { return }
-                coordinator.pendingURLs = cleaned
+                self.coordinator.pendingURLs = cleaned
             } catch {
                 // Best-effort: failures leave the UI idle.
             }
@@ -159,10 +159,10 @@ struct RootView: View {
                 }
                 let ext = srcURL.pathExtension.isEmpty ? "dat" : srcURL.pathExtension
                 let target = inDir.appendingPathComponent("\(id.uuidString).\(ext)")
-                let fm = FileManager.default
-                if (try? fm.linkItem(at: srcURL, to: target)) != nil {
+                let fileManager = FileManager.default
+                if (try? fileManager.linkItem(at: srcURL, to: target)) != nil {
                     continuation.resume(returning: target)
-                } else if (try? fm.copyItem(at: srcURL, to: target)) != nil {
+                } else if (try? fileManager.copyItem(at: srcURL, to: target)) != nil {
                     continuation.resume(returning: target)
                 } else {
                     continuation.resume(returning: nil)
@@ -196,7 +196,7 @@ struct RootView: View {
             let video = Bundle.main.url(forResource: "Sample-DirtyLivePhoto", withExtension: "mov")
         else { return }
 
-        let prefs = prefsStore.current
+        let prefs = self.prefsStore.current
         Task {
             do {
                 let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
@@ -211,7 +211,7 @@ struct RootView: View {
                 )
                 var urls = [result.still.outputURL]
                 if let video = result.video { urls.append(video.outputURL) }
-                coordinator.pendingURLs = urls
+                self.coordinator.pendingURLs = urls
             } catch {
                 // The sample demo is best-effort; failures leave the UI idle.
             }
@@ -220,16 +220,16 @@ struct RootView: View {
 
     private var onboardingBinding: Binding<Bool> {
         Binding(
-            get: { !prefsStore.onboardingCompletedV1 },
+            get: { !self.prefsStore.onboardingCompletedV1 },
             set: { _ in }
         )
     }
 
     private var shareSheetBinding: Binding<Bool> {
         Binding(
-            get: { coordinator.pendingURLs != nil },
+            get: { self.coordinator.pendingURLs != nil },
             set: { presented in
-                if !presented { coordinator.pendingURLs = nil }
+                if !presented { self.coordinator.pendingURLs = nil }
             }
         )
     }
