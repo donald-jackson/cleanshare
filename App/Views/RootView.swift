@@ -16,23 +16,23 @@ struct RootView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                Text("CleanShare")
+                Text(String(localized: "CleanShare"))
                     .font(.largeTitle).bold()
-                Text("Strip metadata before sharing")
+                Text(String(localized: "Strip metadata before sharing"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Button("Try it on a sample photo") {
+                Button(String(localized: "Try it on a sample photo")) {
                     cleanSamplePhoto()
                 }
                 .buttonStyle(.borderedProminent)
 
-                Button("Clean photos…") {
+                Button(String(localized: "Clean photos…")) {
                     showPhotoPicker = true
                 }
                 .buttonStyle(.borderedProminent)
 
-                Button("Try it on a Live Photo (sample)") {
+                Button(String(localized: "Try it on a Live Photo (sample)")) {
                     livePhotoOnChoose = { mode in
                         showLivePhotoSheet = false
                         cleanSampleLivePhoto(mode: mode)
@@ -49,7 +49,7 @@ struct RootView: View {
                     } label: {
                         Image(systemName: "gearshape")
                     }
-                    .accessibilityLabel("Settings")
+                    .accessibilityLabel(String(localized: "Settings"))
                 }
             }
         }

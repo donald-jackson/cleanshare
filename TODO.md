@@ -1176,7 +1176,7 @@
   - Done: Screenshot exists AND `ui_describe_all` mentions PHPicker UI elements.
   - Refs: PLAN.md §3.2.
 
-- [ ] **4.22** Write Localizable.xcstrings (en-US baseline)
+- [x] **4.22** Write Localizable.xcstrings (en-US baseline)
   - File: `App/Resources/Localizable.xcstrings`. Use Xcode's String Catalog format. Extract every user-facing string: button labels ("Clean photos…", "Try it on a sample photo", "Cancel", "Get started"), screen titles, alert messages, settings row labels.
   - Update call sites in `App/`, `Packages/CleanShareUI/Sources/` to use `String(localized:)` for these strings (so they resolve from the catalog).
   - Test: `test -f App/Resources/Localizable.xcstrings && plutil -lint App/Resources/Localizable.xcstrings && python3 -c "import json; d=json.load(open('App/Resources/Localizable.xcstrings')); assert d.get('sourceLanguage')=='en'; assert len(d.get('strings',{})) >= 10"`.
