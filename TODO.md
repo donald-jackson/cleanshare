@@ -390,7 +390,7 @@
   - Done: Output contains `** BUILD SUCCEEDED **`.
   - Refs: PLAN.md §11.1.
 
-- [ ] **1.25** Boot simulator, install built `.app`, launch app
+- [x] **1.25** Boot simulator, install built `.app`, launch app
   - `mcp__ios-simulator__open_simulator`.
   - `mcp__ios-simulator__get_booted_sim_id` — record the UDID (use the latest iPhone runtime if multiple sims are available; prefer iPhone 16 / 17 Pro).
   - Resolve built path: `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -path '*/Debug-iphonesimulator/*' -type d | head -1`.
