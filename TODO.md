@@ -668,7 +668,7 @@
 
 ## Phase 3: Video + Live Photo + share-extension wiring
 
-- [ ] **3.01** Implement AVPassthroughCleaner (passthrough writer)
+- [x] **3.01** Implement AVPassthroughCleaner (passthrough writer)
   - File: `Sources/CleanShareCore/Engine/AVPassthroughCleaner.swift` — `public struct AVPassthroughCleaner: Cleaner`. Implementation must match PLAN.md §4.3 exactly:
     1. `AVURLAsset(url: input, options: [AVURLAssetPreferPreciseDurationAndTimingKey: true])`.
     2. `let writer = try AVAssetWriter(outputURL: output, fileType: output.pathExtension.lowercased() == "mov" ? .mov : .mp4)`; `writer.shouldOptimizeForNetworkUse = true`; `writer.metadata = []`.

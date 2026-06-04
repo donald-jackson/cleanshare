@@ -5,7 +5,7 @@ let package = Package(
     name: "CleanShareCore",
     platforms: [
         .iOS(.v17),
-        .macOS(.v11)
+        .macOS(.v12)
     ],
     products: [
         .library(
