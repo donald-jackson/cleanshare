@@ -902,7 +902,7 @@
   - Done: Builds.
   - Refs: PLAN.md §20 Week 4.
 
-- [ ] **4.04** Sim verify onboarding page 1 — visual inspection
+- [x] **4.04** Sim verify onboarding page 1 — visual inspection
   - 1. `xcrun simctl uninstall <UDID> dev.cleanshare.app` to clear stored prefs (so onboarding shows).
   - 2. Build + install + launch via the MCP tools.
   - 3. `mcp__ios-simulator__screenshot` → `screenshots/dev/4.04-onboarding-1.png`.

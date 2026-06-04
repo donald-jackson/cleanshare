@@ -53,9 +53,11 @@ public struct OnboardingView: View {
             Text("Share without leaking")
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             Text("CleanShare strips identifying metadata from your photos and videos before sharing them")
                 .font(.title3)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(.white.opacity(0.9))
         }
     }
