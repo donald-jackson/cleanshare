@@ -1619,7 +1619,7 @@
   - Done: Doc exists with required content.
   - Refs: PLAN.md §4, §9.
 
-- [ ] **7.08** Write docs/metadata-reference.md
+- [x] **7.08** Write docs/metadata-reference.md
   - Pull PLAN.md §4.4 verbatim or close to it — the per-tag-family table (EXIF/GPS/IPTC/TIFF/MakerNote/XMP/PNG-ancillary/etc., what's stripped, what's preserved by default, what's user-toggleable).
   - Test: `test -f docs/metadata-reference.md && grep -q 'MakerApple' docs/metadata-reference.md && grep -q 'ICC' docs/metadata-reference.md`.
   - Done: Doc exists with the required tag references.
