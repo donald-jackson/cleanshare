@@ -1260,7 +1260,7 @@
   - Done: All four lanes present; readonly Match; build number from GH Actions.
   - Refs: PLAN.md §12.1.
 
-- [ ] **5.05** Write .github/workflows/release.yml
+- [x] **5.05** Write .github/workflows/release.yml
   - Triggers: `push.tags: ["v*.*.*"]` + `workflow_dispatch` with `lane` (default `release`) input. `environment: release` (manual approval gate).
   - Job runs on `macos-15`, `timeout-minutes: 60`. Steps: checkout v4 → select Xcode 16 → `brew install xcodegen` → `bundle install --path vendor/bundle` → decode `ASC_API_KEY_BASE64` secret to `~/.private_keys/AuthKey.p8` → `bundle exec fastlane "${{ inputs.lane || 'release' }}"`.
   - All secrets referenced via `${{ secrets.* }}`: `MATCH_PASSWORD`, `MATCH_GIT_URL`, `MATCH_GIT_BASIC_AUTHORIZATION`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_API_KEY_BASE64`, `FASTLANE_APPLE_ID`, `FASTLANE_TEAM_ID`.
