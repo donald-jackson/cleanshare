@@ -811,7 +811,7 @@
   - Done: Test passes — three images cleaned, three events received.
   - Refs: PLAN.md §4.6, §7.3.
 
-- [ ] **3.12** Create CleanShareUI Swift Package
+- [x] **3.12** Create CleanShareUI Swift Package
   - `Packages/CleanShareUI/Package.swift` — swift-tools-version 6.0, platforms `.iOS(.v17)`, products `CleanShareUI` library, depends on local path `../CleanShareCore`.
   - `Packages/CleanShareUI/Sources/CleanShareUI/Placeholder.swift` — `public enum CleanShareUI { public static let version = "0.0.0" }`.
   - `Packages/CleanShareUI/Tests/CleanShareUITests/PlaceholderTests.swift` — one test asserting `CleanShareUI.version` is non-empty.
