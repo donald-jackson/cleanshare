@@ -126,10 +126,10 @@
   - Refs: PLAN.md §4.2, §11.1.
 
 - [x] **1.09** Write Brewfile
-  - Required entries (one per line): `brew "xcodegen"`, `brew "swiftlint"`, `brew "swiftformat"`, `brew "xcbeautify"`, `brew "fastlane"`, `brew "gh"`, `brew "jq"`, `brew "exiftool"`, `brew "ffmpeg"`.
-  - Test: `for t in xcodegen swiftlint swiftformat xcbeautify fastlane gh jq exiftool ffmpeg; do grep -q "brew \"$t\"" Brewfile || { echo "missing: $t"; exit 1; }; done`.
-  - Done: All nine tools present.
-  - Refs: PLAN.md §10.
+  - Required entries (one per line): `brew "xcodegen"`, `brew "swiftlint"`, `brew "swiftformat"`, `brew "xcbeautify"`, `brew "fastlane"`, `brew "gh"`, `brew "jq"`, `brew "exiftool"`, `brew "ffmpeg"`, `brew "librsvg"` (rsvg-convert for SVG→PNG icon rendering in 4.14), `brew "coreutils"` (gtimeout for build.sh's hard-kill watchdog).
+  - Test: `for t in xcodegen swiftlint swiftformat xcbeautify fastlane gh jq exiftool ffmpeg librsvg coreutils; do grep -q "brew \"$t\"" Brewfile || { echo "missing: $t"; exit 1; }; done`.
+  - Done: All eleven tools present.
+  - Refs: PLAN.md §10, §14.1.
 
 - [x] **1.10** Write Makefile
   - Phony targets: `bootstrap`, `gen`, `build`, `test`, `lint`, `format`, `verify-strip`, `clean`, `screenshots`.
@@ -946,7 +946,7 @@
   - Done: Builds.
   - Refs: PLAN.md §20 Week 4.
 
-- [ ] **4.08** Sim verify SettingsView — every toggle visible + GPS confirmation alert
+- [x] **4.08** Sim verify SettingsView — every toggle visible + GPS confirmation alert
   - Rebuild + reinstall + launch (skip onboarding by setting prefs first: `xcrun simctl spawn <UDID> defaults write group.dev.cleanshare.app onboardingCompletedV1 -bool YES`).
   - Tap gear icon via `ui_find_element` + `ui_tap`. `screenshot` → `4.08-settings.png`.
   - `ui_describe_all` — confirm the substrings: "Metadata to keep", "Keep orientation", "Keep ICC", "Keep capture date", "Keep camera make", "Location (GPS)", "Live Photos", "Diagnostics", "About CleanShare".
