@@ -332,7 +332,7 @@
   - Done: Plist is valid AND the App Group identifier matches the host app.
   - Refs: PLAN.md §2.
 
-- [ ] **1.21** Write Packages/CleanShareCore/Package.swift
+- [x] **1.21** Write Packages/CleanShareCore/Package.swift
   - `swift-tools-version: 6.0`. Platforms `.iOS(.v17)`. Products: one library `CleanShareCore`. Targets: `CleanShareCore` at `Sources/CleanShareCore`, plus `CleanShareCoreTests` at `Tests/CleanShareCoreTests`.
   - Test: `test -f Packages/CleanShareCore/Package.swift && grep -q 'swift-tools-version: 6.0' Packages/CleanShareCore/Package.swift && grep -q '\.iOS(\.v17)' Packages/CleanShareCore/Package.swift && cd Packages/CleanShareCore && swift package describe --type json | python3 -c 'import json,sys; d=json.load(sys.stdin); names=[t["name"] for t in d["targets"]]; assert "CleanShareCore" in names; assert "CleanShareCoreTests" in names'`.
   - Done: Package describes both targets via SwiftPM.
