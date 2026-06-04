@@ -1530,7 +1530,7 @@
   - Done: All six files present and within their respective length limits.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.15** Write fastlane/metadata/review_information/
+- [x] **6.15** Write fastlane/metadata/review_information/
   - `notes.txt` per PLAN.md §13.4:
     - "No account required. Demo username/password intentionally blank."
     - "Test the in-app pipeline: tap 'Try it on a sample photo'. The before/after diff shows EXIF/GPS removed."

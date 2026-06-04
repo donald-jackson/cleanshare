@@ -1,0 +1,11 @@
+No account required. Demo username/password intentionally blank.
+
+Test the in-app pipeline: tap "Try it on a sample photo". The before/after diff shows EXIF/GPS removed.
+
+Test the share-extension pipeline: Photos → pick any photo → Share → CleanShare → Messages.
+
+Verify on-device only: Network Link Conditioner = 100% loss; app still works for all flows.
+
+Comparable approved apps: ViewExif, Metapho.
+
+Maintainer contact: <placeholder>@cleanshare.dev
