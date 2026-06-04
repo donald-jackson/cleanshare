@@ -15,11 +15,11 @@ func sanitizedFrameProperties(
 ) -> [CFString: Any] {
     var out: [CFString: Any] = [:]
 
-    // The PNG encoder rejects a kCFNull deletion of the Exif/TIFF containers and
-    // fails CGImageDestinationFinalize. Because each frame is re-added from a
-    // freshly decoded CGImage (which carries no metadata), those dictionaries
-    // cannot leak source PII regardless of the kCFNull. See PLAN.md §4.2.
-    let allowsExifTIFFNull = kind != .png
+    // The PNG and HEIC/HEIF encoders reject a kCFNull deletion of the Exif/TIFF
+    // containers and fail CGImageDestinationFinalize. Because each frame is
+    // re-added from a freshly decoded CGImage (which carries no metadata), those
+    // dictionaries cannot leak source PII regardless of the kCFNull. See PLAN.md §4.2.
+    let allowsExifTIFFNull = kind != .png && kind != .heic && kind != .heif
 
     // Explicit delete via kCFNull — NOT omission.
     if allowsExifTIFFNull { out[kCGImagePropertyExifDictionary] = kCFNull }

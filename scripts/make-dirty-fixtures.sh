@@ -12,6 +12,7 @@ need() { command -v "$1" >/dev/null 2>&1 || { echo "error: '$1' not found on PAT
 need exiftool
 need sips
 need ffmpeg
+need swift
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -69,5 +70,60 @@ ffmpeg -nostdin -loglevel error -y -f lavfi -i 'testsrc=duration=2:size=320x240:
     -metadata 'com.apple.quicktime.model=iPhone 15 Pro' \
     "$DIRTY/h264_short.mp4"
 
-echo "Generated 6 dirty fixtures in $DIRTY:"
+# 7. livephoto.{heic,mov} — a synthetic Live Photo pair sharing the content
+#    identifier ABC-123-DEADBEEF. exiftool/ffmpeg cannot synthesize the Apple
+#    content-identifier keys that ImageIO/AVFoundation actually read — the still's
+#    MakerApple dictionary tag 17 and the video's mdta
+#    com.apple.quicktime.content.identifier — so we inject them with the same
+#    ImageIO / AVFoundation APIs the engine itself uses. See PLAN.md §4.5.
+LP_ID="ABC-123-DEADBEEF"
+
+solid_png 200 200 orange "$tmp/lp.png"
+sips -s format heic "$tmp/lp.png" --out "$tmp/lp_base.heic" >/dev/null
+
+cat > "$tmp/inject_still.swift" <<'SWIFT'
+import ImageIO
+import CoreGraphics
+import UniformTypeIdentifiers
+import Foundation
+let args = CommandLine.arguments
+let inURL = URL(fileURLWithPath: args[1]), outURL = URL(fileURLWithPath: args[2]), id = args[3]
+guard let src = CGImageSourceCreateWithURL(inURL as CFURL, nil),
+      let img = CGImageSourceCreateImageAtIndex(src, 0, nil) else { fatalError("read still") }
+var props = (CGImageSourceCopyPropertiesAtIndex(src, 0, nil) as? [CFString: Any]) ?? [:]
+props[kCGImagePropertyMakerAppleDictionary] = ["17": id]
+guard let dest = CGImageDestinationCreateWithURL(
+    outURL as CFURL, UTType.heic.identifier as CFString, 1, nil) else { fatalError("dest") }
+CGImageDestinationAddImage(dest, img, props as CFDictionary)
+guard CGImageDestinationFinalize(dest) else { fatalError("finalize still") }
+SWIFT
+swift "$tmp/inject_still.swift" "$tmp/lp_base.heic" "$DIRTY/livephoto.heic" "$LP_ID"
+
+ffmpeg -nostdin -loglevel error -y -f lavfi -i 'testsrc=duration=1:size=200x200:rate=30' \
+    -c:v libx264 -pix_fmt yuv420p "$tmp/lp_base.mov"
+
+cat > "$tmp/inject_video.swift" <<'SWIFT'
+import AVFoundation
+import CoreMedia
+import Foundation
+let args = CommandLine.arguments
+let inURL = URL(fileURLWithPath: args[1]), outURL = URL(fileURLWithPath: args[2]), id = args[3]
+try? FileManager.default.removeItem(at: outURL)
+guard let export = AVAssetExportSession(
+    asset: AVURLAsset(url: inURL), presetName: AVAssetExportPresetPassthrough) else { fatalError("export") }
+let item = AVMutableMetadataItem()
+item.identifier = .quickTimeMetadataContentIdentifier
+item.dataType = kCMMetadataBaseDataType_UTF8 as String
+item.value = id as NSString
+export.outputURL = outURL
+export.outputFileType = .mov
+export.metadata = [item]
+let sem = DispatchSemaphore(value: 0)
+export.exportAsynchronously { sem.signal() }
+sem.wait()
+guard export.status == .completed else { fatalError("export status \(export.status.rawValue)") }
+SWIFT
+swift "$tmp/inject_video.swift" "$tmp/lp_base.mov" "$DIRTY/livephoto.mov" "$LP_ID"
+
+echo "Generated dirty fixtures in $DIRTY:"
 ls -1 "$DIRTY"

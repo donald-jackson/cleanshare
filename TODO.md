@@ -756,7 +756,7 @@
   - Done: Builds. (End-to-end test happens in 3.08.)
   - Refs: PLAN.md §4.5.
 
-- [ ] **3.08** Write LivePhotoCleanerTests (synthetic pair)
+- [x] **3.08** Write LivePhotoCleanerTests (synthetic pair)
   - Extend `scripts/make-dirty-fixtures.sh` to also produce a synthetic Live Photo pair: `tests/fixtures/dirty/livephoto.heic` (use exiftool to set `MakerNotes:ContentIdentifier=ABC-123-DEADBEEF`) and `tests/fixtures/dirty/livephoto.mov` (use ffmpeg `-metadata com.apple.quicktime.content.identifier=ABC-123-DEADBEEF`).
   - File: `Tests/CleanShareCoreTests/LivePhotoCleanerTests.swift`. Three tests:
     1. `testDowngradeProducesOnlyStillAndDropsUUID` — out has only the still file; auditor reports no leak; the still's MakerApple dict is absent.
