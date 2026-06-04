@@ -74,7 +74,7 @@
   - Done: `.git/` exists and `git status` runs without error.
   - Refs: PLAN.md §10.
 
-- [ ] **1.02** Write LICENSE (MIT, 2026)
+- [x] **1.02** Write LICENSE (MIT, 2026)
   - Standard MIT text, copyright holder `CleanShare contributors`, year `2026`. Use the canonical MIT phrasing (https://opensource.org/licenses/MIT) — no modifications.
   - Test: `grep -q 'MIT License' LICENSE && grep -q '2026 CleanShare contributors' LICENSE && grep -q 'Permission is hereby granted' LICENSE`.
   - Done: All three greps succeed.
