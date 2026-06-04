@@ -1496,7 +1496,7 @@
   - Done: Both files present; quotes file has ≥3 blockquote lines; bio has contact pointer.
   - Refs: PLAN.md §14.4.
 
-- [ ] **6.12** Write `marketing/press-kit/social-copy.md` (HN / Mastodon / Reddit / X launch posts)
+- [x] **6.12** Write `marketing/press-kit/social-copy.md` (HN / Mastodon / Reddit / X launch posts)
   - File: `marketing/press-kit/social-copy.md`. One H2 section per channel, each containing the actual copy-paste-ready post:
     - `## Mastodon` — 1-paragraph post + hashtags (#iOS #privacy #opensource).
     - `## Hacker News (Show HN)` — `**Title:** Show HN: CleanShare – iOS app that strips photo metadata before sharing (MIT)` + multi-paragraph body covering motivation + technical notes (AVAssetWriter passthrough, ImageIO safe pattern, Swift 6 strict concurrency, CI privacy regression, network-silence test).
