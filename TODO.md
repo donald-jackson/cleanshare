@@ -1183,7 +1183,7 @@
   - Done: Catalog parses AND has at least 10 strings.
   - Refs: PLAN.md §20 Week 4.
 
-- [ ] **4.23** Sim record full happy-path video (PHPicker → clean → share sheet)
+- [x] **4.23** Sim record full happy-path video (PHPicker → clean → share sheet)
   - Boot sim. Seed it with `xcrun simctl addmedia <UDID> tests/fixtures/dirty/iphone_sample.jpg`. Build + install + launch.
   - `mcp__ios-simulator__record_video` → start recording to `screenshots/dev/4.21-full-flow.mov`.
   - Drive the UI:
