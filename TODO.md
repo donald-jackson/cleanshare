@@ -1591,7 +1591,7 @@
   - Done: All three measure blocks run AND meet their loose baselines on the dev machine.
   - Refs: PLAN.md §5.2, §8.
 
-- [ ] **7.04** Implement MetricKitCollector
+- [x] **7.04** Implement MetricKitCollector
   - File: `Packages/CleanShareCore/Sources/CleanShareCore/Diagnostics/MetricKitCollector.swift` — `@MainActor public final class MetricKitCollector: NSObject, MXMetricManagerSubscriber`.
   - On `didReceive` callbacks, serialize each `MXMetricPayload` and `MXDiagnosticPayload` to JSON, prepend to a rolling list capped at 5, persist to `<AppGroup>/Diagnostics/reports.json`.
   - Two static API entry points: `MetricKitCollector.subscribe()` (idempotent — registers the subscriber once with `MXMetricManager.shared`) and `MetricKitCollector.unsubscribe()`. Only called when the user toggles the Diagnostics row in Settings.
