@@ -1613,7 +1613,7 @@
   - Done: Doc exists with the required cross-references.
   - Refs: PLAN.md §2.
 
-- [ ] **7.07** Write docs/threat-model.md
+- [x] **7.07** Write docs/threat-model.md
   - Pull from PLAN.md §9 (privacy posture) + the threat enumeration implicit in §4 (per-format metadata risks). Document: in-scope threats (metadata leakage at share time), out-of-scope (the recipient app — WhatsApp re-encodes; document this), mitigations (fail-closed audit, CI privacy regression).
   - Test: `test -f docs/threat-model.md && grep -q 'fail-closed' docs/threat-model.md && grep -q 'recipient app' docs/threat-model.md`.
   - Done: Doc exists with required content.
