@@ -452,7 +452,7 @@
   - Done: Both files exist with the required pointers.
   - Refs: PLAN.md §17.
 
-- [ ] **1.30** Write CODE_OF_CONDUCT.md (Contributor Covenant 2.1)
+- [x] **1.30** Write CODE_OF_CONDUCT.md (Contributor Covenant 2.1)
   - Use the verbatim text of Contributor Covenant 2.1 from https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md.
   - Set the contact email to `conduct@cleanshare.dev` (placeholder for now; documented in `docs/manual-steps.md` as needing real mailbox setup).
   - Test: `grep -q 'Contributor Covenant' CODE_OF_CONDUCT.md && grep -q 'version/2/1' CODE_OF_CONDUCT.md && grep -q '@cleanshare.dev' CODE_OF_CONDUCT.md`.
