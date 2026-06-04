@@ -429,7 +429,7 @@
   - Done: All seven required headings present AND the launch screenshot is referenced.
   - Refs: PLAN.md §10, §14.
 
-- [ ] **1.28** Write CHANGELOG.md
+- [x] **1.28** Write CHANGELOG.md
   - Keep a Changelog 1.1.0 format. Header block:
     ```markdown
     # Changelog
