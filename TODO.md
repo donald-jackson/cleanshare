@@ -537,7 +537,7 @@
   - Done: Builds; the struct lives in `Model/`.
   - Refs: PLAN.md §4.6.
 
-- [ ] **2.03** Define LivePhotoMode enum
+- [x] **2.03** Define LivePhotoMode enum
   - File: `Packages/CleanShareCore/Sources/CleanShareCore/Model/LivePhotoMode.swift`.
   - `public enum LivePhotoMode: String, Sendable, Codable, CaseIterable { case prompt, downgradeToStill, preservePairing, repairWithFreshID }`.
   - Test: `cd Packages/CleanShareCore && swift build && grep -q 'case repairWithFreshID' Sources/CleanShareCore/Model/LivePhotoMode.swift`.
