@@ -212,7 +212,7 @@
   - Done: All five targets parse cleanly out of the YAML.
   - Refs: PLAN.md §2, §10.
 
-- [ ] **1.14** Write scripts/generate-project.sh
+- [x] **1.14** Write scripts/generate-project.sh
   - Contents:
     ```bash
     #!/usr/bin/env bash
