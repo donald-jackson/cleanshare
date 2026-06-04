@@ -1706,7 +1706,7 @@
   - Done: Video >500 KB; three step screenshots present; visual criteria satisfied.
   - Refs: PLAN.md §3.2.
 
-- [ ] **8.06** Remove all placeholder source files
+- [x] **8.06** Remove all placeholder source files
   - Delete the files that existed only to satisfy XcodeGen / Swift Package Manager during early-phase scaffolding, now superseded by real code:
     - `Packages/CleanShareCore/Sources/CleanShareCore/CleanShareCore.swift` (the `public enum CleanShareCore { static let version = "0.0.0" }` namespace) — deleted; no consumer should reference it (`grep -r 'CleanShareCore\.version'` in App/, ShareExtension/, Packages/ returns no matches).
     - `Packages/CleanShareCore/Tests/CleanShareCoreTests/CleanShareCoreTests.swift` (the `testVersionNotEmpty` placeholder test) — deleted; real tests in `ImageIOCleanerTests`, `AVPassthroughCleanerTests`, etc. now cover the package.
