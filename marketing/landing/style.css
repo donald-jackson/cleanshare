@@ -1,0 +1,25 @@
+/* CleanShare landing page — custom tweaks Tailwind can't express cleanly.
+   Brand: teal #19B4B0 -> indigo #3B3FB8. */
+
+.hero-gradient {
+  background: linear-gradient(135deg, #19B4B0 0%, #3B3FB8 100%);
+}
+
+/* App Store / TestFlight badge placeholders.
+   Replaced with real badges once the app is live (see docs/manual-steps.md). */
+.badge-placeholder {
+  display: inline-block;
+  min-width: 160px;
+  padding: 0.6rem 1.4rem;
+  border-radius: 0.75rem;
+  text-align: left;
+  color: #ffffff;
+  background: rgba(11, 15, 26, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.badge-placeholder:hover {
+  background: rgba(11, 15, 26, 0.5);
+  transform: translateY(-1px);
+}

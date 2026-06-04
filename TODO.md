@@ -1320,7 +1320,7 @@
   - Done: Script is executable, syntax-checks, prompts for both required vars.
   - Refs: PLAN.md §12.3.
 
-- [ ] **5.12** Write marketing/landing/index.html + style.css
+- [x] **5.12** Write marketing/landing/index.html + style.css
   - `marketing/landing/index.html` — single page, no build step. Hero section with the wordmark + tagline + App Store badge placeholder + TestFlight badge placeholder + GitHub octocat link. Three short explainer sections (What gets stripped / How it works / Privacy). Footer with links to `/privacy`, `/faq`, `/press`. Use Tailwind via CDN `<script src="https://cdn.tailwindcss.com">`.
   - `marketing/landing/style.css` — minimal custom CSS for the gradient hero background (teal→indigo) and any tweaks Tailwind can't express cleanly.
   - Test: `test -f marketing/landing/index.html && grep -q CleanShare marketing/landing/index.html && grep -q tailwind marketing/landing/index.html && test -f marketing/landing/style.css`.

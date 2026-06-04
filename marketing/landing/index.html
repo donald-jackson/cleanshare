@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleanShare — Strip photo metadata before you share</title>
+  <meta name="description" content="CleanShare is a free, open-source iOS app that strips EXIF, GPS, and camera metadata from your photos and videos before sharing. On-device, no tracking, MIT licensed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: "#19B4B0",
+            indigo: "#3B3FB8",
+            ink: "#0B0F1A",
+            paper: "#F8FAFC",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="font-sans bg-paper text-ink antialiased">
+
+  <!-- Hero -->
+  <header class="hero-gradient text-white">
+    <nav class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
+      <span class="text-xl font-extrabold tracking-tight">CleanShare</span>
+      <a href="https://github.com/cleanshare/cleanshare" class="inline-flex items-center gap-2 text-sm font-medium opacity-90 hover:opacity-100 transition" aria-label="CleanShare on GitHub">
+        <svg height="22" width="22" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"></path>
+        </svg>
+        GitHub
+      </a>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-6 pt-12 pb-24 text-center">
+      <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight">CleanShare</h1>
+      <p class="mt-5 text-xl sm:text-2xl font-medium text-white/90">
+        Strip the hidden metadata from your photos and videos before you share them.
+      </p>
+      <p class="mt-3 text-base text-white/80">
+        Free. Open source. On-device. No tracking, ever.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <!-- App Store badge placeholder -->
+        <a href="#" class="badge-placeholder" aria-label="Download on the App Store (coming soon)">
+          <span class="block text-xs uppercase tracking-wide opacity-70">Coming soon</span>
+          <span class="block text-lg font-semibold">App Store</span>
+        </a>
+        <!-- TestFlight badge placeholder -->
+        <a href="#" class="badge-placeholder" aria-label="Join the TestFlight beta (coming soon)">
+          <span class="block text-xs uppercase tracking-wide opacity-70">Beta</span>
+          <span class="block text-lg font-semibold">TestFlight</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Explainer sections -->
+  <main class="max-w-5xl mx-auto px-6">
+    <section class="grid gap-10 sm:grid-cols-3 py-20">
+      <div>
+        <h2 class="text-lg font-bold text-indigo">What gets stripped</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink/80">
+          GPS coordinates, camera make and model, serial numbers, timestamps,
+          MakerNote blocks, and XMP — every identifying tag EXIF and friends can carry,
+          gone before the file ever leaves your device.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-indigo">How it works</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink/80">
+          CleanShare lives in the iOS share sheet. Pick your photos, share to CleanShare,
+          and it re-presents the system share sheet with cleaned copies — ready for
+          WhatsApp, Messages, Instagram, or anywhere else.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-indigo">Privacy by design</h2>
+        <p class="mt-3 text-sm leading-relaxed text-ink/80">
+          Everything happens on your iPhone or iPad. No servers, no accounts, no analytics,
+          no network calls — verified by CI. The whole app is MIT licensed and auditable.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-ink/10">
+    <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/70">
+      <span>&copy; 2026 CleanShare contributors · MIT licensed</span>
+      <nav class="flex items-center gap-6">
+        <a href="/privacy" class="hover:text-indigo transition">Privacy</a>
+        <a href="/faq" class="hover:text-indigo transition">FAQ</a>
+        <a href="/press" class="hover:text-indigo transition">Press</a>
+        <a href="https://github.com/cleanshare/cleanshare" class="hover:text-indigo transition">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>
