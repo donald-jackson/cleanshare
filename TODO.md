@@ -298,7 +298,7 @@
   - Done: All four assertions pass.
   - Refs: PLAN.md §2, §6.
 
-- [ ] **1.18** Scaffold ShareExtension/ShareViewController.swift (stub)
+- [x] **1.18** Scaffold ShareExtension/ShareViewController.swift (stub)
   - Real wiring comes in 3.11; for now create a minimal subclass:
     ```swift
     import UIKit
