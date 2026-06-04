@@ -506,7 +506,7 @@
   - Done: Workflow YAML parses; has the required steps + cancel-in-progress.
   - Refs: PLAN.md §11.1.
 
-- [ ] **1.36** Initial commit (Phase 1)
+- [x] **1.36** Initial commit (Phase 1)
   - `git add` ONLY the files created during Phase 1. Explicitly DO NOT add `CleanShare.xcodeproj/`, `Config/Local.xcconfig`, `.build-logs/`, `.build-state`, `.needs-human`, `screenshots/dev/`, `DerivedData/`.
   - Stage selectively: `git add LICENSE .gitignore .gitattributes .editorconfig .swift-version .swiftformat .swiftlint.yml Brewfile Makefile Config/ project.yml scripts/ App/ ShareExtension/ Packages/ README.md CHANGELOG.md CONTRIBUTING.md SUPPORT.md CODE_OF_CONDUCT.md SECURITY.md PRIVACY.md .github/`.
   - Run `git status --short` first to inspect; if any tracked-but-shouldn't-be path appears (`.build-state`, `Config/Local.xcconfig`, etc.), abort and fix `.gitignore`.
