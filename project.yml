@@ -1,0 +1,66 @@
+name: CleanShare
+options:
+  bundleIdPrefix: dev.cleanshare
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+configs:
+  Debug: debug
+  Release: release
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
+packages:
+  CleanShareCore:
+    path: Packages/CleanShareCore
+targets:
+  CleanShare:
+    type: application
+    supportedDestinations: [iOS]
+    sources:
+      - App
+    entitlements:
+      path: App/CleanShare.entitlements
+    info:
+      path: App/Resources/Info.plist
+    dependencies:
+      - package: CleanShareCore
+      - target: CleanShareShareExt
+        embed: true
+  CleanShareShareExt:
+    type: app-extension
+    supportedDestinations: [iOS]
+    sources:
+      - ShareExtension
+    entitlements:
+      path: ShareExtension/ShareExtension.entitlements
+    info:
+      path: ShareExtension/Info.plist
+    dependencies:
+      - package: CleanShareCore
+  CleanShareTests:
+    type: bundle.unit-test
+    supportedDestinations: [iOS]
+    sources:
+      - CleanShareTests
+    dependencies:
+      - target: CleanShare
+  CleanShareUITests:
+    type: bundle.ui-testing
+    supportedDestinations: [iOS]
+    sources:
+      - CleanShareUITests
+    dependencies:
+      - target: CleanShare
+  ShareExtensionTests:
+    type: bundle.unit-test
+    supportedDestinations: [iOS]
+    sources:
+      - ShareExtensionTests
+    dependencies:
+      - target: CleanShareShareExt

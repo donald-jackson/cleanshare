@@ -179,7 +179,7 @@
   - Done: Both files exist with the right includes + signing styles.
   - Refs: PLAN.md §12.2.
 
-- [ ] **1.13** Write project.yml (XcodeGen spec — full, all three targets + tests)
+- [x] **1.13** Write project.yml (XcodeGen spec — full, all three targets + tests)
   - Top of file:
     ```yaml
     name: CleanShare
