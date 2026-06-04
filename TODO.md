@@ -766,7 +766,7 @@
   - Done: All three tests pass.
   - Refs: PLAN.md §4.5, §8.2.
 
-- [ ] **3.09** Implement Manifest types
+- [x] **3.09** Implement Manifest types
   - File: `Sources/CleanShareCore/IO/Manifest.swift`. Types:
     - `public struct Manifest: Codable, Sendable, Equatable { public let token: String; public let createdAt: Date; public let receipts: [CleanReceipt]; public init(token: String, receipts: [CleanReceipt]) { self.token = token; self.createdAt = Date(); self.receipts = receipts } }`.
     - `public enum ManifestWriter { public static func write(_ manifest: Manifest, to url: URL) throws { let data = try JSONEncoder().encode(manifest); try data.write(to: url, options: .atomic) } }`.
