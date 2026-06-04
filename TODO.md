@@ -551,7 +551,7 @@
   - Done: Builds; struct is `public`.
   - Refs: PLAN.md §4.6.
 
-- [ ] **2.05** Define Cleaner protocol + CleanerError enum
+- [x] **2.05** Define Cleaner protocol + CleanerError enum
   - `Sources/CleanShareCore/Engine/Cleaner.swift` — `public protocol Cleaner: Sendable { func clean(input: URL, output: URL, prefs: CleaningPreferences) async throws -> CleanReceipt }`.
   - `Sources/CleanShareCore/Engine/CleanerError.swift` — `public enum CleanerError: Error, Sendable, Equatable { case unreadable, unwritable, frameDecodeFailed(index: Int), writeFailed, leakDetected(keys: [String]), appendFailed, avFailed(reason: String?), unsupportedFormat(String), cancelled }`. Use `String?` for `avFailed` rather than `Error?` so the enum is `Sendable + Equatable` without `@unchecked`.
   - These are coupled (`Cleaner.clean` throws `CleanerError`), so they stay in one task.
