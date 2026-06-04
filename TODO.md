@@ -1389,7 +1389,7 @@
   - Done: Screenshot has correct dimensions; visual criteria above hold.
   - Refs: PLAN.md §13.3.
 
-- [ ] **6.03** Capture iPhone screenshots 02–06 (all from real product UI — no marketing-only views)
+- [x] **6.03** Capture iPhone screenshots 02–06 (all from real product UI — no marketing-only views)
   - 02 — sample-diff screen: launch app → tap "Try it on a sample photo" → wait for diff → capture. Real product flow. Output `screenshots/iPhone-6.9/02-diff.png` at 1320×2868.
   - 03 — share-sheet mid-flow: launch app → "Clean photos…" → pick seeded photo (`xcrun simctl addmedia booted tests/fixtures/dirty/iphone_sample.jpg` first) → wait for share sheet → capture during presentation. Output `03-share.png`.
   - 04 — video support callout: navigate Settings → About → scroll to the "Supported formats" section (added in 4.09) → capture. This is real product UI — the About → Supported formats section IS the App Store "video support" screenshot. Output `04-formats.png`.
