@@ -775,7 +775,7 @@
   - Done: Round-trip test passes.
   - Refs: PLAN.md §6.
 
-- [ ] **3.10** Implement HandoffURL helpers
+- [x] **3.10** Implement HandoffURL helpers
   - File: `Sources/CleanShareCore/IO/HandoffURL.swift`. Extension:
     ```swift
     public extension URL {
