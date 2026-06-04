@@ -38,7 +38,7 @@ public struct ImageIOCleaner: Cleaner {
             guard let cgImage = CGImageSourceCreateImageAtIndex(src, i, srcOpts) else {
                 throw CleanerError.frameDecodeFailed(index: i)
             }
-            let props = sanitizedFrameProperties(from: src, frameIndex: i, prefs: prefs)
+            let props = sanitizedFrameProperties(from: src, frameIndex: i, prefs: prefs, kind: kind)
             CGImageDestinationAddImage(dest, cgImage, props as CFDictionary)   // NOT AddImageFromSource
         }
 

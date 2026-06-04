@@ -10,16 +10,23 @@ import ImageIO
 func sanitizedFrameProperties(
     from src: CGImageSource,
     frameIndex: Int,
-    prefs: CleaningPreferences
+    prefs: CleaningPreferences,
+    kind: MediaKind
 ) -> [CFString: Any] {
     var out: [CFString: Any] = [:]
 
+    // The PNG encoder rejects a kCFNull deletion of the Exif/TIFF containers and
+    // fails CGImageDestinationFinalize. Because each frame is re-added from a
+    // freshly decoded CGImage (which carries no metadata), those dictionaries
+    // cannot leak source PII regardless of the kCFNull. See PLAN.md §4.2.
+    let allowsExifTIFFNull = kind != .png
+
     // Explicit delete via kCFNull — NOT omission.
-    out[kCGImagePropertyExifDictionary] = kCFNull
+    if allowsExifTIFFNull { out[kCGImagePropertyExifDictionary] = kCFNull }
     out[kCGImagePropertyExifAuxDictionary] = kCFNull
     out[kCGImagePropertyGPSDictionary] = kCFNull
     out[kCGImagePropertyIPTCDictionary] = kCFNull
-    out[kCGImagePropertyTIFFDictionary] = kCFNull
+    if allowsExifTIFFNull { out[kCGImagePropertyTIFFDictionary] = kCFNull }
     out[kCGImagePropertyJFIFDictionary] = kCFNull
     out[kCGImagePropertyMakerAppleDictionary] = kCFNull
     out[kCGImagePropertyMakerNikonDictionary] = kCFNull

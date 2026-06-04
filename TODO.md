@@ -616,7 +616,7 @@
   - Done: Symlink exists pointing at fixtures; package compiles.
   - Refs: PLAN.md §8.2.
 
-- [ ] **2.11** Write ImageIOCleanerTests (one test per fixture, all must show leak-free output)
+- [x] **2.11** Write ImageIOCleanerTests (one test per fixture, all must show leak-free output)
   - File: `Packages/CleanShareCore/Tests/CleanShareCoreTests/ImageIOCleanerTests.swift`. Five tests: `testJPEGiPhoneSample`, `testJPEGPixelSample`, `testPNGTransparent`, `testGIFAnimated`, `testJPEGLightroom`. Each loads the fixture via `Bundle.module.url(forResource:withExtension:)`, runs `ImageIOCleaner().clean(...)`, then asserts the receipt's `leakedKeys` is empty AND `MetadataAuditor.audit(url: outURL, kind: <kind>, allowing: [])` returns `[]`.
   - Test: `cd Packages/CleanShareCore && swift test --filter ImageIOCleanerTests` — all 5 pass.
   - Done: All five image cleaning tests pass.
