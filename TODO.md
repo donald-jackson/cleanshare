@@ -1013,7 +1013,7 @@
   - Done: Screenshot exists AND grep confirms no `(debug)`-labelled UI affordances exist in source.
   - Refs: PLAN.md §4.5.
 
-- [ ] **4.13** Hand-author SVG app icon at `marketing/icon/AppIcon.svg`
+- [x] **4.13** Hand-author SVG app icon at `marketing/icon/AppIcon.svg`
   - Write exactly this SVG to `marketing/icon/AppIcon.svg` (1024×1024 viewBox, brand gradient + photo card + three rising sparkles per PLAN.md §14.1):
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>

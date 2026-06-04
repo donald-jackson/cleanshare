@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="CleanShare">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#19B4B0"/>
+      <stop offset="1" stop-color="#3B3FB8"/>
+    </linearGradient>
+    <linearGradient id="photoTint" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F1FBFA"/>
+      <stop offset="1" stop-color="#E1EEFB"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+      <feOffset dx="0" dy="14" result="b"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.42"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- background (iOS applies the squircle mask automatically) -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- photo card: rotated slightly so the sparkles can sit in the gap -->
+  <g transform="translate(512 540) rotate(-7) translate(-280 -280)">
+    <rect x="0" y="0" width="560" height="560" rx="56" ry="56" fill="#FFFFFF" filter="url(#cardShadow)"/>
+    <rect x="40" y="40" width="480" height="400" rx="20" ry="20" fill="url(#photoTint)"/>
+    <!-- sun -->
+    <circle cx="172" cy="160" r="44" fill="#FFB347"/>
+    <!-- mountains -->
+    <path d="M 60 440 L 200 240 L 320 360 L 440 220 L 520 320 L 520 440 Z" fill="#19B4B0" opacity="0.78"/>
+    <path d="M 280 440 L 380 290 L 520 440 Z" fill="#3B3FB8" opacity="0.55"/>
+    <!-- caption strip (deliberately blank — metadata cleaned) -->
+    <rect x="40" y="464" width="480" height="56" rx="10" ry="10" fill="#F4F6F9"/>
+    <rect x="60" y="482" width="220" height="20" rx="6" ry="6" fill="#D9DEE6"/>
+  </g>
+
+  <!-- three rising sparkles trailing up-right (metadata being cleaned away) -->
+  <g fill="#FFFFFF">
+    <path d="M 820 320 L 842 252 L 864 320 L 932 342 L 864 364 L 842 432 L 820 364 L 752 342 Z" opacity="0.95"/>
+    <path d="M 904 180 L 916 142 L 928 180 L 966 192 L 928 204 L 916 242 L 904 204 L 866 192 Z" opacity="0.85"/>
+    <circle cx="958" cy="88" r="16" opacity="0.78"/>
+  </g>
+</svg>
