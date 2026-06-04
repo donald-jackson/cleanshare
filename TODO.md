@@ -544,7 +544,7 @@
   - Done: Builds AND all four cases present.
   - Refs: PLAN.md §4.5.
 
-- [ ] **2.04** Define CleanReceipt struct
+- [x] **2.04** Define CleanReceipt struct
   - File: `Packages/CleanShareCore/Sources/CleanShareCore/Model/CleanReceipt.swift`.
   - `public struct CleanReceipt: Sendable, Codable, Equatable { public let inputURL: URL; public let outputURL: URL; public let kind: MediaKind; public let bytesIn: Int; public let bytesOut: Int; public let durationMS: Int; public let reencoded: Bool; public let leakedKeys: [String]; public init(...) {...} }` (provide a memberwise `public init`).
   - Test: `cd Packages/CleanShareCore && swift build && grep -q 'public struct CleanReceipt' Sources/CleanShareCore/Model/CleanReceipt.swift`.
