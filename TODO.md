@@ -92,7 +92,7 @@
   - Done: File exists and contains both LF + binary directives.
   - Refs: PLAN.md §10.
 
-- [ ] **1.05** Write .editorconfig
+- [x] **1.05** Write .editorconfig
   - `root = true`. Default `[*]` block: `end_of_line = lf`, `insert_final_newline = true`, `charset = utf-8`, `trim_trailing_whitespace = true`. `[*.swift]` block: `indent_style = space`, `indent_size = 4`. `[*.{yml,yaml,json}]`: `indent_size = 2`. `[*.md]`: `trim_trailing_whitespace = false` (markdown trailing spaces sometimes have meaning).
   - Test: `test -f .editorconfig && grep -q 'root = true' .editorconfig && grep -q 'indent_size = 4' .editorconfig && grep -q '\[*.md\]' .editorconfig`.
   - Done: All three directives present.
