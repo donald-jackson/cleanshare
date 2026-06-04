@@ -1224,7 +1224,7 @@
   - Done: `bundle exec fastlane --version` resolves without "command not found" and prints a fastlane version line.
   - Refs: PLAN.md §12; CLAUDE.md "Build environment (Apple Silicon)".
 
-- [ ] **5.02** Write fastlane/Appfile
+- [x] **5.02** Write fastlane/Appfile
   - File:
     ```ruby
     app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
