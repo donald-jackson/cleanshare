@@ -1564,7 +1564,7 @@
 
 ## Phase 7: Quality (fuzz + perf + diagnostics + docs)
 
-- [ ] **7.01** Implement FuzzTests (gated behind CLEANSHARE_RUN_FUZZ env var)
+- [x] **7.01** Implement FuzzTests (gated behind CLEANSHARE_RUN_FUZZ env var)
   - File: `Packages/CleanShareCore/Tests/CleanShareCoreTests/FuzzTests.swift`.
   - For each of the 5 image fixtures + the video fixture: generate 50 bit-flipped variants (mutate a random byte at a random offset, skipping the first 16 bytes of the file to avoid breaking magic numbers). Run the appropriate cleaner. Allowed outcomes per call: (a) succeeds with `receipt.leakedKeys.isEmpty == true`, OR (b) throws a `CleanerError`. Silent metadata retention is a failure.
   - In `setUp`, `try XCTSkipUnless(ProcessInfo.processInfo.environment["CLEANSHARE_RUN_FUZZ"] != nil, "Fuzz tests are nightly-only")`.
