@@ -98,7 +98,7 @@
   - Done: All three directives present.
   - Refs: PLAN.md §10.
 
-- [ ] **1.06** Write .swift-version
+- [x] **1.06** Write .swift-version
   - Single line: `6.0`. No trailing whitespace.
   - Test: `[ "$(cat .swift-version)" = "6.0" ]`.
   - Done: File contents exactly `6.0\n`.
