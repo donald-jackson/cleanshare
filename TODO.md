@@ -1064,7 +1064,7 @@
   - Done: SVG file exists, parses cleanly, has the brand gradient + photoTint definitions.
   - Refs: PLAN.md §14.1.
 
-- [ ] **4.14** Write scripts/render-app-icon.sh (SVG → PNGs via librsvg)
+- [x] **4.14** Write scripts/render-app-icon.sh (SVG → PNGs via librsvg)
   - File: `scripts/render-app-icon.sh` (chmod +x):
     ```bash
     #!/usr/bin/env bash
