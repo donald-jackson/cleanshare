@@ -1452,7 +1452,7 @@
   - Done: v1.0 promo text + at least 3 variants present; none exceed 170 chars.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.08** Write `marketing/app-store/whats-new.md` (release notes source)
+- [x] **6.08** Write `marketing/app-store/whats-new.md` (release notes source)
   - File: `marketing/app-store/whats-new.md`. This is the source for `fastlane/metadata/en-US/release_notes.txt`.
   - Sections:
     - `## v1.0.0 — Initial release` — body covers welcome statement + bullet list of headline features (the share-extension flow, in-app PHPicker, sample-photo demo, Live Photos with three modes, supported formats, settings, "zero data collected").
