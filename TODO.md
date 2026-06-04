@@ -1409,7 +1409,7 @@
   - Done: All five screenshots at correct resolution; no marketing-only views in source; no marketing-tagged DEBUG blocks.
   - Refs: PLAN.md §13.3, §13.5.
 
-- [ ] **6.04** Capture iPad screenshots 01–04
+- [x] **6.04** Capture iPad screenshots 01–04
   - Run `scripts/screenshots.sh ipad`. Captures 4 screenshots at 2064×2752 mirroring the iPhone content: hero, diff, share-sheet, privacy card.
   - Output: `screenshots/iPad-13/01-hero.png` … `04-privacy.png`.
   - Visual Check: same as iPhone, but: layout makes use of the wider iPad canvas (e.g. RootView shows the "Try it" button + "Clean photos…" button side-by-side or in a larger card).
