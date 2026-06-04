@@ -1135,7 +1135,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.18** Wire "Try it on a sample photo" button + flow in RootView
+- [x] **4.18** Wire "Try it on a sample photo" button + flow in RootView
   - In `App/Views/RootView.swift`, add a `Button("Try it on a sample photo")`. Tapping:
     1. Copies the bundled `Sample-DirtyPhoto.jpg` into a fresh Workspace job dir's `in/`.
     2. Runs `ImageIOCleaner` cleaning it into the job dir's `out/`.

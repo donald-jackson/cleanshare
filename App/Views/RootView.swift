@@ -8,6 +8,7 @@ struct RootView: View {
     @State private var showSettings = false
     @State private var showLivePhotoSheet = false
     @State private var livePhotoOnChoose: (LivePhotoMode) -> Void = { _ in }
+    @State private var sampleDiff: SampleDiffPair?
 
     var body: some View {
         NavigationStack {
@@ -17,6 +18,11 @@ struct RootView: View {
                 Text("Strip metadata before sharing")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+
+                Button("Try it on a sample photo") {
+                    cleanSamplePhoto()
+                }
+                .buttonStyle(.borderedProminent)
 
                 Button("Try it on a Live Photo (sample)") {
                     livePhotoOnChoose = { mode in
@@ -47,6 +53,9 @@ struct RootView: View {
                 SettingsView(prefsStore: prefsStore)
             }
         }
+        .sheet(item: $sampleDiff) { pair in
+            SampleDiffView(beforeURL: pair.beforeURL, afterURL: pair.afterURL)
+        }
         .sheet(isPresented: $showLivePhotoSheet) {
             LivePhotoConsentSheet(prefsStore: prefsStore, onChoose: $livePhotoOnChoose)
                 .presentationDetents([.medium])
@@ -56,6 +65,29 @@ struct RootView: View {
                 ActivityView(activityItems: urls) {
                     coordinator.pendingURLs = nil
                 }
+            }
+        }
+    }
+
+    /// Cleans the bundled sample photo and presents a BEFORE / AFTER metadata diff.
+    private func cleanSamplePhoto() {
+        guard let sample = Bundle.main.url(forResource: "Sample-DirtyPhoto", withExtension: "jpg") else {
+            return
+        }
+
+        let prefs = prefsStore.current
+        Task {
+            do {
+                let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
+                let job = try await workspace.newJob()
+                let input = job.inDir.appendingPathComponent(sample.lastPathComponent)
+                try FileManager.default.copyItem(at: sample, to: input)
+                let output = job.outDir.appendingPathComponent(sample.lastPathComponent)
+
+                let receipt = try await ImageIOCleaner().clean(input: input, output: output, prefs: prefs)
+                sampleDiff = SampleDiffPair(beforeURL: input, afterURL: receipt.outputURL)
+            } catch {
+                // The sample demo is best-effort; failures leave the UI idle.
             }
         }
     }
@@ -105,4 +137,12 @@ struct RootView: View {
             }
         )
     }
+}
+
+/// Identifiable pairing of the original and cleaned sample-photo URLs, used to
+/// drive the `SampleDiffView` sheet.
+private struct SampleDiffPair: Identifiable {
+    let id = UUID()
+    let beforeURL: URL
+    let afterURL: URL
 }
