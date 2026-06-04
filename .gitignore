@@ -1,0 +1,44 @@
+# macOS
+.DS_Store
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+CleanShare.xcodeproj/
+.swiftpm/
+
+# Swift Package Manager
+.build/
+
+# Per-contributor signing override
+Config/Local.xcconfig
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Dependencies / tooling
+vendor/
+node_modules/
+
+# Scratch / temp
+tmp/
+*.swp
+
+# Build loop state
+.build-logs/
+.build-state
+.needs-human
+
+# Coverage
+coverage/
+
+# Artefacts
+*.ipa
+*.dSYM.zip
+
+# Dev screenshots
+screenshots/dev/

@@ -80,7 +80,7 @@
   - Done: All three greps succeed.
   - Refs: PLAN.md §15.
 
-- [ ] **1.03** Write .gitignore
+- [x] **1.03** Write .gitignore
   - Cover: `.DS_Store`, `xcuserdata/`, `*.xcuserstate`, `DerivedData/`, `.build/`, `CleanShare.xcodeproj/`, `Config/Local.xcconfig`, `fastlane/report.xml`, `fastlane/Preview.html`, `fastlane/screenshots`, `fastlane/test_output`, `vendor/`, `tmp/`, `.build-logs/`, `.build-state`, `.needs-human`, `coverage/`, `*.ipa`, `*.dSYM.zip`, `screenshots/dev/`, `*.swp`, `.swiftpm/`, `node_modules/`.
   - Test: `for p in DerivedData '.build/' 'CleanShare.xcodeproj/' Local.xcconfig '.build-state' '.needs-human' 'screenshots/dev/'; do grep -qF "$p" .gitignore || { echo "missing pattern: $p"; exit 1; }; done`.
   - Done: All required patterns present.
