@@ -32,7 +32,12 @@ format:
 	swiftformat .
 
 verify-strip:
-	./scripts/verify-metadata-stripped.sh tests/fixtures/cleaned/*
+	cd Packages/CleanShareCore && swift build --product cleanshare-cli
+	rm -rf tests/fixtures/cleaned && mkdir -p tests/fixtures/cleaned
+	for f in tests/fixtures/dirty/*; do \
+	  ./Packages/CleanShareCore/.build/debug/cleanshare-cli clean "$$f" "tests/fixtures/cleaned/$$(basename $$f)" || exit 1; \
+	done
+	bash scripts/verify-metadata-stripped.sh tests/fixtures/cleaned/*
 
 clean:
 	rm -rf $(DERIVED_DATA)/CleanShare-* .build CleanShare.xcodeproj

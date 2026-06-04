@@ -639,7 +639,7 @@
   - Done: Script is executable, syntax-checks, and exits 0 on the current (empty) source tree.
   - Refs: PLAN.md §8.6, §18.3.
 
-- [ ] **2.14** Add CleanShareCoreCLI executable target + wire `make verify-strip`
+- [x] **2.14** Add CleanShareCoreCLI executable target + wire `make verify-strip`
   - Edit `Packages/CleanShareCore/Package.swift`: add `.executableTarget(name: "cleanshare-cli", dependencies: ["CleanShareCore"], path: "Sources/CleanShareCoreCLI")` AND add `cleanshare-cli` to `products`.
   - Create `Packages/CleanShareCore/Sources/CleanShareCoreCLI/main.swift`. CLI usage: `cleanshare-cli clean <input> <output> [--kind=auto|jpeg|heic|…]`. On error, exit non-zero with `stderr` message.
   - Update Makefile `verify-strip`:

@@ -11,12 +11,21 @@ let package = Package(
         .library(
             name: "CleanShareCore",
             targets: ["CleanShareCore"]
+        ),
+        .executable(
+            name: "cleanshare-cli",
+            targets: ["cleanshare-cli"]
         )
     ],
     targets: [
         .target(
             name: "CleanShareCore",
             path: "Sources/CleanShareCore"
+        ),
+        .executableTarget(
+            name: "cleanshare-cli",
+            dependencies: ["CleanShareCore"],
+            path: "Sources/CleanShareCoreCLI"
         ),
         .testTarget(
             name: "CleanShareCoreTests",

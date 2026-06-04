@@ -18,7 +18,10 @@
 # {Exif}(ColorSpace, PixelXDimension, PixelYDimension) and {JFIF} on cleaned
 # JPEG/PNG output, and orientation is kept by default. Those tags are PII-free,
 # so the EXIF check is an allowlist of structural tags rather than "no EXIF dict
-# at all" — otherwise every cleaned image would false-positive.
+# at all" — otherwise every cleaned image would false-positive. For the same
+# reason XMP-x:XMPToolkit (a constant writer-version string, e.g. "XMP Core
+# 6.0.0") is exempted: ImageIO injects an XMP packet wrapper on PNG output and
+# the toolkit identifier carries no PII. Every other XMP tag is still a leak.
 set -euo pipefail
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "error: '$1' not found on PATH" >&2; exit 2; }; }
@@ -63,7 +66,7 @@ verify_image() {
           })
         | map(select(
             . as $e
-            | ($e.group | test("^XMP"))
+            | (($e.group | test("^XMP")) and ($e.tag != "XMPToolkit"))
             or (["GPS","IPTC","IPTC2","Photoshop","MakerNotes"] | index($e.group) != null)
             or ($e.group | test("MakerNotes"))
             or (
