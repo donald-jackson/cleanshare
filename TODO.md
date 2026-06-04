@@ -326,7 +326,7 @@
   - Done: All three assertions pass.
   - Refs: PLAN.md §3.1.
 
-- [ ] **1.20** Write ShareExtension/ShareExtension.entitlements
+- [x] **1.20** Write ShareExtension/ShareExtension.entitlements
   - Same App Group as host: `com.apple.security.application-groups` = `[group.dev.cleanshare.app]`.
   - Test: `plutil -lint ShareExtension/ShareExtension.entitlements && plutil -extract 'com.apple.security.application-groups.0' raw ShareExtension/ShareExtension.entitlements | grep -q '^group.dev.cleanshare.app$'`.
   - Done: Plist is valid AND the App Group identifier matches the host app.
