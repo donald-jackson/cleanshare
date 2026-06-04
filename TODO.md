@@ -1508,7 +1508,7 @@
   - Done: All five channel sections present; HN post mentions the AVAssetWriter passthrough technical detail.
   - Refs: PLAN.md §14.4.
 
-- [ ] **6.13** Write fastlane/metadata/en-US/ — names + subtitle + description
+- [x] **6.13** Write fastlane/metadata/en-US/ — names + subtitle + description
   - `fastlane/metadata/en-US/name.txt` = `CleanShare` (single line, no newlines).
   - `fastlane/metadata/en-US/subtitle.txt` = `Strip metadata before sharing` (≤30 chars).
   - `fastlane/metadata/en-US/description.txt` — 3 paragraphs:

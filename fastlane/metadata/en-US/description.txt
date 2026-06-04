@@ -1,0 +1,5 @@
+Every photo and video you share carries hidden metadata. EXIF tags can record exactly where a picture was taken, which phone or camera shot it, and the precise date and time. When you send that file to a messaging app or post it online, all of that travels with it — quietly handing strangers your location, your device, and your daily patterns.
+
+CleanShare slots into the iOS share sheet to fix this. Share any photo or video to CleanShare, it strips the identifying metadata — GPS coordinates, camera make and model, MakerNote, XMP, timestamps — and then re-presents the share sheet so you can send the cleaned file onward to WhatsApp, Messages, Instagram, or anywhere else. One extra tap, and what leaves your phone is just the picture.
+
+No accounts. No analytics. No network calls — nothing ever leaves your device. CleanShare does its work entirely on-device and is free and open source under the MIT license, so anyone can read exactly what it does. Privacy you can verify, not just trust.
