@@ -631,7 +631,7 @@
   - Done: Script parses; running it on a dirty fixture exits non-zero (it correctly DETECTS the leak we expect to be there pre-cleaning).
   - Refs: PLAN.md §8.3.
 
-- [ ] **2.13** Write scripts/check-no-trackers.sh
+- [x] **2.13** Write scripts/check-no-trackers.sh
   - Greps `App/`, `ShareExtension/`, `Packages/CleanShareCore/Sources/`, `Packages/CleanShareUI/Sources/` (if exists) for any of: `Firebase`, `Mixpanel`, `Amplitude`, `Sentry`, `Bugsnag`, `Crashlytics`, `FBSDK`, `FacebookCore`, `AppsFlyer`, `Branch.io`. Case-insensitive. Excludes comments inside `// FORBIDDEN:` lines (so docs can mention the names).
   - Also greps the built `.app` (if `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -type d -path '*/Debug-iphonesimulator/*' | head -1` finds one) using `strings` for the same set.
   - Exits non-zero on any match.
@@ -1120,14 +1120,14 @@
   - Done: Two home-screen screenshots present; visual criteria satisfied.
   - Refs: PLAN.md §14.1.
 
-- [ ] **4.14** Add bundled Sample-DirtyPhoto.jpg
+- [ ] **4.16** Add bundled Sample-DirtyPhoto.jpg
   - Copy `tests/fixtures/dirty/iphone_sample.jpg` to `App/Resources/Sample-DirtyPhoto.jpg`. (Keep as JPEG, not HEIC — HEIC conversion via `sips` is unreliable across macOS versions; JPEG is universally supported and the metadata-stripping demo works identically.)
   - Add a one-line `App/Resources/README.md` documenting the file's purpose.
   - Test: `test -f App/Resources/Sample-DirtyPhoto.jpg && exiftool App/Resources/Sample-DirtyPhoto.jpg | grep -qi 'GPS'`.
   - Done: Bundled file present AND has GPS metadata.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.15** Implement SampleDiffView (BEFORE / AFTER EXIF columns)
+- [ ] **4.17** Implement SampleDiffView (BEFORE / AFTER EXIF columns)
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Sheets/SampleDiffView.swift` — `public struct SampleDiffView: View`. Takes `let beforeURL: URL` and `let afterURL: URL?`.
   - Body: a horizontally split (`HStack`) view with two `ScrollView { Text(...) }` columns. Each column renders the output of `CGImageSourceCopyPropertiesAtIndex(_, 0, nil)` (or `[:]` for the missing case) formatted as `key: value` lines in `.font(.system(.caption, design: .monospaced))`. Colour-code keys that match the SENSITIVE set in red.
   - Title bar: `Text("Before").bold()` left column, `Text("After cleaning").bold()` right column.
@@ -1417,7 +1417,98 @@
   - Done: Four iPad screenshots at the correct resolution.
   - Refs: PLAN.md §13.3.
 
-- [ ] **6.05** Write fastlane/metadata/en-US/ — names + subtitle + description
+- [ ] **6.05** Write `marketing/app-store/listing.md` (rich source of the App Store description)
+  - File: `marketing/app-store/listing.md`. This is the SOURCE-of-truth for the App Store listing copy. The plain `.txt` files under `fastlane/metadata/en-US/` (tasks 6.13–6.14) are extracts of this file.
+  - Required H2 sections (in this order): `## Name`, `## Subtitle (≤30 chars)`, `## Description`, `## Tags / Categories`, `## Age rating`.
+  - The `## Description` body MUST cover (one short paragraph each, in this order):
+    1. What CleanShare does (one-sentence elevator + the share-sheet flow).
+    2. What gets removed (EXIF, GPS, Apple MakerNote, IPTC, XMP, embedded thumbnails, QuickTime metadata, timed-metadata tracks).
+    3. What gets preserved by default (orientation, color profile).
+    4. Performance (4K HEVC under a second; passthrough, no re-encode).
+    5. Privacy promise (no accounts / analytics / network; verified by CI on every commit).
+    6. Open source — MIT license + link to source.
+  - Categories: Primary `Photo & Video`, Secondary `Utilities`. Age rating 4+.
+  - Top of file: a 3-line `<!-- maintained as the source for fastlane/metadata/en-US/description.txt --> ...` note explaining the convention.
+  - Test: `test -f marketing/app-store/listing.md && for h in '## Name' '## Subtitle' '## Description' '## Tags' '## Age rating'; do grep -qF "$h" marketing/app-store/listing.md || { echo "missing section: $h"; exit 1; }; done && grep -q 'EXIF' marketing/app-store/listing.md && grep -q 'no network' marketing/app-store/listing.md && grep -q 'MIT' marketing/app-store/listing.md`.
+  - Done: All five H2 sections present AND core promise terms present.
+  - Refs: PLAN.md §13.1, §9.
+
+- [ ] **6.06** Write `marketing/app-store/keywords.md` (ASO research + chosen keyword string)
+  - File: `marketing/app-store/keywords.md`. Sections:
+    - `## Chosen (v1.0)` — the exact ≤100-char CSV that goes into fastlane: `privacy,photo,metadata,exif,gps,share,strip,clean,open source,free`. Reasoning paragraph below it (one paragraph: why these 10).
+    - `## Alternatives considered` — a markdown table of `Keyword | Why considered | Why rejected` rows (≥4 rows: `viewexif`, `metapho`, `anonymous`, `location`, plus any extras you propose).
+    - `## A/B test plan for v1.1+` — describe a single concrete A/B test (e.g. swap a couple of generic keywords for destination-app names like `whatsapp,signal,messenger`) and how you'd measure it (search-tab impressions + tap-through).
+    - `## Title-field keywords` — note that "CleanShare" and "Strip metadata before sharing" are ALREADY indexed via name + subtitle; don't waste keyword slots on them.
+  - Test: `test -f marketing/app-store/keywords.md && grep -q 'privacy,photo,metadata' marketing/app-store/keywords.md && grep -q 'A/B' marketing/app-store/keywords.md && grep -qE '\| .* \| .* \| .* \|' marketing/app-store/keywords.md`.
+  - Done: Chosen CSV present, A/B test plan present, alternatives table present.
+  - Refs: PLAN.md §13.1.
+
+- [ ] **6.07** Write `marketing/app-store/promo-copy.md` (the 170-char promotional text + variants)
+  - File: `marketing/app-store/promo-copy.md`. Sections:
+    - `## v1.0 launch` — the chosen 170-char promo text + char count in parens.
+    - `## Variants` — three variants labelled `**A — feature focus**`, `**B — emotional**`, `**C — credibility**`, each annotated with its char count. All variants ≤170 chars.
+    - Note (one line at the top): "Apple lets you update promo text WITHOUT a binary submission; use it for time-sensitive announcements (press pickups, sales, news)."
+  - Test: `test -f marketing/app-store/promo-copy.md && grep -q 'v1.0 launch' marketing/app-store/promo-copy.md && grep -c '^**[A-C] ' marketing/app-store/promo-copy.md | awk '$1 >= 3 { exit 0 } { exit 1 }' && python3 -c "import re,sys; t=open('marketing/app-store/promo-copy.md').read(); [sys.exit('variant >170: '+v[:30]) for v in re.findall(r'>\s*\"?([^\"\n]+)', t) if len(v) > 170]"`.
+  - Done: v1.0 promo text + at least 3 variants present; none exceed 170 chars.
+  - Refs: PLAN.md §13.1.
+
+- [ ] **6.08** Write `marketing/app-store/whats-new.md` (release notes source)
+  - File: `marketing/app-store/whats-new.md`. This is the source for `fastlane/metadata/en-US/release_notes.txt`.
+  - Sections:
+    - `## v1.0.0 — Initial release` — body covers welcome statement + bullet list of headline features (the share-extension flow, in-app PHPicker, sample-photo demo, Live Photos with three modes, supported formats, settings, "zero data collected").
+    - `## Template for future versions` — a `### vX.Y.Z — short title` heading with a 1-2 sentence summary placeholder + 3-bullet template for headline change / secondary change / bug fix.
+  - Test: `test -f marketing/app-store/whats-new.md && grep -q 'v1.0.0 — Initial release' marketing/app-store/whats-new.md && grep -q 'Template for future versions' marketing/app-store/whats-new.md`.
+  - Done: Both sections present.
+  - Refs: PLAN.md §16.
+
+- [ ] **6.09** Write `marketing/app-store/screenshot-captions.md`
+  - File: `marketing/app-store/screenshot-captions.md`. One caption per App Store screenshot — these are the strings that will overlay each PNG (either baked-in via the screenshots.sh pipeline OR set in App Store Connect's screenshot editor).
+  - Sections:
+    - `## iPhone (6.9", 1320×2868)` — 6 lines, one per screenshot:
+      - `01-hero.png — "Share photos without leaking your location."`
+      - `02-diff.png — "See exactly what we strip."`
+      - `03-share.png — "Same tap count as before."`
+      - `04-formats.png — "Photos AND videos."`
+      - `05-privacy.png — "Zero data collected."`
+      - `06-source.png — "Open source. Audit our pipeline."`
+    - `## iPad (13", 2064×2752)` — 4 lines mirroring the iPhone set (hero / diff / share / privacy).
+  - Test: `test -f marketing/app-store/screenshot-captions.md && grep -c '\.png — "' marketing/app-store/screenshot-captions.md | awk '$1 >= 10 { exit 0 } { exit 1 }'`.
+  - Done: At least 10 captioned screenshot lines.
+  - Refs: PLAN.md §13.3.
+
+- [ ] **6.10** Write `marketing/press-kit/press-release.md` (launch-day one-pager)
+  - File: `marketing/press-kit/press-release.md`. Structure:
+    - `**FOR IMMEDIATE RELEASE — <date placeholder>**`
+    - One-sentence headline + 2-paragraph hook (the problem + the product).
+    - `**Key features:**` bullet list (6 bullets covering: removal scope, preservation defaults, Live Photo modes, formats, universal iPhone+iPad, iOS 17+).
+    - `**Privacy posture:**` bullet list (5 bullets: no accounts, no analytics, no network — CI-verified on every commit, App Store privacy label "Data Not Collected", MIT-licensed source link).
+    - `**Pricing:** Free, no in-app purchases.`
+    - `**Contact:**` + `**Press kit:**` + `**App Store:**` lines (placeholders for human to fill).
+    - Footer: `About the maintainer: see maintainer-bio.md`.
+  - Test: `test -f marketing/press-kit/press-release.md && grep -q 'FOR IMMEDIATE RELEASE' marketing/press-kit/press-release.md && grep -q 'Privacy posture' marketing/press-kit/press-release.md && grep -q 'Data Not Collected' marketing/press-kit/press-release.md && grep -q 'MIT' marketing/press-kit/press-release.md`.
+  - Done: All required headings + privacy framing present.
+  - Refs: PLAN.md §14.4, §13.
+
+- [ ] **6.11** Write `marketing/press-kit/maintainer-bio.md` + `marketing/press-kit/quotes.md`
+  - `marketing/press-kit/maintainer-bio.md` — one-paragraph bio (≤80 words) suitable for press attribution. Placeholder name + 1-line "Contact:" + 1-line "GitHub:" + 1-line "Mastodon:" rows (humans fill the actual handles).
+  - `marketing/press-kit/quotes.md` — three pre-canned quotes from the maintainer, each ≤40 words, labelled `## Quote 1 — the "why"`, `## Quote 2 — the "how"`, `## Quote 3 — the "what's different"`. Each quote in `> blockquote` form so journalists can copy-paste.
+  - Test: `test -f marketing/press-kit/maintainer-bio.md && test -f marketing/press-kit/quotes.md && [ "$(grep -c '^> ' marketing/press-kit/quotes.md)" -ge 3 ] && grep -q 'Contact:' marketing/press-kit/maintainer-bio.md`.
+  - Done: Both files present; quotes file has ≥3 blockquote lines; bio has contact pointer.
+  - Refs: PLAN.md §14.4.
+
+- [ ] **6.12** Write `marketing/press-kit/social-copy.md` (HN / Mastodon / Reddit / X launch posts)
+  - File: `marketing/press-kit/social-copy.md`. One H2 section per channel, each containing the actual copy-paste-ready post:
+    - `## Mastodon` — 1-paragraph post + hashtags (#iOS #privacy #opensource).
+    - `## Hacker News (Show HN)` — `**Title:** Show HN: CleanShare – iOS app that strips photo metadata before sharing (MIT)` + multi-paragraph body covering motivation + technical notes (AVAssetWriter passthrough, ImageIO safe pattern, Swift 6 strict concurrency, CI privacy regression, network-silence test).
+    - `## r/iOSProgramming` — title + technical-angle paragraph.
+    - `## r/privacy` — title + threat-model-angle paragraph.
+    - `## Twitter / X` — ≤280-char post with emoji + App Store and source links.
+  - Each post must reference `github.com/<placeholder>/cleanshare` and the App Store link placeholder (human will substitute actual URLs).
+  - Test: `test -f marketing/press-kit/social-copy.md && for h in Mastodon 'Hacker News' 'r/iOSProgramming' 'r/privacy' 'Twitter / X'; do grep -q "^## $h" marketing/press-kit/social-copy.md || { echo "missing section: $h"; exit 1; }; done && grep -q 'Show HN' marketing/press-kit/social-copy.md && grep -q 'passthrough' marketing/press-kit/social-copy.md`.
+  - Done: All five channel sections present; HN post mentions the AVAssetWriter passthrough technical detail.
+  - Refs: PLAN.md §14.4.
+
+- [ ] **6.13** Write fastlane/metadata/en-US/ — names + subtitle + description
   - `fastlane/metadata/en-US/name.txt` = `CleanShare` (single line, no newlines).
   - `fastlane/metadata/en-US/subtitle.txt` = `Strip metadata before sharing` (≤30 chars).
   - `fastlane/metadata/en-US/description.txt` — 3 paragraphs:
@@ -1428,7 +1519,7 @@
   - Done: All three files exist, subtitle within limit, description multi-paragraph.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.06** Write fastlane/metadata/en-US/ — keywords + promo + URLs + release notes
+- [ ] **6.14** Write fastlane/metadata/en-US/ — keywords + promo + URLs + release notes
   - `keywords.txt` (≤100 chars, CSV): `privacy,photo,metadata,exif,gps,share,strip,clean,open source,free`.
   - `promotional_text.txt` (≤170 chars): `Share photos and videos without leaking your location, camera model, or timestamps. One tap, no accounts, nothing leaves your device.`.
   - `support_url.txt` = `https://cleanshare.dev/support`.
@@ -1439,7 +1530,7 @@
   - Done: All six files present and within their respective length limits.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.07** Write fastlane/metadata/review_information/
+- [ ] **6.15** Write fastlane/metadata/review_information/
   - `notes.txt` per PLAN.md §13.4:
     - "No account required. Demo username/password intentionally blank."
     - "Test the in-app pipeline: tap 'Try it on a sample photo'. The before/after diff shows EXIF/GPS removed."
@@ -1453,7 +1544,7 @@
   - Done: All required review-information files present with the required talking points.
   - Refs: PLAN.md §13.4.
 
-- [ ] **6.08** Write docs/app-store-privacy.md
+- [ ] **6.16** Write docs/app-store-privacy.md
   - Documents that every category in the App Store Connect privacy questionnaire is answered "No" → resulting label "Data Not Collected".
   - Reference PLAN.md §9 + §18.
   - Note that the questionnaire is submitted via App Store Connect UI (already in `docs/manual-steps.md`).
@@ -1461,13 +1552,13 @@
   - Done: Doc exists with the required references.
   - Refs: PLAN.md §9, §13.2.
 
-- [ ] **6.09** Commit Phase 6
-  - Stage: `git add scripts/screenshots.sh screenshots/iPhone-6.9/ screenshots/iPad-13/ fastlane/metadata/ docs/app-store-privacy.md`.
-  - Note: `screenshots/dev/` is gitignored — `screenshots/iPhone-6.9/` and `screenshots/iPad-13/` are NOT (these are App-Store-bound assets).
-  - Commit message: `chore(release): phase 6 — App Store metadata + iPhone/iPad screenshots + review notes + privacy doc`.
-  - Test: `git log --oneline -1 | grep -q 'phase 6'`.
-  - Done: Commit recorded.
-  - Refs: PLAN.md §20 Week 6.
+- [ ] **6.17** Commit Phase 6
+  - Stage: `git add scripts/screenshots.sh screenshots/iPhone-6.9/ screenshots/iPad-13/ marketing/app-store/ marketing/press-kit/press-release.md marketing/press-kit/maintainer-bio.md marketing/press-kit/quotes.md marketing/press-kit/social-copy.md fastlane/metadata/ docs/app-store-privacy.md`.
+  - Note: `screenshots/dev/` is gitignored — `screenshots/iPhone-6.9/` and `screenshots/iPad-13/` are NOT (these are App-Store-bound assets). The `marketing/press-kit/icons/` directory was already committed by Phase 4 (task 4.14).
+  - Commit message: `chore(release): phase 6 — App Store screenshots + listing.md + keywords.md + promo-copy.md + whats-new.md + captions + press kit + fastlane metadata extracts + privacy doc`.
+  - Test: `git log --oneline -1 | grep -q 'phase 6' && git ls-files marketing/app-store/ marketing/press-kit/ | wc -l | awk '$1 >= 8 { exit 0 } { exit 1 }'`.
+  - Done: Commit exists AND at least 8 files under `marketing/app-store/` + `marketing/press-kit/` are tracked (5 app-store .md + 4 press-kit .md).
+  - Refs: PLAN.md §20 Week 6, §14.4.
 
 ---
 
