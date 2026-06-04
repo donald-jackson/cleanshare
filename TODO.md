@@ -1552,7 +1552,7 @@
   - Done: Doc exists with the required references.
   - Refs: PLAN.md §9, §13.2.
 
-- [ ] **6.17** Commit Phase 6
+- [x] **6.17** Commit Phase 6
   - Stage: `git add scripts/screenshots.sh screenshots/iPhone-6.9/ screenshots/iPad-13/ marketing/app-store/ marketing/press-kit/press-release.md marketing/press-kit/maintainer-bio.md marketing/press-kit/quotes.md marketing/press-kit/social-copy.md fastlane/metadata/ docs/app-store-privacy.md`.
   - Note: `screenshots/dev/` is gitignored — `screenshots/iPhone-6.9/` and `screenshots/iPad-13/` are NOT (these are App-Store-bound assets). The `marketing/press-kit/icons/` directory was already committed by Phase 4 (task 4.14).
   - Commit message: `chore(release): phase 6 — App Store screenshots + listing.md + keywords.md + promo-copy.md + whats-new.md + captions + press kit + fastlane metadata extracts + privacy doc`.
