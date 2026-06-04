@@ -31,7 +31,7 @@ let package = Package(
             name: "CleanShareCoreTests",
             dependencies: ["CleanShareCore"],
             path: "Tests/CleanShareCoreTests",
-            resources: [.copy("Fixtures")]
+            resources: [.copy("Fixtures"), .copy("PerfFixtures")]
         )
     ]
 )

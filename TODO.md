@@ -1581,7 +1581,7 @@
   - Done: Test passes; zero recorded requests across all flows.
   - Refs: PLAN.md §8.5, §18.3.
 
-- [ ] **7.03** Implement PerformanceTests
+- [x] **7.03** Implement PerformanceTests
   - File: `Packages/CleanShareCore/Tests/CleanShareCoreTests/PerformanceTests.swift`. Three `measure {}` tests:
     1. `testPerfJPEG12MP_under500ms` — clean a 12-MP JPEG (generate via `scripts/make-perf-fixtures.sh` using ffmpeg: `ffmpeg -f lavfi -i nullsrc=s=4000x3000 -frames:v 1 -q:v 2 tests/fixtures/perf/jpeg_12mp.jpg` plus exiftool to add metadata). Baseline: < 500 ms (3× the PLAN.md §5.2 target of < 80 ms for CI overhead).
     2. `testPerfHEIC12MP_under400ms` — same dimensions but HEIC via `sips -s format heic`. Baseline: < 400 ms.
