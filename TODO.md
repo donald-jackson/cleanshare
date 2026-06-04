@@ -125,7 +125,7 @@
   - Done: All four greps succeed AND `swiftlint --config .swiftlint.yml lint --quiet 2>&1 || true` does not print a "configuration error".
   - Refs: PLAN.md §4.2, §11.1.
 
-- [ ] **1.09** Write Brewfile
+- [x] **1.09** Write Brewfile
   - Required entries (one per line): `brew "xcodegen"`, `brew "swiftlint"`, `brew "swiftformat"`, `brew "xcbeautify"`, `brew "fastlane"`, `brew "gh"`, `brew "jq"`, `brew "exiftool"`, `brew "ffmpeg"`.
   - Test: `for t in xcodegen swiftlint swiftformat xcbeautify fastlane gh jq exiftool ffmpeg; do grep -q "brew \"$t\"" Brewfile || { echo "missing: $t"; exit 1; }; done`.
   - Done: All nine tools present.
