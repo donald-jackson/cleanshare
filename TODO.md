@@ -825,7 +825,7 @@
   - Done: Both targets link the new package.
   - Refs: PLAN.md §2.
 
-- [ ] **3.14** Implement a minimal CleaningProgressView in CleanShareUI
+- [x] **3.14** Implement a minimal CleaningProgressView in CleanShareUI
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Sheets/CleaningProgressView.swift` — `public struct CleaningProgressView: View`. Takes `@ObservedObject var progress: CleaningProgressModel` where `CleaningProgressModel: ObservableObject` exposes `@Published var fraction: Double` and `@Published var currentFile: String?`. Renders a `VStack` with `ProgressView(value: fraction)`, a `Text(currentFile ?? "Preparing…")`, and a small "Cleaning your media…" heading.
   - Test: `cd Packages/CleanShareUI && swift build && grep -q 'CleaningProgressView' Sources/CleanShareUI/Sheets/CleaningProgressView.swift`.
   - Done: Builds.
