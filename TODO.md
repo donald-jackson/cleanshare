@@ -225,7 +225,7 @@
   - Done: Script is executable and parses without syntax errors.
   - Refs: PLAN.md §10.
 
-- [ ] **1.15** Scaffold App/CleanShareApp.swift + RootView + HandoffRouter stub
+- [x] **1.15** Scaffold App/CleanShareApp.swift + RootView + HandoffRouter stub
   - `App/CleanShareApp.swift`:
     ```swift
     import SwiftUI
