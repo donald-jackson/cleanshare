@@ -459,7 +459,7 @@
   - Done: All three present.
   - Refs: PLAN.md §17.
 
-- [ ] **1.31** Write SECURITY.md + PRIVACY.md
+- [x] **1.31** Write SECURITY.md + PRIVACY.md
   - `SECURITY.md` — explains the supported versions table (latest only for now), how to report vulnerabilities (GitHub Security Advisories — `https://github.com/<placeholder>/cleanshare/security/advisories/new`), DO NOT file public issues for privacy/security bugs.
   - `PRIVACY.md` — mirrors PLAN.md §9: "Data Not Collected" across all categories, MetricKit opt-in only, no network calls, no identifiers persisted, full source-code link, CI verification claim ("we test for it on every commit").
   - Test: `test -f SECURITY.md && grep -q 'Security Advisor' SECURITY.md && test -f PRIVACY.md && grep -q 'Data Not Collected' PRIVACY.md && grep -q 'MetricKit' PRIVACY.md && grep -q 'no network' PRIVACY.md`.
