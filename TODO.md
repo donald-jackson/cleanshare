@@ -1211,7 +1211,7 @@
 
 ## Phase 5: Release infrastructure (workflows + landing + signing docs)
 
-- [ ] **5.01** Write Gemfile + bundle install (Apple Silicon, no sudo)
+- [x] **5.01** Write Gemfile + bundle install (Apple Silicon, no sudo)
   - Step 1 — ensure `bundler` is reachable WITHOUT sudo: if `command -v bundle` returns non-zero, run `gem install --user-install bundler`. Then make sure `~/.gem/ruby/<VERSION>/bin` is on PATH for the current shell (`export PATH="$HOME/.gem/ruby/$(ruby -e 'puts RUBY_VERSION.split(\".\").first(2).join(\".\") + \".0\"')/bin:$PATH"` — or rely on Homebrew Ruby being on PATH from CLAUDE.md pre-loop setup).
   - Step 2 — write `Gemfile`:
     ```ruby
