@@ -989,7 +989,7 @@
   - Done: Three screenshots present, each >15 KB, all visual criteria satisfied.
   - Refs: PLAN.md §9, §13.5.
 
-- [ ] **4.11** Implement LivePhotoConsentSheet
+- [x] **4.11** Implement LivePhotoConsentSheet
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Sheets/LivePhotoConsentSheet.swift` — `public struct LivePhotoConsentSheet: View`. Title "Live Photo detected". Body: short explanation of what each mode does (1 line each). Three `Button` rows for the three concrete modes (Downgrade / Preserve / Re-pair), and a `Toggle("Don't ask again", isOn: $dontAskAgain)` at the bottom.
   - On tap of any mode button: if `dontAskAgain == true`, write the chosen mode to `prefsStore.livePhotoDefaultMode`. Then call a `@Binding var onChoose: (LivePhotoMode) -> Void` closure passed by the caller.
   - Test: `cd Packages/CleanShareUI && swift build`.
