@@ -1276,7 +1276,7 @@
   - Done: YAML parses with cron + fuzz job + nightly TestFlight job.
   - Refs: PLAN.md §11.3.
 
-- [ ] **5.07** Write .github/workflows/pages.yml
+- [x] **5.07** Write .github/workflows/pages.yml
   - Triggers: `push.branches: [main]` (only when `marketing/landing/**` or `PRIVACY.md` changes — use `paths:` filter) + `workflow_dispatch`.
   - Uses GH Pages built-in actions: `actions/configure-pages@v5`, `actions/upload-pages-artifact@v3` with `path: marketing/landing/`, `actions/deploy-pages@v4`.
   - Permissions: `pages: write`, `id-token: write`.
