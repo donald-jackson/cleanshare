@@ -1354,7 +1354,7 @@
   - Done: All required entries present.
   - Refs: PLAN.md §11.7, §12, §13, §14.3, §17.
 
-- [ ] **5.15** Commit Phase 5
+- [x] **5.15** Commit Phase 5
   - Stage: `git add Gemfile Gemfile.lock fastlane/ .github/workflows/release.yml .github/workflows/nightly.yml .github/workflows/pages.yml .github/workflows/codeql.yml .github/workflows/stale.yml docs/ scripts/bootstrap.sh marketing/`.
   - Commit message: `feat(release): phase 5 — fastlane + 5 GH workflows + landing site + signing docs + manual-steps checklist`.
   - Test: `git log --oneline -1 | grep -q 'phase 5'`.
