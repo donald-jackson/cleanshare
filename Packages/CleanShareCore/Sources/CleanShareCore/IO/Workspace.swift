@@ -54,6 +54,14 @@ public actor Workspace {
         )
     }
 
+    /// Creates `inbox/<token>/` (if needed) and returns the URL where that job's
+    /// `manifest.json` should be written for the host app to pick up. See PLAN.md §6.
+    public func inboxManifestURL(token: String) throws -> URL {
+        let dir = inboxDir.appendingPathComponent(token, isDirectory: true)
+        try fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent("manifest.json")
+    }
+
     /// Removes `tmp/job-<id>` recursively. No-op if it does not exist.
     public func cleanup(jobID: UUID) throws {
         let jobDir = tmpDir.appendingPathComponent("job-\(jobID.uuidString)", isDirectory: true)

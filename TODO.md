@@ -831,7 +831,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.1, §6.
 
-- [ ] **3.15** Wire ShareExtension/ShareViewController (real flow)
+- [x] **3.15** Wire ShareExtension/ShareViewController (real flow)
   - Replace the stub in `ShareExtension/ShareViewController.swift` with the real flow per PLAN.md §3.1 + §6:
     1. `viewDidLoad`: create a `CleaningProgressModel`, host `CleaningProgressView(progress: model)` via `UIHostingController`, add it as child controller.
     2. Spawn a `Task`:

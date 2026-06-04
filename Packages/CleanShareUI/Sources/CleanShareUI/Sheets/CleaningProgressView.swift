@@ -15,9 +15,11 @@ public final class CleaningProgressModel: ObservableObject {
 /// Minimal progress sheet shown while media is being cleaned.
 public struct CleaningProgressView: View {
     @ObservedObject var progress: CleaningProgressModel
+    private let onCancel: (() -> Void)?
 
-    public init(progress: CleaningProgressModel) {
+    public init(progress: CleaningProgressModel, onCancel: (() -> Void)? = nil) {
         self.progress = progress
+        self.onCancel = onCancel
     }
 
     public var body: some View {
@@ -28,6 +30,10 @@ public struct CleaningProgressView: View {
             Text(progress.currentFile ?? "Preparing…")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+            if let onCancel {
+                Button("Cancel", role: .cancel, action: onCancel)
+                    .padding(.top, 4)
+            }
         }
         .padding()
     }
