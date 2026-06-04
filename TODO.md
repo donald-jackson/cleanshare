@@ -1305,7 +1305,7 @@
   - Done: Both docs exist with the required content pointers.
   - Refs: PLAN.md §12, §11.2.
 
-- [ ] **5.11** Write scripts/bootstrap.sh (interactive contributor setup)
+- [x] **5.11** Write scripts/bootstrap.sh (interactive contributor setup)
   - Behaviour:
     1. If `Config/Local.xcconfig` exists, prompt y/N before overwriting.
     2. Read `DEVELOPMENT_TEAM_OVERRIDE` from user input. Validate it's exactly 10 alphanumeric chars.
