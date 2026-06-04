@@ -1785,7 +1785,7 @@
   - Done: Both the new release heading AND a fresh Unreleased heading exist.
   - Refs: PLAN.md §16.
 
-- [ ] **8.11** Final commit + tag v0.1.0
+- [x] **8.11** Final commit + tag v0.1.0
   - Stage: `git add CHANGELOG.md` plus any deletions from 8.06 / 8.07 (run `git status --short` first to see what `git rm` already staged automatically).
   - Commit: `chore(release): v0.1.0 — feature-complete release candidate (scaffolding cleared, no mocks).`.
   - Tag: `git tag -a v0.1.0 -m "v0.1.0 — feature-complete RC. App Store submission pending docs/manual-steps.md."`.
