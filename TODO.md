@@ -1236,7 +1236,7 @@
   - Done: File present with both bundle IDs and ENV fallbacks.
   - Refs: PLAN.md §12.1.
 
-- [ ] **5.03** Write fastlane/Matchfile
+- [x] **5.03** Write fastlane/Matchfile
   - File:
     ```ruby
     git_url(ENV["MATCH_GIT_URL"] || "")
