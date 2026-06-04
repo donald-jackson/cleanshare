@@ -86,7 +86,7 @@
   - Done: All required patterns present.
   - Refs: PLAN.md §10.
 
-- [ ] **1.04** Write .gitattributes
+- [x] **1.04** Write .gitattributes
   - Enforce LF line endings: `*.swift text eol=lf`, `*.md text eol=lf`, `*.yml text eol=lf`, `*.sh text eol=lf`, `*.json text eol=lf`. Also `*.png binary` and `*.jpg binary`.
   - Test: `test -f .gitattributes && grep -q 'eol=lf' .gitattributes && grep -q 'png binary' .gitattributes`.
   - Done: File exists and contains both LF + binary directives.

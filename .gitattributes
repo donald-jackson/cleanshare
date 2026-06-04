@@ -1,0 +1,10 @@
+# Enforce LF line endings for text sources
+*.swift text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.sh    text eol=lf
+*.json  text eol=lf
+
+# Treat image assets as binary
+*.png binary
+*.jpg binary
