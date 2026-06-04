@@ -610,7 +610,7 @@
   - Done: All five fixtures exist, iphone_sample has GPS, pixel_sample has XMP Creator, README documents provenance.
   - Refs: PLAN.md §8.2, §15.
 
-- [ ] **2.10** Wire fixtures into CleanShareCore test target as resources
+- [x] **2.10** Wire fixtures into CleanShareCore test target as resources
   - Update `Packages/CleanShareCore/Package.swift` so `CleanShareCoreTests` target has `resources: [.copy("Fixtures")]` and the directory `Packages/CleanShareCore/Tests/CleanShareCoreTests/Fixtures` is a symlink to `../../../../tests/fixtures/dirty` (relative path). Create the symlink with `ln -sf ../../../../tests/fixtures/dirty Packages/CleanShareCore/Tests/CleanShareCoreTests/Fixtures`.
   - Test: `test -L Packages/CleanShareCore/Tests/CleanShareCoreTests/Fixtures && [ "$(readlink Packages/CleanShareCore/Tests/CleanShareCoreTests/Fixtures)" = "../../../../tests/fixtures/dirty" ] && cd Packages/CleanShareCore && swift build`.
   - Done: Symlink exists pointing at fixtures; package compiles.

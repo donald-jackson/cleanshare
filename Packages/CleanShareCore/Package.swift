@@ -21,7 +21,8 @@ let package = Package(
         .testTarget(
             name: "CleanShareCoreTests",
             dependencies: ["CleanShareCore"],
-            path: "Tests/CleanShareCoreTests"
+            path: "Tests/CleanShareCoreTests",
+            resources: [.copy("Fixtures")]
         )
     ]
 )
