@@ -1461,7 +1461,7 @@
   - Done: Both sections present.
   - Refs: PLAN.md §16.
 
-- [ ] **6.09** Write `marketing/app-store/screenshot-captions.md`
+- [x] **6.09** Write `marketing/app-store/screenshot-captions.md`
   - File: `marketing/app-store/screenshot-captions.md`. One caption per App Store screenshot — these are the strings that will overlay each PNG (either baked-in via the screenshots.sh pipeline OR set in App Store Connect's screenshot editor).
   - Sections:
     - `## iPhone (6.9", 1320×2868)` — 6 lines, one per screenshot:
