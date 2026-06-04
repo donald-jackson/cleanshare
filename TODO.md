@@ -929,7 +929,7 @@
   - Done: Three screenshots exist (>10 KB each) AND visual criteria above hold.
   - Refs: PLAN.md §14.2.
 
-- [ ] **4.06** Implement SettingsView
+- [x] **4.06** Implement SettingsView
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Settings/SettingsView.swift` — `public struct SettingsView: View`. Use SwiftUI `Form` with sections:
     1. **Metadata to keep** — toggles for `keepOrientation`, `keepICCProfile`, `keepCaptureDate`, `keepCameraMakeModel`, each bound to `prefsStore.*`.
     2. **Location (GPS)** — toggle for `keepGPS`. When the user tries to enable it, show an `.alert` titled "Keep GPS in shared photos?" with body "Photos with GPS coordinates reveal where they were taken. Are you sure?" and Cancel + Enable buttons.
