@@ -338,7 +338,7 @@
   - Done: Package describes both targets via SwiftPM.
   - Refs: PLAN.md §2, §10.
 
-- [ ] **1.22** Add CleanShareCore placeholder source + first test
+- [x] **1.22** Add CleanShareCore placeholder source + first test
   - `Packages/CleanShareCore/Sources/CleanShareCore/CleanShareCore.swift`:
     ```swift
     public enum CleanShareCore {

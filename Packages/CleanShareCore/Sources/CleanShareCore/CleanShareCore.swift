@@ -1,2 +1,3 @@
-// CleanShareCore — shared metadata-stripping engine.
-// Real types land in later Phase 2/3 tasks (ImageIOCleaner, AVPassthroughCleaner, etc.).
+public enum CleanShareCore {
+    public static let version = "0.0.0"
+}
