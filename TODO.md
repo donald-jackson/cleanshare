@@ -1643,7 +1643,7 @@
   - Done: ADR-0003 exists.
   - Refs: PLAN.md §6.
 
-- [ ] **7.12** Write docs/adr/0004-metrickit-only.md
+- [x] **7.12** Write docs/adr/0004-metrickit-only.md
   - Status: Accepted. Decision: opt-in MetricKit, on-device only, manual export. No Firebase/Sentry/Crashlytics. No auto-transmission.
   - Test: `test -f docs/adr/0004-metrickit-only.md && grep -q 'MetricKit' docs/adr/0004-metrickit-only.md && grep -q 'auto-transmission' docs/adr/0004-metrickit-only.md`.
   - Done: ADR-0004 exists.
