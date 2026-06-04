@@ -445,7 +445,7 @@
   - Done: All three references present.
   - Refs: PLAN.md §16.
 
-- [ ] **1.29** Write CONTRIBUTING.md + SUPPORT.md
+- [x] **1.29** Write CONTRIBUTING.md + SUPPORT.md
   - `CONTRIBUTING.md` — covers: development setup pointer to `scripts/bootstrap.sh`, PR flow, the "tests required for every change" rule, the "no new third-party deps without an ADR" rule (link to `docs/adr/0002-no-third-party-deps.md` even though that's created in task 7.09), the privacy-regression must-pass rule.
   - `SUPPORT.md` — short pointer to Issues for bugs and Discussions for questions; explicitly redirects security reports to `SECURITY.md`.
   - Test: `test -f CONTRIBUTING.md && grep -q bootstrap CONTRIBUTING.md && grep -q 'third-party' CONTRIBUTING.md && grep -q privacy CONTRIBUTING.md && test -f SUPPORT.md && grep -q SECURITY.md SUPPORT.md`.
