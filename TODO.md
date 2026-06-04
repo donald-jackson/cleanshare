@@ -104,7 +104,7 @@
   - Done: File contents exactly `6.0\n`.
   - Refs: PLAN.md §10, §7.
 
-- [ ] **1.07** Write .swiftformat config
+- [x] **1.07** Write .swiftformat config
   - Set: `--swiftversion 6.0`, `--indent 4`, `--maxwidth 120`, `--commas inline`, `--header strip`, `--ifdef no-indent`, `--self insert`, `--patternlet inline`.
   - Test: `test -f .swiftformat && grep -q '\-\-swiftversion 6.0' .swiftformat && grep -q '\-\-maxwidth 120' .swiftformat`.
   - Done: Both directives present.

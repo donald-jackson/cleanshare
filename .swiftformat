@@ -1,0 +1,8 @@
+--swiftversion 6.0
+--indent 4
+--maxwidth 120
+--commas inline
+--header strip
+--ifdef no-indent
+--self insert
+--patternlet inline
