@@ -919,7 +919,7 @@
   - Done: Screenshot exists AND visual criteria 1–6 are all satisfied.
   - Refs: PLAN.md §14.2.
 
-- [ ] **4.05** Sim verify onboarding pages 2 + 3 + "Get started" dismisses
+- [x] **4.05** Sim verify onboarding pages 2 + 3 + "Get started" dismisses
   - From the booted sim where 4.04 left off: `mcp__ios-simulator__ui_swipe` from right to left to advance to page 2. `screenshot` → `4.05-onboarding-2.png`. Swipe again to page 3. `screenshot` → `4.05-onboarding-3.png`. `ui_find_element` for "Get started"; `ui_tap` it. Then `screenshot` → `4.05-after-onboarding.png`. `ui_describe_all` — confirm the onboarding sheet is gone and the main RootView is visible.
   - Visual Check:
     - 4.05-onboarding-2.png: three-step illustration visible; icons distinct; second page indicator dot filled.
