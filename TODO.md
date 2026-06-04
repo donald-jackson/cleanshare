@@ -1417,7 +1417,7 @@
   - Done: Four iPad screenshots at the correct resolution.
   - Refs: PLAN.md §13.3.
 
-- [ ] **6.05** Write `marketing/app-store/listing.md` (rich source of the App Store description)
+- [x] **6.05** Write `marketing/app-store/listing.md` (rich source of the App Store description)
   - File: `marketing/app-store/listing.md`. This is the SOURCE-of-truth for the App Store listing copy. The plain `.txt` files under `fastlane/metadata/en-US/` (tasks 6.13–6.14) are extracts of this file.
   - Required H2 sections (in this order): `## Name`, `## Subtitle (≤30 chars)`, `## Description`, `## Tags / Categories`, `## Age rating`.
   - The `## Description` body MUST cover (one short paragraph each, in this order):
