@@ -1284,7 +1284,7 @@
   - Done: YAML parses with the three deploy-pages actions.
   - Refs: PLAN.md §11.4, §14.3.
 
-- [ ] **5.08** Write .github/workflows/codeql.yml
+- [x] **5.08** Write .github/workflows/codeql.yml
   - Triggers: `schedule: cron "0 12 * * 1"` (weekly Mondays) + `pull_request.branches: [main]` (path-filtered to Swift sources) + `workflow_dispatch`.
   - Uses `github/codeql-action/init@v3` with `languages: swift`, then `analyze@v3`.
   - Test: `test -f .github/workflows/codeql.yml && python3 -c "import yaml; yaml.safe_load(open('.github/workflows/codeql.yml'))" && grep -q 'languages: swift' .github/workflows/codeql.yml`.
