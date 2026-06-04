@@ -743,7 +743,7 @@
   - Done: Builds; basic test passes.
   - Refs: PLAN.md §5.1.
 
-- [ ] **3.07** Implement LivePhotoCleaner
+- [x] **3.07** Implement LivePhotoCleaner
   - File: `Sources/CleanShareCore/Engine/LivePhotoCleaner.swift` — `public struct LivePhotoCleaner: Sendable`. Method: `public func clean(still: URL, video: URL, outDir: URL, mode: LivePhotoMode, prefs: CleaningPreferences) async throws -> (still: CleanReceipt, video: CleanReceipt?)`.
   - Implementation per PLAN.md §4.5:
     - Resolve mode: if mode == `.prompt`, this is a programmer error — engine should never receive `.prompt`. Throw `CleanerError.unsupportedFormat("LivePhotoMode.prompt must be resolved by UI")`.
