@@ -466,7 +466,7 @@
   - Done: Both files exist with the required content.
   - Refs: PLAN.md §9, §17.
 
-- [ ] **1.32** Write .github/CODEOWNERS + dependabot.yml + FUNDING.yml
+- [x] **1.32** Write .github/CODEOWNERS + dependabot.yml + FUNDING.yml
   - `.github/CODEOWNERS` — per PLAN.md §17.4: `*` → `@<maintainer>`; `/ShareExtension/`, `/Packages/CleanShareCore/Sources/Verification/`, `/.github/workflows/` all also `@<maintainer>`.
   - `.github/dependabot.yml`:
     ```yaml

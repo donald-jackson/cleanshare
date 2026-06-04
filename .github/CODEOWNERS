@@ -1,0 +1,8 @@
+# CleanShare code owners — see PLAN.md §17.4
+# Default owner for everything in the repo.
+*                                            @<maintainer>
+
+# Security-sensitive areas require explicit maintainer review.
+/ShareExtension/                             @<maintainer>
+/Packages/CleanShareCore/Sources/Verification/  @<maintainer>
+/.github/workflows/                          @<maintainer>
