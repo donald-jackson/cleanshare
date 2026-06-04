@@ -698,7 +698,7 @@
   - Done: Builds; both string references present.
   - Refs: PLAN.md §4.3, §8.1.
 
-- [ ] **3.03** Generate the video fixture
+- [x] **3.03** Generate the video fixture
   - Add `scripts/make-dirty-fixtures.sh` step (extend the file from 2.09) that produces `tests/fixtures/dirty/h264_short.mp4`:
     ```bash
     ffmpeg -y -f lavfi -i 'testsrc=duration=2:size=320x240:rate=30' \

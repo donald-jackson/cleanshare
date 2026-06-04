@@ -61,5 +61,13 @@ exiftool -overwrite_original \
     -XMP:Rating=5 \
     "$DIRTY/lightroom.jpg" >/dev/null
 
-echo "Generated 5 dirty fixtures in $DIRTY:"
+# 6. h264_short.mp4 — 2s H.264 clip with QuickTime location + make/model atoms
+ffmpeg -nostdin -loglevel error -y -f lavfi -i 'testsrc=duration=2:size=320x240:rate=30' \
+    -c:v libx264 -pix_fmt yuv420p \
+    -metadata location='+51.5074-000.1278/' \
+    -metadata 'com.apple.quicktime.make=Apple' \
+    -metadata 'com.apple.quicktime.model=iPhone 15 Pro' \
+    "$DIRTY/h264_short.mp4"
+
+echo "Generated 6 dirty fixtures in $DIRTY:"
 ls -1 "$DIRTY"
