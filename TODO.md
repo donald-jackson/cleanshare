@@ -868,7 +868,7 @@
   - Done: Both screenshots exist; post-URL screenshot is >10 KB and visually shows the app still alive.
   - Refs: PLAN.md §6.
 
-- [ ] **3.18** Commit Phase 3
+- [x] **3.18** Commit Phase 3
   - Stage: `git add Packages/CleanShareCore/ Packages/CleanShareUI/ ShareExtension/ App/ project.yml scripts/make-dirty-fixtures.sh tests/fixtures/dirty/h264_short.mp4 tests/fixtures/dirty/livephoto.* tests/fixtures/README.md`.
   - Commit message: `feat(engine,extension): phase 3 — video passthrough + live photo + share-extension wiring + handoff router`.
   - Test: `git log --oneline -1 | grep -q 'phase 3'`.
