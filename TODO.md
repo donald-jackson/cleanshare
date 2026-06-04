@@ -1200,7 +1200,7 @@
   - Done: Video file exists (>200 KB), three step screenshots present.
   - Refs: PLAN.md §3.2, §20 Week 4.
 
-- [ ] **4.24** Commit Phase 4
+- [x] **4.24** Commit Phase 4
   - Stage: `git add App/ Packages/CleanShareUI/ scripts/generate-icons.sh`. Run `git status --short` first to confirm no stray gitignored files.
   - Commit message: `feat(ui): phase 4 — onboarding + settings + about + live-photo sheet + sample diff + PHPicker + l10n + icon`.
   - Test: `git log --oneline -1 | grep -q 'phase 4'`.
