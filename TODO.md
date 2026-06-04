@@ -622,7 +622,7 @@
   - Done: All five image cleaning tests pass.
   - Refs: PLAN.md §8.2.
 
-- [ ] **2.12** Write scripts/verify-metadata-stripped.sh
+- [x] **2.12** Write scripts/verify-metadata-stripped.sh
   - Accepts one or more file paths. Behaviour:
     - For images (`.jpg`, `.jpeg`, `.heic`, `.heif`, `.png`, `.gif`, `.tiff`, `.webp`): run `exiftool -a -G1 -j <file>` and `jq` over the result asserting that the EXIF, GPS, IPTC, XMP, Photoshop, and any MakerNotes top-level group keys are absent or empty. Print which key leaked and exit 1 on any positive match.
     - For videos (`.mp4`, `.mov`): run `ffprobe -v error -show_format -show_streams -of json <file>` and `jq` over `.format.tags // {}, .streams[].tags // {}` asserting both empty.
@@ -1013,43 +1013,111 @@
   - Done: Screenshot exists AND grep confirms no `(debug)`-labelled UI affordances exist in source.
   - Refs: PLAN.md §4.5.
 
-- [ ] **4.13** Generate app icon placeholder (1024×1024)
-  - File: `scripts/generate-icons.sh` (chmod +x). Implementation:
+- [ ] **4.13** Hand-author SVG app icon at `marketing/icon/AppIcon.svg`
+  - Write exactly this SVG to `marketing/icon/AppIcon.svg` (1024×1024 viewBox, brand gradient + photo card + three rising sparkles per PLAN.md §14.1):
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="CleanShare">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#19B4B0"/>
+          <stop offset="1" stop-color="#3B3FB8"/>
+        </linearGradient>
+        <linearGradient id="photoTint" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F1FBFA"/>
+          <stop offset="1" stop-color="#E1EEFB"/>
+        </linearGradient>
+        <filter id="cardShadow" x="-25%" y="-25%" width="150%" height="150%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+          <feOffset dx="0" dy="14" result="b"/>
+          <feComponentTransfer><feFuncA type="linear" slope="0.42"/></feComponentTransfer>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <!-- background (iOS applies the squircle mask automatically) -->
+      <rect width="1024" height="1024" fill="url(#bg)"/>
+
+      <!-- photo card: rotated slightly so the sparkles can sit in the gap -->
+      <g transform="translate(512 540) rotate(-7) translate(-280 -280)">
+        <rect x="0" y="0" width="560" height="560" rx="56" ry="56" fill="#FFFFFF" filter="url(#cardShadow)"/>
+        <rect x="40" y="40" width="480" height="400" rx="20" ry="20" fill="url(#photoTint)"/>
+        <!-- sun -->
+        <circle cx="172" cy="160" r="44" fill="#FFB347"/>
+        <!-- mountains -->
+        <path d="M 60 440 L 200 240 L 320 360 L 440 220 L 520 320 L 520 440 Z" fill="#19B4B0" opacity="0.78"/>
+        <path d="M 280 440 L 380 290 L 520 440 Z" fill="#3B3FB8" opacity="0.55"/>
+        <!-- caption strip (deliberately blank — metadata cleaned) -->
+        <rect x="40" y="464" width="480" height="56" rx="10" ry="10" fill="#F4F6F9"/>
+        <rect x="60" y="482" width="220" height="20" rx="6" ry="6" fill="#D9DEE6"/>
+      </g>
+
+      <!-- three rising sparkles trailing up-right (metadata being cleaned away) -->
+      <g fill="#FFFFFF">
+        <path d="M 820 320 L 842 252 L 864 320 L 932 342 L 864 364 L 842 432 L 820 364 L 752 342 Z" opacity="0.95"/>
+        <path d="M 904 180 L 916 142 L 928 180 L 966 192 L 928 204 L 916 242 L 904 204 L 866 192 Z" opacity="0.85"/>
+        <circle cx="958" cy="88" r="16" opacity="0.78"/>
+      </g>
+    </svg>
+    ```
+  - Test: `test -f marketing/icon/AppIcon.svg && python3 -c "import xml.etree.ElementTree as ET; t=ET.parse('marketing/icon/AppIcon.svg'); root=t.getroot(); assert root.attrib.get('viewBox')=='0 0 1024 1024'; assert len(root.findall('.//{http://www.w3.org/2000/svg}linearGradient')) >= 2"`.
+  - Done: SVG file exists, parses cleanly, has the brand gradient + photoTint definitions.
+  - Refs: PLAN.md §14.1.
+
+- [ ] **4.14** Write scripts/render-app-icon.sh (SVG → PNGs via librsvg)
+  - File: `scripts/render-app-icon.sh` (chmod +x):
     ```bash
     #!/usr/bin/env bash
+    # Render marketing/icon/AppIcon.svg to:
+    #   - App/Resources/Assets.xcassets/AppIcon.appiconset/Icon-1024.png (Xcode AppIcon)
+    #   - marketing/press-kit/icons/AppIcon-{2048,512,256,128}.png (press kit)
     set -euo pipefail
     cd "$(dirname "$0")/.."
-    OUT=App/Resources/Assets.xcassets/AppIcon.appiconset/Icon-1024.png
-    mkdir -p "$(dirname "$OUT")"
-    python3 - "$OUT" <<'PY'
+
+    if ! command -v rsvg-convert >/dev/null 2>&1; then
+        echo "ERROR: rsvg-convert not on PATH. Run: brew install librsvg" >&2
+        exit 1
+    fi
+
+    SRC="marketing/icon/AppIcon.svg"
+    APPICON_DIR="App/Resources/Assets.xcassets/AppIcon.appiconset"
+    PRESS_DIR="marketing/press-kit/icons"
+    mkdir -p "$APPICON_DIR" "$PRESS_DIR"
+
+    rsvg-convert -w 1024 -h 1024 -o "$APPICON_DIR/Icon-1024.png" "$SRC"
+    for size in 2048 512 256 128; do
+        rsvg-convert -w "$size" -h "$size" -o "$PRESS_DIR/AppIcon-${size}.png" "$SRC"
+    done
+
+    # Verify the main 1024 PNG dimensions
+    python3 - "$APPICON_DIR/Icon-1024.png" <<PY
+    from PIL import Image
     import sys
-    from PIL import Image, ImageDraw, ImageFont
-    size = 1024
-    img = Image.new("RGB", (size, size))
-    for y in range(size):
-        t = y / (size - 1)
-        r = int(0.098 * (1 - t) * 255 + 0.231 * t * 255)
-        g = int(0.706 * (1 - t) * 255 + 0.247 * t * 255)
-        b = int(0.690 * (1 - t) * 255 + 0.722 * t * 255)
-        for x in range(size):
-            img.putpixel((x, y), (r, g, b))
-    draw = ImageDraw.Draw(img)
-    try:
-        font = ImageFont.truetype("/System/Library/Fonts/SFNS.ttf", 480)
-    except Exception:
-        font = ImageFont.load_default()
-    text = "CS"
-    bbox = draw.textbbox((0, 0), text, font=font)
-    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    draw.text(((size - tw) / 2 - bbox[0], (size - th) / 2 - bbox[1]), text,
-              fill=(255, 255, 255), font=font)
-    img.save(sys.argv[1], "PNG", optimize=True)
+    im = Image.open(sys.argv[1])
+    assert im.size == (1024, 1024), f"Expected 1024x1024, got {im.size}"
+    print(f"OK {sys.argv[1]} {im.size}")
     PY
     ```
-  - If PIL is missing, run `python3 -m pip install --user Pillow` before re-running.
-  - Update `App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json` to reference the file: `{"images": [{"filename": "Icon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"}], "info": {"version": 1, "author": "xcode"}}`.
-  - Test: `bash scripts/generate-icons.sh && file App/Resources/Assets.xcassets/AppIcon.appiconset/Icon-1024.png | grep -q '1024 x 1024' && python3 -c "import json; d=json.load(open('App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json')); assert any(i.get('filename')=='Icon-1024.png' for i in d['images'])"`.
-  - Done: 1024×1024 PNG exists AND Contents.json references it.
+  - Update `App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json` to:
+    ```json
+    {"images":[{"filename":"Icon-1024.png","idiom":"universal","platform":"ios","size":"1024x1024"}],"info":{"version":1,"author":"xcode"}}
+    ```
+  - Run `bash scripts/render-app-icon.sh` and confirm outputs.
+  - Test: `bash scripts/render-app-icon.sh && file App/Resources/Assets.xcassets/AppIcon.appiconset/Icon-1024.png | grep -q '1024 x 1024' && [ "$(ls marketing/press-kit/icons/AppIcon-*.png 2>/dev/null | wc -l)" -eq 4 ] && python3 -c "import json; d=json.load(open('App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json')); assert d['images'][0]['filename']=='Icon-1024.png'"`.
+  - Done: 1024 AppIcon PNG exists; press-kit has 4 rendered sizes; Contents.json points at the right filename.
+  - Refs: PLAN.md §14.1.
+
+- [ ] **4.15** Sim verify the icon renders on the home screen
+  - Rebuild + reinstall the app with the new icon. Send the app to the home screen (`mcp__ios-simulator__ui_tap` the home indicator OR `xcrun simctl ui booted appearance light`).
+  - `xcrun simctl ui booted appearance dark` then home-screen `screenshot` → `screenshots/dev/4.15-icon-dark.png`. Switch to `light`, screenshot → `4.15-icon-light.png`.
+  - Visual Check (LOOK at both screenshots):
+    1. App icon visible on the home screen with the brand teal→indigo gradient.
+    2. White photo-card silhouette legible (not muddy).
+    3. At least the largest of the three sparkles is visible.
+    4. iOS applies its squircle mask cleanly — no visible corners.
+    5. Looks reasonable in both light and dark mode (the gradient + white card should hold up in either).
+  - Test: `[ "$(ls screenshots/dev/4.15-icon-*.png 2>/dev/null | wc -l)" -eq 2 ]`.
+  - Done: Two home-screen screenshots present; visual criteria satisfied.
   - Refs: PLAN.md §14.1.
 
 - [ ] **4.14** Add bundled Sample-DirtyPhoto.jpg
@@ -1067,7 +1135,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.16** Wire "Try it on a sample photo" button + flow in RootView
+- [ ] **4.18** Wire "Try it on a sample photo" button + flow in RootView
   - In `App/Views/RootView.swift`, add a `Button("Try it on a sample photo")`. Tapping:
     1. Copies the bundled `Sample-DirtyPhoto.jpg` into a fresh Workspace job dir's `in/`.
     2. Runs `ImageIOCleaner` cleaning it into the job dir's `out/`.
@@ -1076,7 +1144,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.17** Sim verify "Try it on a sample photo" — BEFORE has GPS, AFTER does not
+- [ ] **4.19** Sim verify "Try it on a sample photo" — BEFORE has GPS, AFTER does not
   - From RootView (sim already running): `ui_find_element "Try it on a sample photo"` → `ui_tap`. Wait 1 s for cleaning. `screenshot` → `4.17-sample-diff.png`. `ui_describe_all` and confirm:
     - The left column (BEFORE) contains substring "GPS" (red-highlighted) AND substring "Apple" (Make/Model).
     - The right column (AFTER) does NOT contain "GPS" AND does NOT contain "MakerApple".
@@ -1090,7 +1158,7 @@
   - Done: Screenshot exists; visual criteria above hold.
   - Refs: PLAN.md §3.3, §13.5.
 
-- [ ] **4.18** Wire PHPicker entry point ("Clean photos…")
+- [ ] **4.20** Wire PHPicker entry point ("Clean photos…")
   - In `App/Views/RootView.swift`, add a primary "Clean photos…" button below "Try it on a sample photo". Tapping presents `PHPickerViewController` (wrapped in `UIViewControllerRepresentable`) with:
     - `selectionLimit: 0`
     - `preferredAssetRepresentationMode: .current` (CRITICAL — prevents HEIC→JPEG transcode; PLAN.md §3.2)
@@ -1100,7 +1168,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.2.
 
-- [ ] **4.19** Sim verify PHPicker presentation
+- [ ] **4.21** Sim verify PHPicker presentation
   - Boot sim with at least one synthetic photo (the sim seeds default media). From RootView: `ui_find_element "Clean photos"`, `ui_tap`. Wait 1 s. `screenshot` → `4.19-phpicker.png`. `ui_describe_all` — confirm "Photos" or "Select" text consistent with iOS PHPicker overlay.
   - Visual Check: The system PHPicker is overlaid on top of the app, showing the simulator's seeded photo library.
   - Note: If the simulator returns an empty PHPicker (no seeded media), use the iOS Photos app to import an image first via `xcrun simctl addmedia <UDID> tests/fixtures/dirty/iphone_sample.jpg`, then retry.
@@ -1108,14 +1176,14 @@
   - Done: Screenshot exists AND `ui_describe_all` mentions PHPicker UI elements.
   - Refs: PLAN.md §3.2.
 
-- [ ] **4.20** Write Localizable.xcstrings (en-US baseline)
+- [ ] **4.22** Write Localizable.xcstrings (en-US baseline)
   - File: `App/Resources/Localizable.xcstrings`. Use Xcode's String Catalog format. Extract every user-facing string: button labels ("Clean photos…", "Try it on a sample photo", "Cancel", "Get started"), screen titles, alert messages, settings row labels.
   - Update call sites in `App/`, `Packages/CleanShareUI/Sources/` to use `String(localized:)` for these strings (so they resolve from the catalog).
   - Test: `test -f App/Resources/Localizable.xcstrings && plutil -lint App/Resources/Localizable.xcstrings && python3 -c "import json; d=json.load(open('App/Resources/Localizable.xcstrings')); assert d.get('sourceLanguage')=='en'; assert len(d.get('strings',{})) >= 10"`.
   - Done: Catalog parses AND has at least 10 strings.
   - Refs: PLAN.md §20 Week 4.
 
-- [ ] **4.21** Sim record full happy-path video (PHPicker → clean → share sheet)
+- [ ] **4.23** Sim record full happy-path video (PHPicker → clean → share sheet)
   - Boot sim. Seed it with `xcrun simctl addmedia <UDID> tests/fixtures/dirty/iphone_sample.jpg`. Build + install + launch.
   - `mcp__ios-simulator__record_video` → start recording to `screenshots/dev/4.21-full-flow.mov`.
   - Drive the UI:
@@ -1132,7 +1200,7 @@
   - Done: Video file exists (>200 KB), three step screenshots present.
   - Refs: PLAN.md §3.2, §20 Week 4.
 
-- [ ] **4.22** Commit Phase 4
+- [ ] **4.24** Commit Phase 4
   - Stage: `git add App/ Packages/CleanShareUI/ scripts/generate-icons.sh`. Run `git status --short` first to confirm no stray gitignored files.
   - Commit message: `feat(ui): phase 4 — onboarding + settings + about + live-photo sheet + sample diff + PHPicker + l10n + icon`.
   - Test: `git log --oneline -1 | grep -q 'phase 4'`.
