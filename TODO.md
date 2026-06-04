@@ -1778,7 +1778,7 @@
   - Done: All four gates pass + post-cleanup screenshot exists + visual criteria hold.
   - Refs: PLAN.md §8, §11.1.
 
-- [ ] **8.10** Update CHANGELOG.md for v0.1.0
+- [x] **8.10** Update CHANGELOG.md for v0.1.0
   - Move the `## [Unreleased]` section content under a new `## [0.1.0] - <today YYYY-MM-DD>` heading (substitute today's date from `date +%F`).
   - Leave a fresh empty `## [Unreleased]` heading at the top.
   - Test: `grep -q '## \[0.1.0\]' CHANGELOG.md && head -20 CHANGELOG.md | grep -q '## \[Unreleased\]'`.
