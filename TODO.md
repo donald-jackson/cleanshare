@@ -713,7 +713,7 @@
   - Done: Fixture exists; ffprobe confirms a location-related tag is present in the input.
   - Refs: PLAN.md §8.2.
 
-- [ ] **3.04** Write AVPassthroughCleanerTests
+- [x] **3.04** Write AVPassthroughCleanerTests
   - File: `Tests/CleanShareCoreTests/AVPassthroughCleanerTests.swift`. Two tests:
     1. `testH264PassthroughStripsAllMetadata` — clean `h264_short.mp4`, assert `receipt.leakedKeys.isEmpty` AND `MetadataAuditor.audit(url: out, kind: .mp4, allowing: [])` returns `[]`.
     2. `testH264PassthroughDoesNotReencode` — assert output file size is within ±15% of input size (more generous than PLAN's ±10% because `shouldOptimizeForNetworkUse = true` reorganises atoms). Also assert `receipt.reencoded == false`.
