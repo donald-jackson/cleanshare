@@ -1298,7 +1298,7 @@
   - Done: YAML parses with all required directives.
   - Refs: PLAN.md §11.6, §17.
 
-- [ ] **5.10** Write docs/codesigning.md + docs/release-process.md
+- [x] **5.10** Write docs/codesigning.md + docs/release-process.md
   - `docs/codesigning.md` covers: contributor flow (`Config/Local.xcconfig` with their own `DEVELOPMENT_TEAM_OVERRIDE` + `BUNDLE_PREFIX`; free Apple ID limits — 7-day re-signing, no App Groups so the URL-scheme handoff falls back to `UIDocumentPickerViewController` per PLAN.md §6.2). Maintainer flow (Fastlane Match against private signing repo, secrets list).
   - `docs/release-process.md` covers: pre-flight checks, `git tag -sa v0.X.Y`, `git push origin tag`, watch `release.yml`, App Store Connect manual submit, "Submit for Review" button, post-approval `Pending Developer Release` → release.
   - Test: `test -f docs/codesigning.md && test -f docs/release-process.md && grep -q 'Local.xcconfig' docs/codesigning.md && grep -q 'Match' docs/codesigning.md && grep -q 'TestFlight' docs/release-process.md`.
