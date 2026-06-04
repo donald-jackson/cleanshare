@@ -567,7 +567,7 @@
   - Done: Builds; at least 15 `kCFNull` references present.
   - Refs: PLAN.md §4.2, §4.4.
 
-- [ ] **2.07** Implement ImageIOCleaner
+- [x] **2.07** Implement ImageIOCleaner
   - File: `Sources/CleanShareCore/Engine/ImageIOCleaner.swift` — `public struct ImageIOCleaner: Cleaner` per PLAN.md §4.2 reference implementation, exactly.
   - Mandatory details:
     1. Source opts: `[kCGImageSourceShouldCache: false]`.
