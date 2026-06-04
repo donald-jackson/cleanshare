@@ -656,7 +656,7 @@
   - Done: All fixtures clean AND post-clean audit reports OK for every file.
   - Refs: PLAN.md §8.3.
 
-- [ ] **2.15** Wire privacy-regression job into pr.yml + commit Phase 2
+- [x] **2.15** Wire privacy-regression job into pr.yml + commit Phase 2
   - Extend `.github/workflows/pr.yml` with a `privacy-regression` job (parallel to the validate job): same macOS 15 runner, `brew install exiftool ffmpeg`, run `cd Packages/CleanShareCore && swift test`, then `make verify-strip`.
   - Validate: `python3 -c "import yaml; d=yaml.safe_load(open('.github/workflows/pr.yml')); assert 'privacy-regression' in d['jobs']"`.
   - Commit message: `feat(engine): phase 2 — image cleaner + auditor + 5 fixtures + privacy CI gate`.

@@ -47,3 +47,23 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             | xcbeautify --renderer terminal
+
+  privacy-regression:
+    name: Privacy Regression
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 16
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Install audit tools
+        run: brew install exiftool ffmpeg
+
+      - name: Run engine tests
+        run: cd Packages/CleanShareCore && swift test
+
+      - name: Verify metadata stripped
+        run: make verify-strip
