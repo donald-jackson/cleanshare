@@ -732,7 +732,7 @@
   - Done: Test passes.
   - Refs: PLAN.md §5.3, §3.1.
 
-- [ ] **3.06** Implement MemoryWatchdog actor
+- [x] **3.06** Implement MemoryWatchdog actor
   - File: `Sources/CleanShareCore/Concurrency/MemoryWatchdog.swift` — `public actor MemoryWatchdog`. API:
     - `public init(pollInterval: Duration = .milliseconds(250))`.
     - `public func footprintMB() async -> Int` — reads `mach_task_basic_info` via `task_info(mach_task_self_, MACH_TASK_BASIC_INFO, …)`; converts `resident_size` to MB.
