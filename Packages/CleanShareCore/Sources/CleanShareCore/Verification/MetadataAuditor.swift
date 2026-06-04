@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 import ImageIO
 
@@ -33,10 +34,25 @@ public enum MetadataAuditor {
 
     /// Re-opens `url` and returns the sorted list of sensitive metadata keys
     /// that leaked through (i.e. present in the output and not in `allowing`).
+    /// QuickTime/MP4 metadata identifiers that carry identifying information.
+    /// Any of these present in the cleaned output (and not in the allowlist) is a
+    /// leak. The content identifier is allowed only when the caller is preserving
+    /// Live Photo pairing (`.preservePairing`). See PLAN.md §4.3, §8.1.
+    static let sensitiveVideoIdentifiers: Set<String> = [
+        "mdta/com.apple.quicktime.location.ISO6709",
+        "mdta/com.apple.quicktime.creationdate",
+        "mdta/com.apple.quicktime.make",
+        "mdta/com.apple.quicktime.model",
+        "mdta/com.apple.quicktime.software",
+        "mdta/com.apple.quicktime.content.identifier",
+        "udta/\u{00A9}xyz",
+    ]
+
     public static func audit(url: URL, kind: MediaKind, allowing allowlist: Set<String>) throws -> [String] {
         switch kind {
         case .mp4, .mov, .livePhoto:
-            // Video auditing is filled in by task 3.02.
+            // Video is audited asynchronously via `auditVideo(url:allowing:)`
+            // because AVFoundation metadata loading is async.
             return []
         default:
             guard let src = CGImageSourceCreateWithURL(url as CFURL, nil) else {
@@ -65,5 +81,43 @@ public enum MetadataAuditor {
             }
             return leaks.sorted()
         }
+    }
+
+    /// Re-opens a cleaned MP4/MOV at `url` and returns the sorted list of
+    /// sensitive metadata identifiers that survived. It loads the asset's
+    /// `.commonMetadata` and `.metadata`, plus every track's `.metadata`, maps
+    /// each `AVMetadataItem` to its `identifier?.rawValue`, and flags any in
+    /// `sensitiveVideoIdentifiers` not present in `allowing`. The presence of any
+    /// timed-metadata track is itself a leak. See PLAN.md §4.3, §8.1.
+    public static func auditVideo(url: URL, allowing allowlist: Set<String>) async throws -> [String] {
+        let asset = AVURLAsset(url: url)
+
+        var identifiers: Set<String> = []
+
+        let common = try await asset.load(.commonMetadata)
+        let containerMetadata = try await asset.load(.metadata)
+        for item in common + containerMetadata {
+            identifiers.insert("\(item.identifier?.rawValue ?? "")")
+        }
+
+        let tracks = try await asset.load(.tracks)
+        var hasTimedMetadataTrack = false
+        for track in tracks {
+            if track.mediaType == .metadata { hasTimedMetadataTrack = true }
+            let trackMetadata = try await track.load(.metadata)
+            for item in trackMetadata {
+                identifiers.insert("\(item.identifier?.rawValue ?? "")")
+            }
+        }
+
+        var leaks = sensitiveVideoIdentifiers
+            .intersection(identifiers)
+            .subtracting(allowlist)
+
+        if hasTimedMetadataTrack {
+            leaks.insert("timed-metadata-track")
+        }
+
+        return leaks.sorted()
     }
 }

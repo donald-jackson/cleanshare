@@ -682,7 +682,7 @@
   - Done: Builds without warnings.
   - Refs: PLAN.md §4.3, §7.
 
-- [ ] **3.02** Extend MetadataAuditor for video
+- [x] **3.02** Extend MetadataAuditor for video
   - Replace the video stub returning `[]`. New behaviour: load the asset, await `.commonMetadata` AND `.metadata`, then iterate every track's `.metadata`. Build a set of `AVMetadataItem` `.key` strings (case `"\(item.identifier?.rawValue ?? "")"`).
   - Sensitive identifiers (any of these in the output is a leak):
     - `mdta/com.apple.quicktime.location.ISO6709`
