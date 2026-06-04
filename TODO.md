@@ -1681,7 +1681,7 @@
   - Done: All fixtures verifiably stripped per external tools.
   - Refs: PLAN.md §8.3.
 
-- [ ] **8.04** Sim verify sample-diff path on a fresh install
+- [x] **8.04** Sim verify sample-diff path on a fresh install
   - Wipe sim state: `xcrun simctl uninstall <UDID> dev.cleanshare.app`.
   - Build, install, launch. Complete onboarding via `ui_find_element` + `ui_tap`.
   - Tap "Try it on a sample photo". `screenshot` → `screenshots/dev/8.04-sample-clean.png`.
