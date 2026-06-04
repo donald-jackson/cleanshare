@@ -798,7 +798,7 @@
   - Done: Both tests pass.
   - Refs: PLAN.md §6.
 
-- [ ] **3.11** Implement CleaningPipeline actor
+- [x] **3.11** Implement CleaningPipeline actor
   - File: `Sources/CleanShareCore/Engine/CleaningPipeline.swift` per PLAN.md §4.6 and §7.3.
   - `public actor CleaningPipeline`. API:
     - `public init(workspace: Workspace, prefs: CleaningPreferences, maxConcurrent: Int = 2)`.
