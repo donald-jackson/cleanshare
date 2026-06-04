@@ -414,7 +414,7 @@
   - Done: PNG file >10 KB exists AND the four visual criteria above are satisfied.
   - Refs: PLAN.md §3.
 
-- [ ] **1.27** Write README.md
+- [x] **1.27** Write README.md
   - Sections (use markdown headings):
     - One-line tagline + badges block (placeholders for TestFlight, App Store, GitHub Actions, License — all `<!-- TODO -->` comments are fine for now).
     - `## What it does` — 3-sentence summary.
