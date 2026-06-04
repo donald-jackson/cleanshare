@@ -1718,7 +1718,7 @@
   - Done: All placeholder files removed AND both packages still build.
   - Refs: PLAN.md §10; CLAUDE.md "No-mocks principle".
 
-- [ ] **8.07** Remove all debug-only UI affordances
+- [x] **8.07** Remove all debug-only UI affordances
   - Grep the source tree for `#if DEBUG` blocks that wrap user-facing UI (buttons, menu items, navigation links, sheet triggers, marketing views). Allowed `#if DEBUG`: pure logging (`print(...)`), test-helper accessors not connected to UI. Forbidden: anything that adds a tappable element to a SwiftUI view body, or that conditionally registers a SwiftUI scene/window.
   - Specifically remove if still present:
     - Any "(debug)" or "(test)" labelled button in `SettingsView`.
