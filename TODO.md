@@ -138,7 +138,7 @@
   - Done: All seven targets resolve via `make -n` without errors.
   - Refs: PLAN.md §10.
 
-- [ ] **1.11** Write Config/Shared.xcconfig + Local.xcconfig.example
+- [x] **1.11** Write Config/Shared.xcconfig + Local.xcconfig.example
   - `Config/Shared.xcconfig`:
     ```
     SWIFT_VERSION = 6.0

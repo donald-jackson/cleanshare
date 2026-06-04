@@ -1,0 +1,3 @@
+// Copy this file to Local.xcconfig and edit. Local.xcconfig is gitignored.
+DEVELOPMENT_TEAM_OVERRIDE = ABCDE12345
+BUNDLE_PREFIX = dev.cleanshare
