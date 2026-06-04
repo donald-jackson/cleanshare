@@ -996,7 +996,7 @@
   - Done: Builds.
   - Refs: PLAN.md §4.5.
 
-- [ ] **4.12** Sim verify LivePhotoConsentSheet via the real PHPicker flow (no debug scaffolding)
+- [x] **4.12** Sim verify LivePhotoConsentSheet via the real PHPicker flow (no debug scaffolding)
   - Seed the simulator's photo library with a synthetic Live Photo pair so the real flow triggers the sheet:
     1. Ensure `tests/fixtures/dirty/livephoto.heic` and `tests/fixtures/dirty/livephoto.mov` exist (created in 3.08).
     2. `xcrun simctl addmedia <UDID> tests/fixtures/dirty/livephoto.heic tests/fixtures/dirty/livephoto.mov`. Verify it imported as a Live Photo via Photos app (sim may import them as separate items — if so, document the limitation in `screenshots/dev/4.12-NOTES.md` and use a fallback path: present the sheet via a `.sheet(isPresented:)` triggered from the in-app "Try it on a Live Photo (sample)" button — see fallback below).
