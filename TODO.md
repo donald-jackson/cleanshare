@@ -819,7 +819,7 @@
   - Done: Package builds and the placeholder test passes.
   - Refs: PLAN.md §2.
 
-- [ ] **3.13** Add CleanShareUI as a project.yml dependency for both targets
+- [x] **3.13** Add CleanShareUI as a project.yml dependency for both targets
   - Edit `project.yml`: under `packages:`, add `CleanShareUI: { path: Packages/CleanShareUI }`. Under both `CleanShare` and `CleanShareShareExt` targets, add `{ package: CleanShareUI }` to `dependencies`. Re-run `./scripts/generate-project.sh`.
   - Test: `./scripts/generate-project.sh && xcodebuild -project CleanShare.xcodeproj -showBuildSettings -scheme CleanShare 2>&1 | grep -q CleanShareUI`.
   - Done: Both targets link the new package.

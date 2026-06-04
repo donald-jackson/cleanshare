@@ -18,6 +18,8 @@ configFiles:
 packages:
   CleanShareCore:
     path: Packages/CleanShareCore
+  CleanShareUI:
+    path: Packages/CleanShareUI
 targets:
   CleanShare:
     type: application
@@ -31,6 +33,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX).app
     dependencies:
       - package: CleanShareCore
+      - package: CleanShareUI
       - target: CleanShareShareExt
         embed: true
   CleanShareShareExt:
@@ -45,6 +48,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX).app.ShareExtension
     dependencies:
       - package: CleanShareCore
+      - package: CleanShareUI
   CleanShareTests:
     type: bundle.unit-test
     supportedDestinations: [iOS]
