@@ -290,7 +290,7 @@
   - Done: All assertions pass.
   - Refs: PLAN.md §6, §9.
 
-- [ ] **1.17** Write App/CleanShare.entitlements + AppIcon stub
+- [x] **1.17** Write App/CleanShare.entitlements + AppIcon stub
   - `App/CleanShare.entitlements` is a plist with `com.apple.security.application-groups` = `[group.dev.cleanshare.app]`.
   - `App/Resources/Assets.xcassets/Contents.json` = `{"info": {"version": 1, "author": "xcode"}}`.
   - `App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json` = minimal stub: `{"images": [{"idiom": "universal", "platform": "ios", "size": "1024x1024"}], "info": {"version": 1, "author": "xcode"}}`. (The real icon image lands in task 4.13.)
