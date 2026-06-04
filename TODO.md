@@ -371,7 +371,7 @@
   - Done: `xcodebuild -list` shows all five targets; the script exits 0.
   - Refs: PLAN.md §10.
 
-- [ ] **1.24** Build host app for iOS Simulator (no signing)
+- [x] **1.24** Build host app for iOS Simulator (no signing)
   - Run:
     ```bash
     xcodebuild \
