@@ -131,7 +131,7 @@
   - Done: All nine tools present.
   - Refs: PLAN.md §10.
 
-- [ ] **1.10** Write Makefile
+- [x] **1.10** Write Makefile
   - Phony targets: `bootstrap`, `gen`, `build`, `test`, `lint`, `format`, `verify-strip`, `clean`, `screenshots`.
   - `gen` runs `./scripts/generate-project.sh`. `build` runs xcodebuild iOS Simulator with `CODE_SIGNING_ALLOWED=NO`. `test` runs both `swift test --package-path Packages/CleanShareCore` AND `xcodebuild test` for the app scheme. `lint` runs `swiftformat --lint . && swiftlint --strict`. `format` runs `swiftformat .`. `verify-strip` cleans every fixture via the CLI shim (set up in task 2.13) and runs `scripts/verify-metadata-stripped.sh tests/fixtures/cleaned/*`. `clean` removes `DerivedData`, `.build`, `CleanShare.xcodeproj`. `screenshots` runs `./scripts/screenshots.sh`.
   - Test: `make -n bootstrap >/dev/null && make -n gen >/dev/null && make -n build >/dev/null && make -n test >/dev/null && make -n lint >/dev/null && make -n verify-strip >/dev/null && make -n clean >/dev/null`.

@@ -1,0 +1,41 @@
+# CleanShare — developer task runner. See PLAN.md §10.
+
+SCHEME ?= CleanShare
+DESTINATION ?= generic/platform=iOS Simulator
+DERIVED_DATA ?= ~/Library/Developer/Xcode/DerivedData
+
+NO_SIGN := CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+.PHONY: bootstrap gen build test lint format verify-strip clean screenshots
+
+bootstrap:
+	./scripts/bootstrap.sh
+
+gen:
+	./scripts/generate-project.sh
+
+build: gen
+	xcodebuild -project CleanShare.xcodeproj -scheme $(SCHEME) \
+		-destination '$(DESTINATION)' -configuration Debug build $(NO_SIGN) \
+		| xcbeautify --renderer terminal
+
+test:
+	swift test --package-path Packages/CleanShareCore
+	xcodebuild -project CleanShare.xcodeproj -scheme $(SCHEME) \
+		-destination 'platform=iOS Simulator,name=iPhone 17 Pro' test $(NO_SIGN) \
+		| xcbeautify --renderer terminal
+
+lint:
+	swiftformat --lint . && swiftlint --strict
+
+format:
+	swiftformat .
+
+verify-strip:
+	./scripts/verify-metadata-stripped.sh tests/fixtures/cleaned/*
+
+clean:
+	rm -rf $(DERIVED_DATA)/CleanShare-* .build CleanShare.xcodeproj
+
+screenshots:
+	./scripts/screenshots.sh
