@@ -1572,7 +1572,7 @@
   - Done: Test passes with the gate set; running without the gate skips them quickly.
   - Refs: PLAN.md §8.4.
 
-- [ ] **7.02** Implement NetworkSilenceTests (XCUITest)
+- [x] **7.02** Implement NetworkSilenceTests (XCUITest)
   - File: `CleanShareUITests/NetworkSilenceTests.swift`.
   - In `setUp`, register a `URLProtocol` subclass `NetworkRecorder` (`URLProtocol.registerClass(NetworkRecorder.self)`). The recorder pushes every `canInit(with:)` URL into a static `recordedRequests: [URL]` array, then returns `false` so URLs fall through to the real loader.
   - Run the app via `XCUIApplication().launch()`. Drive: onboarding (Get started), tap "Try it on a sample photo", let it complete, dismiss. Tap "Clean photos…", pick a media item (use the simulator's seeded media), let cleaning + share-sheet finish, cancel the share sheet.
