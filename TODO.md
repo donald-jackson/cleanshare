@@ -1107,7 +1107,7 @@
   - Done: 1024 AppIcon PNG exists; press-kit has 4 rendered sizes; Contents.json points at the right filename.
   - Refs: PLAN.md §14.1.
 
-- [ ] **4.15** Sim verify the icon renders on the home screen
+- [x] **4.15** Sim verify the icon renders on the home screen
   - Rebuild + reinstall the app with the new icon. Send the app to the home screen (`mcp__ios-simulator__ui_tap` the home indicator OR `xcrun simctl ui booted appearance light`).
   - `xcrun simctl ui booted appearance dark` then home-screen `screenshot` → `screenshots/dev/4.15-icon-dark.png`. Switch to `light`, screenshot → `4.15-icon-light.png`.
   - Visual Check (LOOK at both screenshots):
