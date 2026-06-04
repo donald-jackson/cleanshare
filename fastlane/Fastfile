@@ -1,0 +1,52 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Run the test suite on the latest iPhone simulator (no signing)"
+  lane :test do
+    scan(
+      scheme: "CleanShare",
+      device: "iPhone 17 Pro",
+      clean: true,
+      code_coverage: true,
+      xcargs: "CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO"
+    )
+  end
+
+  desc "Fetch signing certs + profiles (readonly so CI never creates new ones)"
+  lane :certs do
+    match(type: "development", readonly: true)
+    match(type: "appstore", readonly: true)
+  end
+
+  desc "Build and upload a beta to TestFlight"
+  lane :beta do
+    increment_build_number(
+      build_number: ENV["GITHUB_RUN_NUMBER"] || "1"
+    )
+    match(type: "appstore", readonly: true)
+    gym(
+      scheme: "CleanShare",
+      export_method: "app-store"
+    )
+    pilot(skip_waiting_for_build_processing: true)
+  end
+
+  desc "Build, upload, and stage an App Store release (no auto-submit)"
+  lane :release do
+    increment_build_number(
+      build_number: ENV["GITHUB_RUN_NUMBER"] || "1"
+    )
+    match(type: "appstore", readonly: true)
+    gym(
+      scheme: "CleanShare",
+      export_method: "app-store"
+    )
+    pilot(skip_waiting_for_build_processing: true)
+    deliver(
+      skip_screenshots: false,
+      skip_metadata: false,
+      submit_for_review: false,
+      force: true
+    )
+  end
+end

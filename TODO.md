@@ -1250,7 +1250,7 @@
   - Done: File present with the git storage mode and ENV-resolved git URL.
   - Refs: PLAN.md §12.1.
 
-- [ ] **5.04** Write fastlane/Fastfile (4 lanes: test, certs, beta, release)
+- [x] **5.04** Write fastlane/Fastfile (4 lanes: test, certs, beta, release)
   - File: implements four lanes:
     - `lane :test` — runs `scan` against the CleanShare scheme on the latest iPhone simulator with no signing.
     - `lane :certs` — runs `match(type: "development", readonly: true)` AND `match(type: "appstore", readonly: true)` — readonly is critical so CI never accidentally creates new certs.
