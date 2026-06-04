@@ -1751,7 +1751,7 @@
   - Done: No `Marketing/` directory exists, no `(debug)`/`(test)` labels in UI source, no `#if DEBUG` block within 800 chars of a SwiftUI view-construction keyword.
   - Refs: CLAUDE.md "No-mocks principle".
 
-- [ ] **8.08** Final no-mocks sweep
+- [x] **8.08** Final no-mocks sweep
   - Confirm there is no remaining `TODO:` / `FIXME:` / `XXX:` comment in production targets (App/, ShareExtension/, Packages/*/Sources/). Such comments in tests are allowed.
   - Confirm there is no `fatalError("not implemented")` / `fatalError("TODO")` in production targets.
   - Confirm there is no `_ = ...` stub assignment in production targets that exists solely to silence a warning about an unused mock.
