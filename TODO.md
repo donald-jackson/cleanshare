@@ -940,7 +940,7 @@
   - Done: Builds.
   - Refs: PLAN.md §4.5, §4.6, §9.
 
-- [ ] **4.07** Add Settings entry point in RootView
+- [x] **4.07** Add Settings entry point in RootView
   - Add a gear icon button in the navigation bar that presents `SettingsView` as a sheet.
   - Test: `xcodebuild ... -scheme CleanShare build ...`.
   - Done: Builds.

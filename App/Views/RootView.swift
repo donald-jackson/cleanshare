@@ -4,18 +4,36 @@ import SwiftUI
 struct RootView: View {
     @EnvironmentObject private var coordinator: ShareSheetCoordinator
     @StateObject private var prefsStore = CleaningPreferencesStore()
+    @State private var showSettings = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("CleanShare")
-                .font(.largeTitle).bold()
-            Text("Strip metadata before sharing")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        NavigationStack {
+            VStack(spacing: 16) {
+                Text("CleanShare")
+                    .font(.largeTitle).bold()
+                Text("Strip metadata before sharing")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .accessibilityLabel("Settings")
+                }
+            }
         }
-        .padding()
         .fullScreenCover(isPresented: onboardingBinding) {
             OnboardingView(prefsStore: prefsStore)
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack {
+                SettingsView(prefsStore: prefsStore)
+            }
         }
         .sheet(isPresented: shareSheetBinding) {
             if let urls = coordinator.pendingURLs {
