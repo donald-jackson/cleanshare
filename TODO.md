@@ -1489,7 +1489,7 @@
   - Done: All required headings + privacy framing present.
   - Refs: PLAN.md §14.4, §13.
 
-- [ ] **6.11** Write `marketing/press-kit/maintainer-bio.md` + `marketing/press-kit/quotes.md`
+- [x] **6.11** Write `marketing/press-kit/maintainer-bio.md` + `marketing/press-kit/quotes.md`
   - `marketing/press-kit/maintainer-bio.md` — one-paragraph bio (≤80 words) suitable for press attribution. Placeholder name + 1-line "Contact:" + 1-line "GitHub:" + 1-line "Mastodon:" rows (humans fill the actual handles).
   - `marketing/press-kit/quotes.md` — three pre-canned quotes from the maintainer, each ≤40 words, labelled `## Quote 1 — the "why"`, `## Quote 2 — the "how"`, `## Quote 3 — the "what's different"`. Each quote in `> blockquote` form so journalists can copy-paste.
   - Test: `test -f marketing/press-kit/maintainer-bio.md && test -f marketing/press-kit/quotes.md && [ "$(grep -c '^> ' marketing/press-kit/quotes.md)" -ge 3 ] && grep -q 'Contact:' marketing/press-kit/maintainer-bio.md`.
