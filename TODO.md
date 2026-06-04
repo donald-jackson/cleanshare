@@ -588,7 +588,7 @@
   - Done: Builds; auditor enum exists with the static method.
   - Refs: PLAN.md §8.1.
 
-- [ ] **2.09** Write scripts/make-dirty-fixtures.sh + generate 5 dirty image fixtures
+- [x] **2.09** Write scripts/make-dirty-fixtures.sh + generate 5 dirty image fixtures
   - File: `scripts/make-dirty-fixtures.sh` (chmod +x). Generates exactly these files in `tests/fixtures/dirty/`:
     1. `iphone_sample.jpg` — 200×200 JPEG with EXIF GPS lat/lon, Make=Apple, Model=iPhone, an Apple MakerNote (use exiftool `-MakerNotes:CameraSerialNumber=ABC123 -EXIF:GPSLatitude='51.5074 N' -EXIF:GPSLongitude='0.1278 W' -EXIF:Make=Apple -EXIF:Model='iPhone 15 Pro' -overwrite_original`).
     2. `pixel_sample.jpg` — 200×200 JPEG with EXIF + XMP (`-EXIF:Make=Google -EXIF:Model=Pixel\ 8 -XMP:Creator=TestUser`).
