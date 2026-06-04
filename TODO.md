@@ -1336,7 +1336,7 @@
   - Done: All four files present.
   - Refs: PLAN.md §14.3.
 
-- [ ] **5.14** Write docs/manual-steps.md (human-only checklist)
+- [x] **5.14** Write docs/manual-steps.md (human-only checklist)
   - Captures every action the agent CANNOT do. Format: a markdown checklist with one-line "how" pointers. Required entries:
     - Apple Developer Program enrollment + Team ID recording.
     - Reserve App Store Connect bundle IDs: `dev.cleanshare.app` AND `dev.cleanshare.app.ShareExtension`.
