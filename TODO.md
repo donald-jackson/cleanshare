@@ -1443,7 +1443,7 @@
   - Done: Chosen CSV present, A/B test plan present, alternatives table present.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.07** Write `marketing/app-store/promo-copy.md` (the 170-char promotional text + variants)
+- [x] **6.07** Write `marketing/app-store/promo-copy.md` (the 170-char promotional text + variants)
   - File: `marketing/app-store/promo-copy.md`. Sections:
     - `## v1.0 launch` — the chosen 170-char promo text + char count in parens.
     - `## Variants` — three variants labelled `**A — feature focus**`, `**B — emotional**`, `**C — credibility**`, each annotated with its char count. All variants ≤170 chars.
