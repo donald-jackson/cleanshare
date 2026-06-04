@@ -519,7 +519,7 @@
 
 ## Phase 2: Image cleaner + fixtures
 
-- [ ] **2.01** Define MediaKind enum
+- [x] **2.01** Define MediaKind enum
   - File: `Packages/CleanShareCore/Sources/CleanShareCore/Model/MediaKind.swift`.
   - `public enum MediaKind: String, Sendable, CaseIterable, Codable { case jpeg, heic, heif, png, gif, webp, tiff, dng, mp4, mov, livePhoto }`.
   - Add `public var cfType: CFString { get }` returning the right `kUTType*` / system UTI string per case (e.g. `kUTTypeJPEG` for `.jpeg`; for `.heic` / `.heif` use `"public.heic"` / `"public.heif"` as CFString).
