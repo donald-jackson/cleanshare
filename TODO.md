@@ -1433,7 +1433,7 @@
   - Done: All five H2 sections present AND core promise terms present.
   - Refs: PLAN.md §13.1, §9.
 
-- [ ] **6.06** Write `marketing/app-store/keywords.md` (ASO research + chosen keyword string)
+- [x] **6.06** Write `marketing/app-store/keywords.md` (ASO research + chosen keyword string)
   - File: `marketing/app-store/keywords.md`. Sections:
     - `## Chosen (v1.0)` — the exact ≤100-char CSV that goes into fastlane: `privacy,photo,metadata,exif,gps,share,strip,clean,open source,free`. Reasoning paragraph below it (one paragraph: why these 10).
     - `## Alternatives considered` — a markdown table of `Keyword | Why considered | Why rejected` rows (≥4 rows: `viewexif`, `metapho`, `anonymous`, `location`, plus any extras you propose).
