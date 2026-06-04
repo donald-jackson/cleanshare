@@ -721,7 +721,7 @@
   - Done: Both tests pass.
   - Refs: PLAN.md §4.3, §8.2.
 
-- [ ] **3.05** Implement Workspace actor
+- [x] **3.05** Implement Workspace actor
   - File: `Sources/CleanShareCore/IO/Workspace.swift` — `public actor Workspace`. API:
     - `public init(appGroupID: String) throws` — resolves the App Group container via `FileManager.containerURL(forSecurityApplicationGroupIdentifier:)`. If `nil` (e.g. running unit tests where the app group isn't entitled), fall back to `NSTemporaryDirectory()/CleanShareWorkspace/`. Document the fallback.
     - `public func newJob() throws -> JobURLs` (synchronous body inside the actor, returns `JobURLs` with `id: UUID`, `inDir`, `outDir`, `manifestURL`). Create the directory tree.
