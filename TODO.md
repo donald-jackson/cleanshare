@@ -1168,7 +1168,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.2.
 
-- [ ] **4.21** Sim verify PHPicker presentation
+- [x] **4.21** Sim verify PHPicker presentation
   - Boot sim with at least one synthetic photo (the sim seeds default media). From RootView: `ui_find_element "Clean photos"`, `ui_tap`. Wait 1 s. `screenshot` → `4.19-phpicker.png`. `ui_describe_all` — confirm "Photos" or "Select" text consistent with iOS PHPicker overlay.
   - Visual Check: The system PHPicker is overlaid on top of the app, showing the simulator's seeded photo library.
   - Note: If the simulator returns an empty PHPicker (no seeded media), use the iOS Photos app to import an image first via `xcrun simctl addmedia <UDID> tests/fixtures/dirty/iphone_sample.jpg`, then retry.
