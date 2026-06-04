@@ -1476,7 +1476,7 @@
   - Done: At least 10 captioned screenshot lines.
   - Refs: PLAN.md §13.3.
 
-- [ ] **6.10** Write `marketing/press-kit/press-release.md` (launch-day one-pager)
+- [x] **6.10** Write `marketing/press-kit/press-release.md` (launch-day one-pager)
   - File: `marketing/press-kit/press-release.md`. Structure:
     - `**FOR IMMEDIATE RELEASE — <date placeholder>**`
     - One-sentence headline + 2-paragraph hook (the problem + the product).
