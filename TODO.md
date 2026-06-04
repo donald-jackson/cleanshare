@@ -580,7 +580,7 @@
   - Done: Builds; the dangerous symbol does NOT appear in any source file.
   - Refs: PLAN.md §4.2.
 
-- [ ] **2.08** Implement MetadataAuditor (image side)
+- [x] **2.08** Implement MetadataAuditor (image side)
   - File: `Sources/CleanShareCore/Verification/MetadataAuditor.swift` — `public enum MetadataAuditor { public static func audit(url: URL, kind: MediaKind, allowing: Set<String>) throws -> [String] }`.
   - For image kinds: `CGImageSourceCreateWithURL` → `CGImageSourceCopyPropertiesAtIndex(_, 0, nil)` → compute `SENSITIVE.intersection(props.keys.map(String.init(describing:))).subtracting(allowlist).sorted()`. `SENSITIVE` is the set of dictionary names: `{Exif}`, `{ExifAux}`, `{GPS}`, `{IPTC}`, `{TIFF}`, `{JFIF}`, `{MakerApple}`, `{MakerNikon}`, `{MakerCanon}`, `{MakerFuji}`, `{MakerOlympus}`, `{MakerPentax}`, `{MakerSony}`, `{XMP}`, `{Photoshop}`, `{IPTCXMP}`, `{PNG}`, `{HEICS}`.
   - Video stub returns `[]` here (filled in 3.02).
