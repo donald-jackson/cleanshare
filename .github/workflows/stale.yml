@@ -1,0 +1,41 @@
+name: Stale
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Mark stale issues and PRs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark and close stale items
+        uses: actions/stale@v9
+        with:
+          days-before-stale: 60
+          days-before-close: 7
+          stale-issue-message: >
+            This issue has had no activity for 60 days and is now marked stale.
+            It will be closed in 7 days if there is no further activity. Add a
+            comment or one of the exempt labels (pinned, roadmap, accepted) to
+            keep it open.
+          close-issue-message: >
+            Closing this issue after 7 days of inactivity since it was marked
+            stale. Feel free to reopen if it is still relevant.
+          stale-pr-message: >
+            This pull request has had no activity for 60 days and is now marked
+            stale. It will be closed in 7 days if there is no further activity.
+            Add a comment or one of the exempt labels (pinned, roadmap,
+            accepted) to keep it open.
+          close-pr-message: >
+            Closing this pull request after 7 days of inactivity since it was
+            marked stale. Feel free to reopen if it is still relevant.
+          stale-issue-label: stale
+          stale-pr-label: stale
+          exempt-issue-labels: "pinned,roadmap,accepted"
+          exempt-pr-labels: "pinned,roadmap,accepted"

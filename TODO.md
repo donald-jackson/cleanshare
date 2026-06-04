@@ -1291,7 +1291,7 @@
   - Done: YAML parses; targets Swift.
   - Refs: PLAN.md §11.5.
 
-- [ ] **5.09** Write .github/workflows/stale.yml
+- [x] **5.09** Write .github/workflows/stale.yml
   - Triggers: `schedule: cron "0 1 * * *"` daily.
   - Uses `actions/stale@v9` with: `days-before-stale: 60`, `days-before-close: 7`, `stale-issue-message`, `close-issue-message`, `exempt-issue-labels: 'pinned,roadmap,accepted'`, same for PRs.
   - Test: `test -f .github/workflows/stale.yml && python3 -c "import yaml; yaml.safe_load(open('.github/workflows/stale.yml'))" && grep -q 'actions/stale@v9' .github/workflows/stale.yml && grep -q 'pinned' .github/workflows/stale.yml`.
