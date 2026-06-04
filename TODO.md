@@ -316,7 +316,7 @@
   - Done: Stub file exists with the expected class and immediately-completes call (so a stray Share-sheet tap in dev doesn't hang).
   - Refs: PLAN.md §3.1.
 
-- [ ] **1.19** Write ShareExtension/Info.plist (NSExtension dict)
+- [x] **1.19** Write ShareExtension/Info.plist (NSExtension dict)
   - `NSExtension` dict with:
     - `NSExtensionPointIdentifier` = `com.apple.share-services`
     - `NSExtensionPrincipalClass` = `$(PRODUCT_MODULE_NAME).ShareViewController`
