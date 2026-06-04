@@ -1631,7 +1631,7 @@
   - Done: ADR-0001 exists.
   - Refs: PLAN.md §10.
 
-- [ ] **7.10** Write docs/adr/0002-no-third-party-deps.md
+- [x] **7.10** Write docs/adr/0002-no-third-party-deps.md
   - Status: Accepted. Decision: zero third-party runtime dependencies. Rationale: privacy app auditability + supply-chain reduction. Consequences: no bundled HTTP client (we have no network); no bundled image decoders (ImageIO is enough); no bundled crash reporter (MetricKit is enough). Cite `scripts/check-no-trackers.sh` as the enforcement mechanism.
   - Test: `test -f docs/adr/0002-no-third-party-deps.md && grep -q 'Accepted' docs/adr/0002-no-third-party-deps.md && grep -q 'check-no-trackers' docs/adr/0002-no-third-party-deps.md`.
   - Done: ADR-0002 exists.
