@@ -84,25 +84,10 @@ public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubsc
         return array
     }
 
-    /// Resolves `<AppGroup>/Diagnostics/reports.json`, creating the directory if
-    /// needed. Falls back to a temp directory when the App Group container is
-    /// unavailable (e.g. unit tests without the entitlement), mirroring `Workspace`.
+    /// Resolves `<AppGroup>/Diagnostics/reports.json`. The path logic lives in
+    /// `DiagnosticsStore` so the read-side UI and export share one source of truth.
     private func reportsURL() -> URL? {
-        let fm = FileManager.default
-        let base: URL
-        if let container = fm.containerURL(forSecurityApplicationGroupIdentifier: appGroupID) {
-            base = container
-        } else {
-            base = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-                .appendingPathComponent("CleanShareDiagnostics", isDirectory: true)
-        }
-        let dir = base.appendingPathComponent("Diagnostics", isDirectory: true)
-        do {
-            try fm.createDirectory(at: dir, withIntermediateDirectories: true)
-        } catch {
-            return nil
-        }
-        return dir.appendingPathComponent("reports.json")
+        DiagnosticsStore.reportsFileURL()
     }
 }
 #endif

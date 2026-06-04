@@ -1600,7 +1600,7 @@
   - Done: Builds.
   - Refs: PLAN.md §18.2.
 
-- [ ] **7.05** Implement DiagnosticsView + wire to SettingsView's diagnostics toggle
+- [x] **7.05** Implement DiagnosticsView + wire to SettingsView's diagnostics toggle
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Settings/DiagnosticsView.swift` — shows a list of the 5 most recent reports (date + brief summary) and an "Export Last 5 Crash Reports" button that opens a `UIActivityViewController` with the JSON file.
   - In `SettingsView` (from 4.06), tap the Diagnostics toggle → call `MetricKitCollector.subscribe()` (or `unsubscribe()`). Navigate from Settings → Diagnostics row → `DiagnosticsView`.
   - Test: `cd Packages/CleanShareUI && swift build`.

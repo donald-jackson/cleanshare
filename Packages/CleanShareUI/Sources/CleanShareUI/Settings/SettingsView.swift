@@ -66,15 +66,24 @@ public struct SettingsView: View {
 
     private var diagnosticsSection: some View {
         Section {
-            Toggle("Help improve CleanShare", isOn: $diagnosticsEnabled)
-            Button("Export Last 5 Crash Reports") {
-                // Share-sheet wiring lands in task 7.04.
-            }
-            .disabled(!diagnosticsEnabled)
+            Toggle("Help improve CleanShare", isOn: Binding(
+                get: { diagnosticsEnabled },
+                set: { newValue in
+                    diagnosticsEnabled = newValue
+                    #if canImport(MetricKit)
+                    if newValue {
+                        MetricKitCollector.subscribe()
+                    } else {
+                        MetricKitCollector.unsubscribe()
+                    }
+                    #endif
+                }
+            ))
+            NavigationLink("View & export reports", destination: DiagnosticsView())
         } header: {
             Text("Diagnostics")
         } footer: {
-            Text("When enabled, MetricKit crash reports are stored on-device only. Tap below to export. No automatic upload.")
+            Text("When enabled, MetricKit crash reports are stored on-device only. Open the reports screen to export. No automatic upload.")
         }
     }
 
