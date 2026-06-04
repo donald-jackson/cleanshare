@@ -1127,7 +1127,7 @@
   - Done: Bundled file present AND has GPS metadata.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.17** Implement SampleDiffView (BEFORE / AFTER EXIF columns)
+- [x] **4.17** Implement SampleDiffView (BEFORE / AFTER EXIF columns)
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Sheets/SampleDiffView.swift` — `public struct SampleDiffView: View`. Takes `let beforeURL: URL` and `let afterURL: URL?`.
   - Body: a horizontally split (`HStack`) view with two `ScrollView { Text(...) }` columns. Each column renders the output of `CGImageSourceCopyPropertiesAtIndex(_, 0, nil)` (or `[:]` for the missing case) formatted as `key: value` lines in `.font(.system(.caption, design: .monospaced))`. Colour-code keys that match the SENSITIVE set in red.
   - Title bar: `Text("Before").bold()` left column, `Text("After cleaning").bold()` right column.
