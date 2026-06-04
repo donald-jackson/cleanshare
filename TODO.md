@@ -401,7 +401,7 @@
   - Done: `ui_describe_all` output includes both `CleanShare` and `Strip metadata before sharing`.
   - Refs: PLAN.md §3, §10.
 
-- [ ] **1.26** Capture launch screenshot + visual inspection
+- [x] **1.26** Capture launch screenshot + visual inspection
   - `mcp__ios-simulator__screenshot` → `screenshots/dev/1.26-app-launch.png`.
   - Look at the screenshot (you have vision). Confirm:
     1. White (or system background) screen.
