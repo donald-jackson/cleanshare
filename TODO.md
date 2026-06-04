@@ -1763,7 +1763,7 @@
   - Done: Grep returns no output (exit 0).
   - Refs: CLAUDE.md "No-mocks principle".
 
-- [ ] **8.09** Re-run full quality gate after scaffolding removal
+- [x] **8.09** Re-run full quality gate after scaffolding removal
   - Now that placeholders and debug UI are gone, run the entire local CI chain once more to confirm nothing regressed:
     ```bash
     make lint && make test && make verify-strip && bash scripts/check-no-trackers.sh
