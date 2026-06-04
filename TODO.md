@@ -972,7 +972,7 @@
   - Done: All three sections present in the source.
   - Refs: PLAN.md §9, §13.5, §14.
 
-- [ ] **4.10** Sim verify AboutView — visual inspection of all four sections
+- [x] **4.10** Sim verify AboutView — visual inspection of all four sections
   - From Settings (already open in sim), `ui_find_element "About CleanShare"`, `ui_tap`. `screenshot` → `4.10-about-top.png` (header + zero-data section).
   - `mcp__ios-simulator__ui_swipe` upward to scroll. `screenshot` → `4.10-about-mid.png` (supported formats + open source).
   - Scroll once more. `screenshot` → `4.10-about-bottom.png` (legal links).
