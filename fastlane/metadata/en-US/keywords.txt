@@ -1,0 +1,1 @@
+privacy,photo,metadata,exif,gps,share,strip,clean,open source,free

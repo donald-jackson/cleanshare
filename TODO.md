@@ -1519,7 +1519,7 @@
   - Done: All three files exist, subtitle within limit, description multi-paragraph.
   - Refs: PLAN.md §13.1.
 
-- [ ] **6.14** Write fastlane/metadata/en-US/ — keywords + promo + URLs + release notes
+- [x] **6.14** Write fastlane/metadata/en-US/ — keywords + promo + URLs + release notes
   - `keywords.txt` (≤100 chars, CSV): `privacy,photo,metadata,exif,gps,share,strip,clean,open source,free`.
   - `promotional_text.txt` (≤170 chars): `Share photos and videos without leaking your location, camera model, or timestamps. One tap, no accounts, nothing leaves your device.`.
   - `support_url.txt` = `https://cleanshare.dev/support`.
