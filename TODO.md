@@ -1158,7 +1158,7 @@
   - Done: Screenshot exists; visual criteria above hold.
   - Refs: PLAN.md §3.3, §13.5.
 
-- [ ] **4.20** Wire PHPicker entry point ("Clean photos…")
+- [x] **4.20** Wire PHPicker entry point ("Clean photos…")
   - In `App/Views/RootView.swift`, add a primary "Clean photos…" button below "Try it on a sample photo". Tapping presents `PHPickerViewController` (wrapped in `UIViewControllerRepresentable`) with:
     - `selectionLimit: 0`
     - `preferredAssetRepresentationMode: .current` (CRITICAL — prevents HEIC→JPEG transcode; PLAN.md §3.2)

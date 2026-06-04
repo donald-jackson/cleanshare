@@ -1,6 +1,8 @@
 import CleanShareCore
 import CleanShareUI
+import PhotosUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct RootView: View {
     @EnvironmentObject private var coordinator: ShareSheetCoordinator
@@ -9,6 +11,7 @@ struct RootView: View {
     @State private var showLivePhotoSheet = false
     @State private var livePhotoOnChoose: (LivePhotoMode) -> Void = { _ in }
     @State private var sampleDiff: SampleDiffPair?
+    @State private var showPhotoPicker = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +24,11 @@ struct RootView: View {
 
                 Button("Try it on a sample photo") {
                     cleanSamplePhoto()
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Clean photos…") {
+                    showPhotoPicker = true
                 }
                 .buttonStyle(.borderedProminent)
 
@@ -56,6 +64,13 @@ struct RootView: View {
         .sheet(item: $sampleDiff) { pair in
             SampleDiffView(beforeURL: pair.beforeURL, afterURL: pair.afterURL)
         }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotoPicker { results in
+                showPhotoPicker = false
+                cleanPicked(results)
+            }
+            .ignoresSafeArea()
+        }
         .sheet(isPresented: $showLivePhotoSheet) {
             LivePhotoConsentSheet(prefsStore: prefsStore, onChoose: $livePhotoOnChoose)
                 .presentationDetents([.medium])
@@ -90,6 +105,87 @@ struct RootView: View {
                 // The sample demo is best-effort; failures leave the UI idle.
             }
         }
+    }
+
+    /// Cleans the photos/videos the user picked from their library and presents the
+    /// system share sheet on the cleaned output. Inputs are hardlinked into a fresh
+    /// Workspace job (no transcode), then run through `CleaningPipeline`. See PLAN.md §3.2.
+    private func cleanPicked(_ results: [PHPickerResult]) {
+        let providers = results.map(\.itemProvider)
+        guard !providers.isEmpty else { return }
+
+        let prefs = prefsStore.current
+        Task {
+            do {
+                let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
+                let job = try await workspace.newJob()
+
+                var items: [CleaningPipeline.InputItem] = []
+                for provider in providers {
+                    if let item = await importItem(provider, into: job.inDir) {
+                        items.append(item)
+                    }
+                }
+                guard !items.isEmpty else { return }
+
+                let pipeline = CleaningPipeline(workspace: workspace, prefs: prefs)
+                await pipeline.enqueue(items)
+
+                var cleaned: [URL] = []
+                for try await event in await pipeline.run() {
+                    if case let .completed(_, receipt) = event {
+                        cleaned.append(receipt.outputURL)
+                    }
+                }
+                guard !cleaned.isEmpty else { return }
+                coordinator.pendingURLs = cleaned
+            } catch {
+                // Best-effort: failures leave the UI idle.
+            }
+        }
+    }
+
+    /// Loads a picked item's file representation and hardlinks (or copies, across
+    /// volumes) it into `inDir`, returning a `CleaningPipeline` input item. Returns
+    /// `nil` for unsupported types or load failures.
+    private func importItem(_ provider: NSItemProvider, into inDir: URL) async -> CleaningPipeline.InputItem? {
+        guard let (typeID, kind) = Self.supportedType(for: provider) else { return nil }
+        let id = UUID()
+        let dest: URL? = await withCheckedContinuation { continuation in
+            provider.loadFileRepresentation(forTypeIdentifier: typeID) { srcURL, _ in
+                guard let srcURL else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                let ext = srcURL.pathExtension.isEmpty ? "dat" : srcURL.pathExtension
+                let target = inDir.appendingPathComponent("\(id.uuidString).\(ext)")
+                let fm = FileManager.default
+                if (try? fm.linkItem(at: srcURL, to: target)) != nil {
+                    continuation.resume(returning: target)
+                } else if (try? fm.copyItem(at: srcURL, to: target)) != nil {
+                    continuation.resume(returning: target)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+        guard let dest else { return nil }
+        return (id: id, sourceURL: dest, kind: kind)
+    }
+
+    /// Picks the first registered type identifier that maps to a supported
+    /// `MediaKind`, skipping `.livePhoto` (the pipeline cleans the still/video
+    /// components, not the bundled live-photo type).
+    private static func supportedType(for provider: NSItemProvider) -> (String, MediaKind)? {
+        for identifier in provider.registeredTypeIdentifiers {
+            guard
+                let type = UTType(identifier),
+                let kind = MediaKind(uti: type),
+                kind != .livePhoto
+            else { continue }
+            return (identifier, kind)
+        }
+        return nil
     }
 
     /// Cleans the bundled sample Live Photo pair with the user's chosen mode and
