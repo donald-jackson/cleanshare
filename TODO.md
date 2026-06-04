@@ -1625,7 +1625,7 @@
   - Done: Doc exists with the required tag references.
   - Refs: PLAN.md §4.4.
 
-- [ ] **7.09** Write docs/adr/0001-record-architecture-decisions.md
+- [x] **7.09** Write docs/adr/0001-record-architecture-decisions.md
   - The ADR-of-ADRs: explains we use the format (https://adr.github.io/madr/), how to propose a new ADR (open a PR adding a new numbered file), and the lifecycle (Proposed → Accepted → Superseded by NNNN).
   - Test: `test -f docs/adr/0001-record-architecture-decisions.md && grep -q 'Proposed' docs/adr/0001-record-architecture-decisions.md && grep -q 'Accepted' docs/adr/0001-record-architecture-decisions.md`.
   - Done: ADR-0001 exists.
