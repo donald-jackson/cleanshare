@@ -24,10 +24,10 @@ targets:
     supportedDestinations: [iOS]
     sources:
       - App
-    entitlements:
-      path: App/CleanShare.entitlements
-    info:
-      path: App/Resources/Info.plist
+    settings:
+      base:
+        INFOPLIST_FILE: App/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/CleanShare.entitlements
     dependencies:
       - package: CleanShareCore
       - target: CleanShareShareExt
@@ -37,10 +37,10 @@ targets:
     supportedDestinations: [iOS]
     sources:
       - ShareExtension
-    entitlements:
-      path: ShareExtension/ShareExtension.entitlements
-    info:
-      path: ShareExtension/Info.plist
+    settings:
+      base:
+        INFOPLIST_FILE: ShareExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ShareExtension/ShareExtension.entitlements
     dependencies:
       - package: CleanShareCore
   CleanShareTests:

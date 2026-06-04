@@ -360,7 +360,7 @@
   - Done: Build succeeds AND the single test passes.
   - Refs: PLAN.md §10.
 
-- [ ] **1.23** Run `./scripts/generate-project.sh` and verify all 5 targets
+- [x] **1.23** Run `./scripts/generate-project.sh` and verify all 5 targets
   - Resolve any XcodeGen error (the most common: a typoed setting key, or missing source dir — create the empty `CleanShareTests/`, `CleanShareUITests/`, `ShareExtensionTests/` dirs if needed; XcodeGen needs them to exist with at least one file. Add a `Tests/Placeholder.swift` per dir containing `import XCTest; final class PlaceholderTests: XCTestCase { func testTrue() { XCTAssertTrue(true) } }`).
   - Test:
     ```bash
