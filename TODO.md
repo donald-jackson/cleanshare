@@ -857,7 +857,7 @@
   - Done: App target builds.
   - Refs: PLAN.md §6.
 
-- [ ] **3.17** Simulator smoke test: app accepts cleanshare:// URL without crashing
+- [x] **3.17** Simulator smoke test: app accepts cleanshare:// URL without crashing
   - 1. `mcp__ios-simulator__open_simulator`; `mcp__ios-simulator__get_booted_sim_id` → record UDID.
   - 2. `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -path '*/Debug-iphonesimulator/*' -type d | head -1` to resolve `.app`. `mcp__ios-simulator__install_app`. `mcp__ios-simulator__launch_app dev.cleanshare.app`.
   - 3. Capture pre-URL screenshot: `mcp__ios-simulator__screenshot` → `screenshots/dev/3.17-pre-url.png`.
