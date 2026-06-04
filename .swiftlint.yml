@@ -1,0 +1,20 @@
+disabled_rules: []
+
+opt_in_rules:
+  - closure_spacing
+  - explicit_init
+  - force_unwrapping
+  - implicit_return
+  - redundant_nil_coalescing
+  - trailing_closure
+
+excluded:
+  - Packages/*/.build
+  - DerivedData
+
+custom_rules:
+  forbidden_addImageFromSource:
+    name: "ImageIO leak risk"
+    regex: "CGImageDestinationAddImageFromSource"
+    message: "Use CGImageDestinationAddImage with explicit kCFNull properties — see PLAN.md §4.2"
+    severity: error

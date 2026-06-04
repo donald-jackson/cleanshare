@@ -110,7 +110,7 @@
   - Done: Both directives present.
   - Refs: PLAN.md §10.
 
-- [ ] **1.08** Write .swiftlint.yml with banned-symbol custom rule
+- [x] **1.08** Write .swiftlint.yml with banned-symbol custom rule
   - Opted-in rules include `closure_spacing`, `explicit_init`, `force_unwrapping`, `implicit_return`, `redundant_nil_coalescing`, `trailing_closure`, plus a `custom_rules` block:
     ```yaml
     custom_rules:
