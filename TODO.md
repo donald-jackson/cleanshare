@@ -1120,7 +1120,7 @@
   - Done: Two home-screen screenshots present; visual criteria satisfied.
   - Refs: PLAN.md §14.1.
 
-- [ ] **4.16** Add bundled Sample-DirtyPhoto.jpg
+- [x] **4.16** Add bundled Sample-DirtyPhoto.jpg
   - Copy `tests/fixtures/dirty/iphone_sample.jpg` to `App/Resources/Sample-DirtyPhoto.jpg`. (Keep as JPEG, not HEIC — HEIC conversion via `sips` is unreliable across macOS versions; JPEG is universally supported and the metadata-stripping demo works identically.)
   - Add a one-line `App/Resources/README.md` documenting the file's purpose.
   - Test: `test -f App/Resources/Sample-DirtyPhoto.jpg && exiftool App/Resources/Sample-DirtyPhoto.jpg | grep -qi 'GPS'`.
