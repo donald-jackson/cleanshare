@@ -1667,7 +1667,7 @@
   - Done: Lint passes.
   - Refs: PLAN.md §11.1.
 
-- [ ] **8.02** Local rehearsal: `make test` is green
+- [x] **8.02** Local rehearsal: `make test` is green
   - Run `make test`. This invokes both `swift test --package-path Packages/CleanShareCore` AND `xcodebuild test` for the app + extension test bundles.
   - Resolve any failures in-scope. Do NOT skip tests to make this pass.
   - Test: `make test` exits 0.
