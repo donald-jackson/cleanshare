@@ -886,7 +886,7 @@
   - Done: Builds; the persistence round-trip test passes.
   - Refs: PLAN.md §4.5, §4.6.
 
-- [ ] **4.02** Implement OnboardingView (3 pages)
+- [x] **4.02** Implement OnboardingView (3 pages)
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/Onboarding/OnboardingView.swift` — `public struct OnboardingView: View`. Body: `TabView` with `.tabViewStyle(.page)`, three pages:
     1. **Welcome** — large headline "Share without leaking" + subhead "CleanShare strips identifying metadata from your photos and videos before sharing them" + an SF Symbol icon `lock.shield.fill` in teal `#19B4B0`.
     2. **How** — three-step illustration: "1. Share from Photos → 2. CleanShare cleans → 3. Share to anyone". Use SF Symbols `square.and.arrow.up`, `wand.and.stars`, `paperplane.fill`.
