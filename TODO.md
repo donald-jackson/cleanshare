@@ -1544,7 +1544,7 @@
   - Done: All required review-information files present with the required talking points.
   - Refs: PLAN.md §13.4.
 
-- [ ] **6.16** Write docs/app-store-privacy.md
+- [x] **6.16** Write docs/app-store-privacy.md
   - Documents that every category in the App Store Connect privacy questionnaire is answered "No" → resulting label "Data Not Collected".
   - Reference PLAN.md §9 + §18.
   - Note that the questionnaire is submitted via App Store Connect UI (already in `docs/manual-steps.md`).
