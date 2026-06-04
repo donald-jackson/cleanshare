@@ -528,7 +528,7 @@
   - Done: Package compiles; the enum has at least 11 cases.
   - Refs: PLAN.md §4.1.
 
-- [ ] **2.02** Define CleaningPreferences struct
+- [x] **2.02** Define CleaningPreferences struct
   - File: `Packages/CleanShareCore/Sources/CleanShareCore/Model/CleaningPreferences.swift`.
   - Replicate PLAN.md §4.6 exactly (all `public var` fields, all defaults). At minimum: `keepOrientation = true`, `keepICCProfile = true`, `keepCaptureDate = false`, `keepGPS = false`, `keepCameraMakeModel = false`, `keepCustomXMP = false`, `preserveVideoCreationDate = false`, `livePhotoMode: LivePhotoMode = .prompt`.
   - Add `public func allowedKeys() -> Set<String>` that returns the string set of CGImage property keys derived from the toggles (used by `MetadataAuditor`).
