@@ -960,7 +960,7 @@
   - Done: All three screenshots present AND visual criteria above hold.
   - Refs: PLAN.md §4.5.
 
-- [ ] **4.09** Implement AboutView (sections: version + privacy + source + supported formats)
+- [x] **4.09** Implement AboutView (sections: version + privacy + source + supported formats)
   - File: `Packages/CleanShareUI/Sources/CleanShareUI/About/AboutView.swift` — `public struct AboutView: View`. Use SwiftUI `List` with these sections (titles render as section headers visible in screenshots):
     1. **Header** — large wordmark "CleanShare" + version + build (read from `Bundle.main.infoDictionary?["CFBundleShortVersionString"]` and `["CFBundleVersion"]`). Background uses the brand teal→indigo gradient.
     2. **Zero data collected** — three rows with SF Symbol leading icons: "No accounts" (`person.slash.fill`), "No analytics" (`chart.bar.xaxis.ascending` crossed out), "No network" (`wifi.slash`). Each row has a one-line caption explaining the guarantee. Footer text: "CleanShare never connects to the internet. We test for it on every commit via CI." This section is what's used as the App Store "privacy" screenshot.
