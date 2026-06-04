@@ -1268,7 +1268,7 @@
   - Done: YAML parses; references all required secrets and the manual-approval environment.
   - Refs: PLAN.md §11.2, §11.7.
 
-- [ ] **5.06** Write .github/workflows/nightly.yml
+- [x] **5.06** Write .github/workflows/nightly.yml
   - Triggers: `schedule: cron "0 6 * * *"` (06:00 UTC daily) + `workflow_dispatch`.
   - Job 1 (`fuzz`): macos-15, runs `cd Packages/CleanShareCore && CLEANSHARE_RUN_FUZZ=1 swift test --filter FuzzTests`.
   - Job 2 (`nightly-beta`): macos-15, depends on `fuzz`, uses `environment: release`, runs `bundle exec fastlane beta` with a nightly version bump (`fastlane action increment_build_number` from `GITHUB_RUN_NUMBER`).
