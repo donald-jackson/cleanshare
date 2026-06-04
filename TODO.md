@@ -1144,7 +1144,7 @@
   - Done: Builds.
   - Refs: PLAN.md §3.3.
 
-- [ ] **4.19** Sim verify "Try it on a sample photo" — BEFORE has GPS, AFTER does not
+- [x] **4.19** Sim verify "Try it on a sample photo" — BEFORE has GPS, AFTER does not
   - From RootView (sim already running): `ui_find_element "Try it on a sample photo"` → `ui_tap`. Wait 1 s for cleaning. `screenshot` → `4.17-sample-diff.png`. `ui_describe_all` and confirm:
     - The left column (BEFORE) contains substring "GPS" (red-highlighted) AND substring "Apple" (Make/Model).
     - The right column (AFTER) does NOT contain "GPS" AND does NOT contain "MakerApple".
