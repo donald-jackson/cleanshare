@@ -1,7 +1,9 @@
+import CleanShareUI
 import SwiftUI
 
 struct RootView: View {
     @EnvironmentObject private var coordinator: ShareSheetCoordinator
+    @StateObject private var prefsStore = CleaningPreferencesStore()
 
     var body: some View {
         VStack(spacing: 16) {
@@ -12,6 +14,9 @@ struct RootView: View {
                 .foregroundStyle(.secondary)
         }
         .padding()
+        .fullScreenCover(isPresented: onboardingBinding) {
+            OnboardingView(prefsStore: prefsStore)
+        }
         .sheet(isPresented: shareSheetBinding) {
             if let urls = coordinator.pendingURLs {
                 ActivityView(activityItems: urls) {
@@ -19,6 +24,13 @@ struct RootView: View {
                 }
             }
         }
+    }
+
+    private var onboardingBinding: Binding<Bool> {
+        Binding(
+            get: { !prefsStore.onboardingCompletedV1 },
+            set: { _ in }
+        )
     }
 
     private var shareSheetBinding: Binding<Bool> {

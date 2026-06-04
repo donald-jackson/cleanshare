@@ -896,7 +896,7 @@
   - Done: Builds; `OnboardingView` is `public`.
   - Refs: PLAN.md §14.2, §20 Week 4.
 
-- [ ] **4.03** Wire OnboardingView into RootView (first launch only)
+- [x] **4.03** Wire OnboardingView into RootView (first launch only)
   - In `App/Views/RootView.swift`, observe `@StateObject var prefsStore = CleaningPreferencesStore()`. If `prefsStore.onboardingCompletedV1 == false`, present `OnboardingView` as a `.fullScreenCover`. Otherwise show the main UI (currently the placeholder Text — primary content comes in later tasks).
   - Test: `xcodebuild -project CleanShare.xcodeproj -scheme CleanShare -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO`.
   - Done: Builds.
