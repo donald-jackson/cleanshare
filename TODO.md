@@ -1327,7 +1327,7 @@
   - Done: Both files exist; index references CleanShare and Tailwind CDN.
   - Refs: PLAN.md §14.3.
 
-- [ ] **5.13** Write marketing/landing/privacy.html + press.html + faq.html + CNAME
+- [x] **5.13** Write marketing/landing/privacy.html + press.html + faq.html + CNAME
   - `privacy.html` — render `PRIVACY.md` to HTML manually (no build step). Mirror every category answered "No" + the "CI tests for it on every commit" claim.
   - `press.html` — boilerplate press kit: short bio paragraph, 3 one-liners, "Download icons + screenshots" link to `https://github.com/<placeholder>/cleanshare/releases/latest/download/press-kit.zip`.
   - `faq.html` — short Q&A: "Why doesn't WhatsApp/IG show the cleaned metadata?" (because they re-encode), "Can I batch-clean?" (yes via PHPicker), "Does it work on iPad?" (yes).

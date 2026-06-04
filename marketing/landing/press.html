@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleanShare — Press Kit</title>
+  <meta name="description" content="Press kit for CleanShare: short bio, one-liners, and downloadable icons and screenshots." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: "#19B4B0",
+            indigo: "#3B3FB8",
+            ink: "#0B0F1A",
+            paper: "#F8FAFC",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="font-sans bg-paper text-ink antialiased">
+
+  <header class="hero-gradient text-white">
+    <nav class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
+      <a href="/" class="text-xl font-extrabold tracking-tight">CleanShare</a>
+      <a href="https://github.com/cleanshare/cleanshare" class="text-sm font-medium opacity-90 hover:opacity-100 transition">GitHub</a>
+    </nav>
+    <div class="max-w-3xl mx-auto px-6 pt-8 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">Press Kit</h1>
+      <p class="mt-4 text-lg text-white/90">
+        Everything you need to write about CleanShare.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-16 space-y-12">
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">About</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        CleanShare is a free and open-source iOS app that strips identifying metadata —
+        EXIF, GPS coordinates, camera make and model, serial numbers, timestamps, MakerNote
+        blocks, and XMP — from photos and videos before you share them. It lives in the iOS
+        share sheet, processes everything on-device with zero network calls, and re-presents
+        the system share sheet with cleaned copies ready for any destination. There are no
+        accounts, no analytics, and no third-party SDKs; the privacy guarantees are enforced
+        mechanically by CI on every commit. CleanShare is MIT licensed and fully auditable.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">One-liners</h2>
+      <ul class="mt-4 space-y-3 text-base leading-relaxed text-ink/80 list-disc pl-6">
+        <li>CleanShare strips the hidden metadata from your photos and videos before you share them — right from the iOS share sheet.</li>
+        <li>No servers, no accounts, no tracking: everything happens on your device, and CI proves it on every commit.</li>
+        <li>Free, open source, and MIT licensed — privacy you can read line by line.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Assets</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        Download icons and screenshots as a single archive:
+      </p>
+      <p class="mt-4">
+        <a href="https://github.com/cleanshare/cleanshare/releases/latest/download/press-kit.zip"
+           class="inline-block badge-placeholder text-base font-semibold no-underline">
+          Download icons + screenshots
+        </a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="border-t border-ink/10">
+    <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/70">
+      <span>&copy; 2026 CleanShare contributors · MIT licensed</span>
+      <nav class="flex items-center gap-6">
+        <a href="/privacy" class="hover:text-indigo transition">Privacy</a>
+        <a href="/faq" class="hover:text-indigo transition">FAQ</a>
+        <a href="/press" class="hover:text-indigo transition">Press</a>
+        <a href="https://github.com/cleanshare/cleanshare" class="hover:text-indigo transition">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

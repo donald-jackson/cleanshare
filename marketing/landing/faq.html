@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleanShare — FAQ</title>
+  <meta name="description" content="Frequently asked questions about CleanShare: why destination apps don't show cleaned metadata, batch cleaning, and iPad support." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: "#19B4B0",
+            indigo: "#3B3FB8",
+            ink: "#0B0F1A",
+            paper: "#F8FAFC",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="font-sans bg-paper text-ink antialiased">
+
+  <header class="hero-gradient text-white">
+    <nav class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
+      <a href="/" class="text-xl font-extrabold tracking-tight">CleanShare</a>
+      <a href="https://github.com/cleanshare/cleanshare" class="text-sm font-medium opacity-90 hover:opacity-100 transition">GitHub</a>
+    </nav>
+    <div class="max-w-3xl mx-auto px-6 pt-8 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">FAQ</h1>
+      <p class="mt-4 text-lg text-white/90">
+        Quick answers to common questions.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-16 space-y-12">
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Why doesn't WhatsApp or Instagram show the cleaned metadata?</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        Apps like WhatsApp and Instagram re-encode images and videos when you upload them,
+        which already discards most metadata on their side. The problem is everything that
+        happens before that — files you AirDrop, email, save to cloud storage, or send through
+        apps that don't re-encode all carry your original EXIF, GPS, and camera data. CleanShare
+        strips that metadata before the file ever leaves your device, so it's gone no matter
+        where the photo ends up.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Can I batch-clean multiple photos at once?</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        Yes. Open CleanShare and pick as many photos or videos as you like through the system
+        photo picker (PHPicker), and it cleans them all in one pass before handing them to the
+        share sheet.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Does it work on iPad?</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        Yes. CleanShare is a universal app that runs on both iPhone and iPad, iOS/iPadOS 17.0
+        and later.
+      </p>
+    </section>
+  </main>
+
+  <footer class="border-t border-ink/10">
+    <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/70">
+      <span>&copy; 2026 CleanShare contributors · MIT licensed</span>
+      <nav class="flex items-center gap-6">
+        <a href="/privacy" class="hover:text-indigo transition">Privacy</a>
+        <a href="/faq" class="hover:text-indigo transition">FAQ</a>
+        <a href="/press" class="hover:text-indigo transition">Press</a>
+        <a href="https://github.com/cleanshare/cleanshare" class="hover:text-indigo transition">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>
