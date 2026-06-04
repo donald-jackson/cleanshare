@@ -276,7 +276,7 @@
   - Done: All three Swift files exist with the expected symbols.
   - Refs: PLAN.md §10, §6.
 
-- [ ] **1.16** Write App/Resources/Info.plist
+- [x] **1.16** Write App/Resources/Info.plist
   - Required keys:
     - `CFBundleDisplayName` = `CleanShare`
     - `CFBundleShortVersionString` = `$(MARKETING_VERSION)` (will be `0.1.0` via xcconfig later)
