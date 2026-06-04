@@ -1637,7 +1637,7 @@
   - Done: ADR-0002 exists.
   - Refs: PLAN.md §15, §18.
 
-- [ ] **7.11** Write docs/adr/0003-extension-handoff-to-host.md
+- [x] **7.11** Write docs/adr/0003-extension-handoff-to-host.md
   - Status: Accepted. Decision: share-extension hands off to the host app via `NSExtensionContext.open(_:completionHandler:)` + custom URL scheme `cleanshare://`. Rationale: extensions cannot present `UIActivityViewController`. Alternatives considered: file-export fallback only (worse UX), Universal Link (Phase 2 hardening). Document the fallback ladder (PLAN.md §6.2).
   - Test: `test -f docs/adr/0003-extension-handoff-to-host.md && grep -q 'UIActivityViewController' docs/adr/0003-extension-handoff-to-host.md && grep -q 'NSExtensionContext' docs/adr/0003-extension-handoff-to-host.md`.
   - Done: ADR-0003 exists.
