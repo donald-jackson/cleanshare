@@ -497,7 +497,7 @@
   - Done: All four files exist and parse as valid YAML.
   - Refs: PLAN.md §17.
 
-- [ ] **1.35** Write .github/workflows/pr.yml (lint + build minimum)
+- [x] **1.35** Write .github/workflows/pr.yml (lint + build minimum)
   - Triggers: `push.branches: [main]` AND `pull_request.branches: [main]`.
   - Concurrency: `group: pr-${{ github.ref }}` with `cancel-in-progress: true`.
   - Single job `validate` on `macos-15`, `timeout-minutes: 25`.
