@@ -559,7 +559,7 @@
   - Done: Both files exist; package builds.
   - Refs: PLAN.md §4.
 
-- [ ] **2.06** Implement PropertySanitizer helpers
+- [x] **2.06** Implement PropertySanitizer helpers
   - File: `Sources/CleanShareCore/Engine/PropertySanitizer.swift` with two `internal` functions per PLAN.md §4.2:
     - `sanitizedFrameProperties(from src: CGImageSource, frameIndex: Int, prefs: CleaningPreferences) -> [CFString: Any]` — explicitly maps each PII dict key to `kCFNull` (one per: `kCGImagePropertyExifDictionary`, `…ExifAuxDictionary`, `…GPSDictionary`, `…IPTCDictionary`, `…TIFFDictionary`, `…JFIFDictionary`, `…MakerAppleDictionary`, `…MakerNikonDictionary`, `…MakerCanonDictionary`, `…MakerFujiDictionary`, `…MakerOlympusDictionary`, `…MakerPentaxDictionary`, `…MakerMinoltaDictionary`, `…PNGDictionary`, `…HEICSDictionary`, plus string-keyed `"{XMP}"`, `"{Photoshop}"`, `"{IPTCXMP}"`). Add-back: root-level orientation if `prefs.keepOrientation`; EXIF sub-dict containing only `kCGImagePropertyExifDateTimeOriginal` if `prefs.keepCaptureDate`.
     - `sanitizedContainerProperties(from src: CGImageSource, prefs: CleaningPreferences) -> [CFString: Any]?` — preserves only structural keys: GIF `kCGImagePropertyGIFLoopCount` if present.
