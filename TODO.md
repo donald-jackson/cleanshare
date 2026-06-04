@@ -1695,7 +1695,7 @@
   - Done: Screenshot exists; visual criteria above hold.
   - Refs: PLAN.md §3.3.
 
-- [ ] **8.05** Sim record final end-to-end PHPicker → clean → share flow
+- [x] **8.05** Sim record final end-to-end PHPicker → clean → share flow
   - Add a fresh media item: `xcrun simctl addmedia <UDID> tests/fixtures/dirty/iphone_sample.jpg`.
   - `mcp__ios-simulator__record_video` → start recording → `screenshots/dev/8.05-final-flow.mov`.
   - Drive: tap "Clean photos…" → pick the seeded photo → tap Add → wait for progress → wait for share sheet → tap "Cancel".
