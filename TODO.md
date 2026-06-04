@@ -488,7 +488,7 @@
   - Done: Template present with all required sections.
   - Refs: PLAN.md §17.3.
 
-- [ ] **1.34** Write .github/ISSUE_TEMPLATE/* files
+- [x] **1.34** Write .github/ISSUE_TEMPLATE/* files
   - `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false`, links to Discussions + Security Advisories.
   - `.github/ISSUE_TEMPLATE/bug_report.yml` — fields: summary, steps to reproduce, expected, actual, iOS version, device.
   - `.github/ISSUE_TEMPLATE/feature_request.yml` — fields: problem, proposed solution, alternatives.

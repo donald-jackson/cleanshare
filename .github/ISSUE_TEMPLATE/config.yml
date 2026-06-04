@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & Discussions
+    url: https://github.com/<placeholder>/cleanshare/discussions
+    about: Ask questions, share ideas, and discuss CleanShare with the community.
+  - name: Report a security vulnerability (private)
+    url: https://github.com/<placeholder>/cleanshare/security/advisories/new
+    about: Privately report a security issue or a real user-data leak via GitHub Security Advisories. Do NOT open a public issue.

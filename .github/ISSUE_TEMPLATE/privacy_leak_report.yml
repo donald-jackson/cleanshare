@@ -1,0 +1,50 @@
+name: Privacy leak report
+description: Report metadata that CleanShare failed to strip from a photo or video.
+labels: ["type:bug", "type:security", "status:needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **If this concerns a real user's data, STOP and use Security Advisories instead.**
+        >
+        > Do NOT attach files containing another person's location, identity, or other
+        > sensitive metadata to a public issue. Report those privately via
+        > [Security Advisories](https://github.com/<placeholder>/cleanshare/security/advisories/new)
+        > — see SECURITY.md.
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      description: Which media format leaked metadata?
+      options:
+        - JPEG
+        - HEIC / HEIF
+        - PNG
+        - Live Photo
+        - Video (MOV / MP4)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: leaked-metadata
+    attributes:
+      label: What metadata leaked
+      description: Which fields/tags survived cleaning (e.g. GPS, MakerNote, capture date)?
+    validations:
+      required: true
+  - type: textarea
+    id: visibility
+    attributes:
+      label: Where it was visible
+      description: How and where did you observe the leaked metadata (e.g. exiftool output, Photos info panel, destination app)?
+    validations:
+      required: true
+  - type: textarea
+    id: sample-file
+    attributes:
+      label: Sample file (optional, redacted)
+      description: |
+        Optionally attach a redacted sample that reproduces the leak. Remove or scrub
+        any data that identifies a real person or location before attaching.
+    validations:
+      required: false
