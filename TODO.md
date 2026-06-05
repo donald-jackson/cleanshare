@@ -1794,3 +1794,75 @@
   - Test: `git tag --list | grep -q '^v0.1.0$' && git log --oneline -1 | grep -q 'v0.1.0' && ! git ls-files | xargs grep -lE 'public enum CleanShareCore' 2>/dev/null | grep -q CleanShareCore.swift && ! find . -path ./node_modules -prune -o -name 'Placeholder*.swift' -print 2>/dev/null | grep -q Placeholder`.
   - Done: Tag exists on HEAD commit; placeholder files are absent from the working tree AND from git history HEAD; commit message references the release candidate.
   - Refs: PLAN.md §16, §20 Week 8; CLAUDE.md "No-mocks principle".
+
+---
+
+## Phase 9: Post-v0.1.0 hotfixes
+
+Tasks here are queued by real device / store-submission feedback after the v0.1.0 tag.
+Each rolls forward into a v0.1.x patch tag (see 9.99).
+
+- [x] **9.01** Verify share-extension reshare works under the LSApplicationQueriesSchemes fix
+  - **Context:** User report (2026-06-05) — sharing from another app's share sheet (WhatsApp, Messages, Photos) into CleanShare produced the `UIDocumentPickerViewController(forExporting:)` Files-export fallback instead of the system re-share sheet. Root cause: iOS 17+ silently returns `opened=false` from `NSExtensionContext.open(_:completionHandler:)` when the extension's Info.plist doesn't declare the URL scheme it intends to open in `LSApplicationQueriesSchemes`. The fix landed in `ShareExtension/Info.plist` + `ShareExtension/ShareViewController.swift` (Unreleased section of CHANGELOG.md).
+  - **Do:**
+    1. Confirm `ShareExtension/Info.plist` includes `LSApplicationQueriesSchemes` with `cleanshare`.
+    2. Confirm `ShareViewController.handOff` wraps `extensionContext?.open(...)` with a `HandOffArbiter` + 4-second timeout fallback so the user never hangs if the completion handler never fires.
+    3. Confirm `HandOffArbiter` is `@unchecked Sendable` (manual NSLock synchronization, comment cites PLAN.md §7.2).
+    4. Rebuild app + extension, install on a sim, exercise the URL handoff via `xcrun simctl openurl booted "cleanshare://handoff?t=test"` after manually writing a synthetic manifest into `~/Library/Developer/CoreSimulator/Devices/<UDID>/data/Containers/Shared/AppGroup/<group-uuid>/inbox/test/manifest.json`. The host app must launch and present `UIActivityViewController`.
+    5. Capture screenshot to `screenshots/dev/9.01-reshare.png`.
+  - **Test:**
+    ```bash
+    plutil -extract LSApplicationQueriesSchemes raw ShareExtension/Info.plist | grep -q . && \
+    grep -q '@unchecked Sendable' ShareExtension/ShareViewController.swift && \
+    grep -q 'HandOffArbiter' ShareExtension/ShareViewController.swift && \
+    grep -q 'asyncAfter(deadline: .now() + 4)' ShareExtension/ShareViewController.swift && \
+    xcodebuild -project CleanShare.xcodeproj -scheme CleanShareShareExt -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | grep -q 'BUILD SUCCEEDED' && \
+    test -f screenshots/dev/9.01-reshare.png
+    ```
+  - **Visual Check** (the screenshot from step 5):
+    1. `UIActivityViewController` (share sheet) is visible.
+    2. Destinations are listed (Messages / AirDrop / Save Image / Files / Mail).
+    3. NO Files-export dialog overlay.
+    4. App is in foreground, not the share-extension UI.
+  - **Done:** Sim verification shows the host app presents the share sheet; extension build is green; the four code-shape greps pass.
+  - **Refs:** PLAN.md §6, §6.2, §7.2. Apple TN3214 on `NSExtensionContext.open`.
+
+- [ ] **9.02** Add Universal Links handoff as the documented Apple-blessed path
+  - **Context:** The LSApplicationQueriesSchemes fix (9.01) addresses the most common cause of `open(cleanshare://) → opened=false`, but Apple's officially-supported way for a share extension to launch its host app is Universal Links (HTTPS URL routed via `apple-app-site-association`). PLAN.md §6.3 flagged this as Phase 2 hardening. We promote it to required for v0.1.x since real-device behaviour around custom-scheme `open()` in extensions has historically been fragile.
+  - **Do:**
+    1. Add `applinks:cleanshare.dev` to `App/CleanShare.entitlements` under `com.apple.developer.associated-domains`.
+    2. Add a parser branch in `CleanShareCore/Sources/CleanShareCore/IO/HandoffURL.swift` recognising `https://cleanshare.dev/handoff?t=<token>` as a handoff URL (the existing `cleanshare://` scheme stays as a backup).
+    3. Change `URL.handoff(token:)` to produce the HTTPS form by default; expose a `URL.handoffCustomScheme(token:)` for fallback.
+    4. In `ShareViewController.handOff`, try the HTTPS handoff first; if `opened=false`, retry with the custom-scheme URL; if BOTH fail, fall to Files.
+    5. Author `marketing/landing/.well-known/apple-app-site-association` (JSON, no extension) with the `applinks` block declaring `appID = "<TEAM_ID>.dev.cleanshare.app"` and `paths = ["/handoff*"]`. The team ID is read from `Config/Local.xcconfig` `DEVELOPMENT_TEAM_OVERRIDE`. Where it's blank, write the file with `<TEAM_ID>` placeholder + a comment pointing at `docs/manual-steps.md`.
+    6. Update `marketing/landing/pages.yml` workflow (if needed) to deploy `.well-known/` correctly — GitHub Pages serves it from the same directory.
+    7. Add to `docs/manual-steps.md` the requirement to substitute the real Team ID before deploying `apple-app-site-association`.
+    8. Add an `App/Handoff/HandoffRouter` test: a unit-test on the host app target asserting both URL forms parse to the same token.
+  - **Test:**
+    ```bash
+    plutil -extract 'com.apple.developer.associated-domains.0' raw App/CleanShare.entitlements | grep -q 'applinks:cleanshare.dev' && \
+    grep -q 'cleanshare.dev/handoff' Packages/CleanShareCore/Sources/CleanShareCore/IO/HandoffURL.swift && \
+    test -f marketing/landing/.well-known/apple-app-site-association && \
+    python3 -c "import json; d=json.load(open('marketing/landing/.well-known/apple-app-site-association')); assert 'applinks' in d" && \
+    grep -q 'Team ID' docs/manual-steps.md && \
+    xcodebuild -project CleanShare.xcodeproj -scheme CleanShare -destination 'generic/platform=iOS Simulator' build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO | grep -q 'BUILD SUCCEEDED'
+    ```
+  - **Done:** Entitlements declare the associated domain; AASA JSON parses; HandoffURL exposes both forms; host app builds.
+  - **Refs:** PLAN.md §6, §6.3; Apple "Supporting associated domains" doc.
+
+- [ ] **9.03** Add device-side smoke-test recipe to docs/release-process.md
+  - **Do:** Append a "Pre-release device smoke test" section to `docs/release-process.md` listing the manual steps a maintainer runs on a real iPhone before each TestFlight upload. Must include:
+    1. Share a photo from Photos → CleanShare → verify share sheet appears (NOT Files dialog).
+    2. Share a photo from WhatsApp → CleanShare → verify share sheet appears.
+    3. Share a Live Photo from Photos → CleanShare → verify consent sheet appears, then share sheet.
+    4. Share a 1-min 4K video → CleanShare → verify share sheet appears within ~1s.
+    5. Network Link Conditioner = 100% loss → repeat all four; app must still work.
+  - **Test:** `grep -q 'Pre-release device smoke test' docs/release-process.md && grep -q 'WhatsApp' docs/release-process.md && grep -q 'Network Link Conditioner' docs/release-process.md`.
+  - **Done:** Section present with all five recipes.
+  - **Refs:** This task documents the regression we hit in 9.01 so a real-device check happens before every release.
+
+- [ ] **9.99** Tag v0.1.1 hotfix
+  - Move `[Unreleased]` section content under a new `## [0.1.1] - <today>` heading. Commit `chore(release): v0.1.1 — share-extension reshare hotfix`. Tag `git tag -a v0.1.1 -m "v0.1.1 — share-extension reshare hotfix"`. Do NOT push.
+  - **Test:** `git tag --list | grep -q '^v0.1.1$' && grep -q '## \[0.1.1\]' CHANGELOG.md`.
+  - **Done:** Tag exists; CHANGELOG bumped.
+  - **Refs:** PLAN.md §16.
