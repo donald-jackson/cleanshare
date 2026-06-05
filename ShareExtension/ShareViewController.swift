@@ -92,55 +92,69 @@ final class ShareViewController: UIViewController {
     }
 
     private func handOff(token: String, cleanedURLs: [URL]) {
+        // Universal Links (`URL.handoff`) need an `applinks:` entitlement plus a
+        // deployed `apple-app-site-association` — neither is configured yet, so
+        // skip them entirely. The custom-scheme URL is what actually routes back
+        // to the host app on a real device.
+        let url = URL.handoffCustomScheme(token: token)
         let arbiter = HandOffArbiter()
 
         // Some iOS releases never invoke `open(_:completionHandler:)` from a share
         // extension when it was launched from another app's share sheet (e.g.
-        // WhatsApp). Guard the ladder with a hard timeout so the user never hangs
-        // on the progress view; fall back to Files if no callback in 4s.
+        // WhatsApp). Hard timeout so the user never hangs on the progress view.
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
             guard let self, arbiter.claim() else { return }
-            NSLog("CleanShare: NSExtensionContext.open() never called back; using Files fallback")
+            NSLog("CleanShare: handoff timed out without callback; using Files fallback")
             self.presentFilesFallback(cleanedURLs)
         }
 
-        // Apple's blessed path is the Universal Link (https). Try it first; if the
-        // associated domain isn't resolvable yet, retry the custom scheme; if both
-        // report failure, fall to Files. See PLAN.md §6.3.
-        let ladder = [URL.handoff(token: token), URL.handoffCustomScheme(token: token)]
-        self.openHandoff(ladder, from: 0, arbiter: arbiter, cleanedURLs: cleanedURLs)
-    }
-
-    /// Walks the handoff URL ladder: opens `urls[index]`, and on `opened == false`
-    /// recurses to the next URL. The first success claims the arbiter and finishes
-    /// the request; exhausting the ladder claims the arbiter and presents Files.
-    @MainActor
-    private func openHandoff(
-        _ urls: [URL],
-        from index: Int,
-        arbiter: HandOffArbiter,
-        cleanedURLs: [URL]
-    ) {
-        guard index < urls.count else {
-            guard arbiter.claim() else { return }
-            NSLog("CleanShare: all handoff URLs returned false; using Files fallback")
-            self.presentFilesFallback(cleanedURLs)
-            return
-        }
-
-        let url = urls[index]
+        // Step 1: try `NSExtensionContext.open(_:completionHandler:)` — Apple's
+        // documented API. Works on iOS <17 and on some iOS 17+ host-app paths.
         extensionContext?.open(url) { [weak self] opened in
             Task { @MainActor in
                 guard let self else { return }
                 if opened {
                     guard arbiter.claim() else { return }
                     self.extensionContext?.completeRequest(returningItems: nil)
+                    return
+                }
+
+                // Step 2: on iOS 17+ the `extensionContext.open` path fires
+                // `opened=false` from share extensions invoked through another
+                // app's share sheet (Photos, WhatsApp, Messages), regardless of
+                // URL scheme or `LSApplicationQueriesSchemes`. The reliable
+                // workaround is the responder-chain `openURL:` selector trick
+                // — used by many shipping App Store apps for this exact pattern.
+                NSLog("CleanShare: extensionContext.open returned false; trying responder chain")
+                if self.openURLViaResponderChain(url) {
+                    guard arbiter.claim() else { return }
+                    self.extensionContext?.completeRequest(returningItems: nil)
                 } else {
-                    NSLog("CleanShare: handoff open(%@) returned false; trying next", url.absoluteString)
-                    self.openHandoff(urls, from: index + 1, arbiter: arbiter, cleanedURLs: cleanedURLs)
+                    guard arbiter.claim() else { return }
+                    NSLog("CleanShare: responder chain found no UIApplication; using Files fallback")
+                    self.presentFilesFallback(cleanedURLs)
                 }
             }
         }
+    }
+
+    /// Walks the `UIResponder` chain to find an object responding to `openURL:`
+    /// (a private UIApplication selector reachable from extensions) and asks it
+    /// to open `url`. This is the standard workaround for share extensions on
+    /// iOS 17+ where `NSExtensionContext.open(_:completionHandler:)` returns
+    /// `opened=false`. Returns `true` if a responder accepted the selector.
+    @MainActor
+    private func openURLViaResponderChain(_ url: URL) -> Bool {
+        var responder: UIResponder? = self
+        let selector = NSSelectorFromString("openURL:")
+        while let current = responder {
+            if current.responds(to: selector) {
+                _ = current.perform(selector, with: url)
+                return true
+            }
+            responder = current.next
+        }
+        return false
     }
 
     private func presentFilesFallback(_ urls: [URL]) {

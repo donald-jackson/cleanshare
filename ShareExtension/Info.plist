@@ -36,5 +36,13 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).ShareViewController</string>
 	</dict>
+	<!-- Required by iOS for the extension to invoke NSExtensionContext.open() with a -->
+	<!-- cleanshare:// URL. Without this declaration, iOS silently calls back with    -->
+	<!-- opened=false from the share-sheet of another app (WhatsApp, Messages, etc.), -->
+	<!-- and the user gets the Files-export fallback instead of the re-share sheet.  -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>cleanshare</string>
+	</array>
 </dict>
 </plist>
