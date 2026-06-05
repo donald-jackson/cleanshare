@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Share-extension handoff now fires `openURL:` **after** `completeRequest`
+  dismisses the share-extension view (the iOS 17+ order requirement —
+  previous releases tried it before dismissal, which iOS silently dropped).
+  Manifest is persisted to the App Group inbox before dismissal, and
+  `HandoffRouter.applyPendingInbox` sweeps that inbox on cold start AND on
+  every transition to `.active` so the share sheet still appears even if
+  iOS drops the `openURL` call entirely.
+- Progress view briefly settles at 100% with a "Cleaned" label for ~300 ms
+  before dismissing — visual closure instead of the extension blinking
+  away mid-stream.
+
+### Removed
+
+- Dead handoff scaffolding: `HandOffArbiter`, `presentFilesFallback`, and
+  the `UIDocumentPickerDelegate` extension on `ShareViewController` are
+  gone now that the handoff no longer falls back to the Files dialog.
+
 ## [0.1.1] - 2026-06-05
 
 ### Added
