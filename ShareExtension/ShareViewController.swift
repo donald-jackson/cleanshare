@@ -83,7 +83,14 @@ final class ShareViewController: UIViewController {
             let manifestURL = try await workspace.inboxManifestURL(token: token)
             try ManifestWriter.write(manifest, to: manifestURL)
 
-            self.handOff(token: token, cleanedURLs: receipts.map(\.outputURL))
+            // Brief visual closure before dismissing — the user sees a 100%
+            // progress bar settle for ~300 ms instead of the extension blinking
+            // away mid-stream.
+            self.progressModel.fraction = 1.0
+            self.progressModel.currentFile = "Cleaned"
+            try? await Task.sleep(for: .milliseconds(300))
+
+            self.handOff(token: token)
         } catch is CancellationError {
             // Cancellation already finished the request via cancel().
         } catch {
@@ -91,80 +98,35 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    private func handOff(token: String, cleanedURLs: [URL]) {
-        // Universal Links (`URL.handoff`) need an `applinks:` entitlement plus a
-        // deployed `apple-app-site-association` — neither is configured yet, so
-        // skip them entirely. The custom-scheme URL is what actually routes back
-        // to the host app on a real device.
+    /// Dismisses the share-extension UI first, then walks the responder chain
+    /// inside the completeRequest completion handler to fire `openURL:` against
+    /// whatever responds to it (effectively UIApplication). This is the pattern
+    /// iOS 17+ requires: the system refuses to switch apps while a share-
+    /// extension view is on screen, so the dismissal MUST come first.
+    ///
+    /// The cleaned-output manifest is already persisted to the App Group inbox
+    /// at this point. If iOS still ignores the openURL call (some 17.x builds
+    /// do), `HandoffRouter.applyPendingInbox(...)` picks the manifest up the
+    /// next time the user foregrounds CleanShare.
+    private func handOff(token: String) {
         let url = URL.handoffCustomScheme(token: token)
-        let arbiter = HandOffArbiter()
-
-        // Some iOS releases never invoke `open(_:completionHandler:)` from a share
-        // extension when it was launched from another app's share sheet (e.g.
-        // WhatsApp). Hard timeout so the user never hangs on the progress view.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
-            guard let self, arbiter.claim() else { return }
-            NSLog("CleanShare: handoff timed out without callback; using Files fallback")
-            self.presentFilesFallback(cleanedURLs)
-        }
-
-        // Step 1: try `NSExtensionContext.open(_:completionHandler:)` — Apple's
-        // documented API. Works on iOS <17 and on some iOS 17+ host-app paths.
-        extensionContext?.open(url) { [weak self] opened in
-            Task { @MainActor in
+        extensionContext?.completeRequest(returningItems: nil) { [weak self] _ in
+            // Hop to the main actor — UIResponder.next is MainActor-isolated and
+            // the completion handler arrives on an arbitrary queue.
+            Task { @MainActor [weak self] in
                 guard let self else { return }
-                if opened {
-                    guard arbiter.claim() else { return }
-                    self.extensionContext?.completeRequest(returningItems: nil)
-                    return
+                var responder: UIResponder? = self
+                let selector = NSSelectorFromString("openURL:")
+                while let current = responder {
+                    if current.responds(to: selector) {
+                        _ = current.perform(selector, with: url)
+                        return
+                    }
+                    responder = current.next
                 }
-
-                // Step 2: on iOS 17+ the `extensionContext.open` path fires
-                // `opened=false` from share extensions invoked through another
-                // app's share sheet (Photos, WhatsApp, Messages), regardless of
-                // URL scheme or `LSApplicationQueriesSchemes`. The reliable
-                // workaround is the responder-chain `openURL:` selector trick
-                // — used by many shipping App Store apps for this exact pattern.
-                NSLog("CleanShare: extensionContext.open returned false; trying responder chain")
-                if self.openURLViaResponderChain(url) {
-                    guard arbiter.claim() else { return }
-                    self.extensionContext?.completeRequest(returningItems: nil)
-                } else {
-                    guard arbiter.claim() else { return }
-                    NSLog("CleanShare: responder chain found no UIApplication; using Files fallback")
-                    self.presentFilesFallback(cleanedURLs)
-                }
+                NSLog("CleanShare: responder chain exhausted; manifest will be picked up on next CleanShare foreground")
             }
         }
-    }
-
-    /// Walks the `UIResponder` chain to find an object responding to `openURL:`
-    /// (a private UIApplication selector reachable from extensions) and asks it
-    /// to open `url`. This is the standard workaround for share extensions on
-    /// iOS 17+ where `NSExtensionContext.open(_:completionHandler:)` returns
-    /// `opened=false`. Returns `true` if a responder accepted the selector.
-    @MainActor
-    private func openURLViaResponderChain(_ url: URL) -> Bool {
-        var responder: UIResponder? = self
-        let selector = NSSelectorFromString("openURL:")
-        while let current = responder {
-            if current.responds(to: selector) {
-                _ = current.perform(selector, with: url)
-                return true
-            }
-            responder = current.next
-        }
-        return false
-    }
-
-    private func presentFilesFallback(_ urls: [URL]) {
-        guard !urls.isEmpty else {
-            extensionContext?.completeRequest(returningItems: nil)
-            return
-        }
-        let picker = UIDocumentPickerViewController(forExporting: urls)
-        picker.delegate = self
-        present(picker, animated: true)
     }
 
     private func cancel() {
@@ -244,33 +206,3 @@ final class ShareViewController: UIViewController {
     }
 }
 
-extension ShareViewController: UIDocumentPickerDelegate {
-    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt _: [URL]) {
-        extensionContext?.completeRequest(returningItems: nil)
-    }
-
-    func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
-        extensionContext?.completeRequest(returningItems: nil)
-    }
-}
-
-/// Single-fire arbiter ensuring that exactly one of (open-completion, timeout)
-/// drives the post-handoff action. Without this, the timeout closure and the
-/// open() completion can race and present the Files picker twice (or call
-/// completeRequest after presenting it).
-///
-/// `@unchecked Sendable` is sound here: the only mutable state is `claimed`,
-/// and every access is serialized by `lock`. See PLAN.md §7.2.
-private final class HandOffArbiter: @unchecked Sendable {
-    private let lock = NSLock()
-    private var claimed = false
-
-    /// Returns `true` exactly once across all callers; subsequent calls return `false`.
-    func claim() -> Bool {
-        lock.lock()
-        defer { lock.unlock() }
-        guard !claimed else { return false }
-        claimed = true
-        return true
-    }
-}

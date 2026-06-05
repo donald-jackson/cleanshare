@@ -29,6 +29,48 @@ enum HandoffRouter {
         return true
     }
 
+    /// Scans the App Group inbox for any pending manifests left behind by a
+    /// share-extension run whose `openURL` handoff was dropped by iOS (a known
+    /// iOS 17+ issue — the extension persists the manifest then asks iOS to
+    /// switch apps, but iOS doesn't always honour the request even after the
+    /// extension UI dismisses). Applies the most recent manifest to the
+    /// coordinator and schedules cleanup of any older entries.
+    ///
+    /// Call from `CleanShareApp` on cold start and on transition to `.active`.
+    /// Returns `true` if a pending manifest was applied.
+    @MainActor
+    @discardableResult
+    static func applyPendingInbox(coordinator: ShareSheetCoordinator) -> Bool {
+        guard let root = containerRoot() else { return false }
+        let inboxRoot = root.appendingPathComponent("inbox", isDirectory: true)
+        let fileManager = FileManager.default
+
+        guard let entries = try? fileManager.contentsOfDirectory(
+            at: inboxRoot,
+            includingPropertiesForKeys: [.contentModificationDateKey],
+            options: [.skipsHiddenFiles]
+        ) else { return false }
+
+        // Sort newest first by mtime, then pick the first that contains a
+        // readable manifest.json.
+        let sorted = entries.sorted { lhs, rhs in
+            let lDate = (try? lhs.resourceValues(forKeys: [.contentModificationDateKey])
+                .contentModificationDate) ?? .distantPast
+            let rDate = (try? rhs.resourceValues(forKeys: [.contentModificationDateKey])
+                .contentModificationDate) ?? .distantPast
+            return lDate > rDate
+        }
+
+        for tokenDir in sorted {
+            let manifestURL = tokenDir.appendingPathComponent("manifest.json")
+            guard let manifest = try? ManifestReader.read(from: manifestURL) else { continue }
+            coordinator.pendingURLs = manifest.receipts.map(\.outputURL)
+            self.scheduleCleanup(token: manifest.token, root: root)
+            return true
+        }
+        return false
+    }
+
     private static func containerRoot() -> URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupID)
     }
