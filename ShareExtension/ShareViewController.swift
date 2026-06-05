@@ -92,13 +92,52 @@ final class ShareViewController: UIViewController {
     }
 
     private func handOff(token: String, cleanedURLs: [URL]) {
-        extensionContext?.open(URL.handoff(token: token)) { [weak self] opened in
+        let arbiter = HandOffArbiter()
+
+        // Some iOS releases never invoke `open(_:completionHandler:)` from a share
+        // extension when it was launched from another app's share sheet (e.g.
+        // WhatsApp). Guard the ladder with a hard timeout so the user never hangs
+        // on the progress view; fall back to Files if no callback in 4s.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) { [weak self] in
+            guard let self, arbiter.claim() else { return }
+            NSLog("CleanShare: NSExtensionContext.open() never called back; using Files fallback")
+            self.presentFilesFallback(cleanedURLs)
+        }
+
+        // Apple's blessed path is the Universal Link (https). Try it first; if the
+        // associated domain isn't resolvable yet, retry the custom scheme; if both
+        // report failure, fall to Files. See PLAN.md §6.3.
+        let ladder = [URL.handoff(token: token), URL.handoffCustomScheme(token: token)]
+        self.openHandoff(ladder, from: 0, arbiter: arbiter, cleanedURLs: cleanedURLs)
+    }
+
+    /// Walks the handoff URL ladder: opens `urls[index]`, and on `opened == false`
+    /// recurses to the next URL. The first success claims the arbiter and finishes
+    /// the request; exhausting the ladder claims the arbiter and presents Files.
+    @MainActor
+    private func openHandoff(
+        _ urls: [URL],
+        from index: Int,
+        arbiter: HandOffArbiter,
+        cleanedURLs: [URL]
+    ) {
+        guard index < urls.count else {
+            guard arbiter.claim() else { return }
+            NSLog("CleanShare: all handoff URLs returned false; using Files fallback")
+            self.presentFilesFallback(cleanedURLs)
+            return
+        }
+
+        let url = urls[index]
+        extensionContext?.open(url) { [weak self] opened in
             Task { @MainActor in
                 guard let self else { return }
                 if opened {
+                    guard arbiter.claim() else { return }
                     self.extensionContext?.completeRequest(returningItems: nil)
                 } else {
-                    self.presentFilesFallback(cleanedURLs)
+                    NSLog("CleanShare: handoff open(%@) returned false; trying next", url.absoluteString)
+                    self.openHandoff(urls, from: index + 1, arbiter: arbiter, cleanedURLs: cleanedURLs)
                 }
             }
         }
@@ -198,5 +237,26 @@ extension ShareViewController: UIDocumentPickerDelegate {
 
     func documentPickerWasCancelled(_: UIDocumentPickerViewController) {
         extensionContext?.completeRequest(returningItems: nil)
+    }
+}
+
+/// Single-fire arbiter ensuring that exactly one of (open-completion, timeout)
+/// drives the post-handoff action. Without this, the timeout closure and the
+/// open() completion can race and present the Files picker twice (or call
+/// completeRequest after presenting it).
+///
+/// `@unchecked Sendable` is sound here: the only mutable state is `claimed`,
+/// and every access is serialized by `lock`. See PLAN.md §7.2.
+private final class HandOffArbiter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var claimed = false
+
+    /// Returns `true` exactly once across all callers; subsequent calls return `false`.
+    func claim() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !claimed else { return false }
+        claimed = true
+        return true
     }
 }

@@ -1827,7 +1827,7 @@ Each rolls forward into a v0.1.x patch tag (see 9.99).
   - **Done:** Sim verification shows the host app presents the share sheet; extension build is green; the four code-shape greps pass.
   - **Refs:** PLAN.md §6, §6.2, §7.2. Apple TN3214 on `NSExtensionContext.open`.
 
-- [ ] **9.02** Add Universal Links handoff as the documented Apple-blessed path
+- [x] **9.02** Add Universal Links handoff as the documented Apple-blessed path
   - **Context:** The LSApplicationQueriesSchemes fix (9.01) addresses the most common cause of `open(cleanshare://) → opened=false`, but Apple's officially-supported way for a share extension to launch its host app is Universal Links (HTTPS URL routed via `apple-app-site-association`). PLAN.md §6.3 flagged this as Phase 2 hardening. We promote it to required for v0.1.x since real-device behaviour around custom-scheme `open()` in extensions has historically been fragile.
   - **Do:**
     1. Add `applinks:cleanshare.dev` to `App/CleanShare.entitlements` under `com.apple.developer.associated-domains`.

@@ -1,10 +1,35 @@
 import Foundation
 
-/// Builds and parses the `cleanshare://handoff?t=<token>` URL the share
-/// extension uses to hand a completed job back to the host app for re-sharing.
-/// See PLAN.md §6.
+/// Builds and parses the URL the share extension uses to hand a completed job
+/// back to the host app for re-sharing. See PLAN.md §6, §6.3.
+///
+/// Two equivalent forms are recognised:
+/// - **Universal Link (default):** `https://cleanshare.dev/handoff?t=<token>` —
+///   Apple's officially-supported way for an extension to launch its host app,
+///   routed via the site's `apple-app-site-association`.
+/// - **Custom scheme (fallback):** `cleanshare://handoff?t=<token>` — used when
+///   the associated domain isn't resolvable (e.g. before the AASA propagates).
 public extension URL {
+    /// Host of the Universal Link form.
+    static let handoffAssociatedDomain = "cleanshare.dev"
+    /// Path of the Universal Link form (matched by the AASA `paths` entry).
+    static let handoffPath = "/handoff"
+
+    /// Universal Link handoff URL (default). Backed by `applinks:cleanshare.dev`.
     static func handoff(token: String) -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = handoffAssociatedDomain
+        components.path = handoffPath
+        components.queryItems = [URLQueryItem(name: "t", value: token)]
+        guard let url = components.url else {
+            preconditionFailure("https handoff components are always a valid URL")
+        }
+        return url
+    }
+
+    /// Custom-scheme handoff URL (fallback). `cleanshare://handoff?t=<token>`.
+    static func handoffCustomScheme(token: String) -> URL {
         var components = URLComponents()
         components.scheme = "cleanshare"
         components.host = "handoff"
@@ -15,8 +40,13 @@ public extension URL {
         return url
     }
 
+    /// Extracts the job token from either handoff form, or `nil` for any other URL.
     static func handoffToken(from url: URL) -> String? {
-        guard url.scheme == "cleanshare", url.host == "handoff" else { return nil }
+        let isUniversalLink = url.scheme == "https"
+            && url.host == handoffAssociatedDomain
+            && url.path == handoffPath
+        let isCustomScheme = url.scheme == "cleanshare" && url.host == "handoff"
+        guard isUniversalLink || isCustomScheme else { return nil }
         let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
             .queryItems?.first { $0.name == "t" }
         return token?.value

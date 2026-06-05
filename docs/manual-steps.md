@@ -66,6 +66,14 @@ Add these under Settings → Environments → `release` → Environment secrets 
 - [ ] **Configure the GH Pages custom domain.** How: repo Settings → Pages → Custom domain
       → `cleanshare.dev` → Save, then enable "Enforce HTTPS" once the cert provisions. The
       `marketing/landing/CNAME` file already contains `cleanshare.dev`.
+- [ ] **Substitute the real Team ID in the Universal Links AASA file before deploying.** How:
+      edit `marketing/landing/.well-known/apple-app-site-association` and replace the
+      `<TEAM_ID>` placeholder in `"appID": "<TEAM_ID>.dev.cleanshare.app"` with your Apple
+      **Team ID** (same value as `DEVELOPMENT_TEAM_OVERRIDE` in `Config/Local.xcconfig`). The
+      file must stay valid JSON with **no** `.json` extension and no comments — Apple's
+      parser rejects both. It is served from `https://cleanshare.dev/.well-known/apple-app-site-association`
+      and backs the `applinks:cleanshare.dev` associated domain that powers the share
+      extension → host handoff. See PLAN.md §6.3.
 
 ## App Store submission
 
