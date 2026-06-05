@@ -50,3 +50,6 @@ tests/fixtures/perf/*.mp4
 
 # Dev screenshots
 screenshots/dev/
+
+# Serena IDE assistant cache
+.serena/

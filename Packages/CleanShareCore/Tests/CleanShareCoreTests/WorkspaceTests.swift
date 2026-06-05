@@ -7,7 +7,7 @@ import XCTest
 final class WorkspaceTests: XCTestCase {
     func testJobLifecycleAndExpiry() async throws {
         let fileManager = FileManager.default
-        let workspace = try Workspace(appGroupID: "group.dev.cleanshare.app.tests")
+        let workspace = try Workspace(appGroupID: "group.solutions.ddj.cleanshare.tests")
 
         let jobA = try await workspace.newJob()
         let jobB = try await workspace.newJob()

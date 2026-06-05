@@ -1,6 +1,6 @@
 git_url(ENV["MATCH_GIT_URL"] || "")
 storage_mode("git")
 type("development")
-app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
+app_identifier(["solutions.ddj.cleanshare", "solutions.ddj.cleanshare.ShareExtension"])
 username(ENV["FASTLANE_APPLE_ID"]) if ENV["FASTLANE_APPLE_ID"]
 team_id(ENV["FASTLANE_TEAM_ID"]) if ENV["FASTLANE_TEAM_ID"]

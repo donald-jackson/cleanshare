@@ -153,7 +153,7 @@
     ```
     // Copy this file to Local.xcconfig and edit. Local.xcconfig is gitignored.
     DEVELOPMENT_TEAM_OVERRIDE = ABCDE12345
-    BUNDLE_PREFIX = dev.cleanshare
+    BUNDLE_PREFIX = solutions.ddj.cleanshare
     ```
   - Test: `test -f Config/Shared.xcconfig && grep -q 'SWIFT_STRICT_CONCURRENCY = complete' Config/Shared.xcconfig && grep -q 'IPHONEOS_DEPLOYMENT_TARGET = 17.0' Config/Shared.xcconfig && test -f Config/Local.xcconfig.example && grep -q 'BUNDLE_PREFIX' Config/Local.xcconfig.example`.
   - Done: Both files exist with the required directives.
@@ -166,7 +166,7 @@
     #include? "Local.xcconfig"
     CODE_SIGN_STYLE = Automatic
     DEVELOPMENT_TEAM = $(DEVELOPMENT_TEAM_OVERRIDE)
-    PRODUCT_BUNDLE_IDENTIFIER = $(BUNDLE_PREFIX).app
+    PRODUCT_BUNDLE_IDENTIFIER = $(BUNDLE_PREFIX)
     SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
     ```
   - `Config/Release.xcconfig`:
@@ -184,7 +184,7 @@
     ```yaml
     name: CleanShare
     options:
-      bundleIdPrefix: dev.cleanshare
+      bundleIdPrefix: solutions.ddj
       deploymentTarget:
         iOS: "17.0"
       createIntermediateGroups: true
@@ -281,7 +281,7 @@
     - `CFBundleDisplayName` = `CleanShare`
     - `CFBundleShortVersionString` = `$(MARKETING_VERSION)` (will be `0.1.0` via xcconfig later)
     - `CFBundleVersion` = `$(CURRENT_PROJECT_VERSION)`
-    - `CFBundleURLTypes` = array with one entry: `CFBundleURLName` = `dev.cleanshare.app`, `CFBundleURLSchemes` = `[cleanshare]`
+    - `CFBundleURLTypes` = array with one entry: `CFBundleURLName` = `solutions.ddj.cleanshare`, `CFBundleURLSchemes` = `[cleanshare]`
     - `NSPhotoLibraryUsageDescription` = `CleanShare uses Photo Library access only to pick photos you choose to clean. Photos never leave your device.`
     - `ITSAppUsesNonExemptEncryption` = `false`
     - `UIApplicationSceneManifest` = empty dict with `UIApplicationSupportsMultipleScenes = false`
@@ -291,10 +291,10 @@
   - Refs: PLAN.md §6, §9.
 
 - [x] **1.17** Write App/CleanShare.entitlements + AppIcon stub
-  - `App/CleanShare.entitlements` is a plist with `com.apple.security.application-groups` = `[group.dev.cleanshare.app]`.
+  - `App/CleanShare.entitlements` is a plist with `com.apple.security.application-groups` = `[group.solutions.ddj.cleanshare]`.
   - `App/Resources/Assets.xcassets/Contents.json` = `{"info": {"version": 1, "author": "xcode"}}`.
   - `App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json` = minimal stub: `{"images": [{"idiom": "universal", "platform": "ios", "size": "1024x1024"}], "info": {"version": 1, "author": "xcode"}}`. (The real icon image lands in task 4.13.)
-  - Test: `plutil -lint App/CleanShare.entitlements && plutil -extract 'com.apple.security.application-groups.0' raw App/CleanShare.entitlements | grep -q '^group.dev.cleanshare.app$' && test -f App/Resources/Assets.xcassets/Contents.json && test -f App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json && python3 -c "import json; json.load(open('App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json'))"`.
+  - Test: `plutil -lint App/CleanShare.entitlements && plutil -extract 'com.apple.security.application-groups.0' raw App/CleanShare.entitlements | grep -q '^group.solutions.ddj.cleanshare$' && test -f App/Resources/Assets.xcassets/Contents.json && test -f App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json && python3 -c "import json; json.load(open('App/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json'))"`.
   - Done: All four assertions pass.
   - Refs: PLAN.md §2, §6.
 
@@ -327,8 +327,8 @@
   - Refs: PLAN.md §3.1.
 
 - [x] **1.20** Write ShareExtension/ShareExtension.entitlements
-  - Same App Group as host: `com.apple.security.application-groups` = `[group.dev.cleanshare.app]`.
-  - Test: `plutil -lint ShareExtension/ShareExtension.entitlements && plutil -extract 'com.apple.security.application-groups.0' raw ShareExtension/ShareExtension.entitlements | grep -q '^group.dev.cleanshare.app$'`.
+  - Same App Group as host: `com.apple.security.application-groups` = `[group.solutions.ddj.cleanshare]`.
+  - Test: `plutil -lint ShareExtension/ShareExtension.entitlements && plutil -extract 'com.apple.security.application-groups.0' raw ShareExtension/ShareExtension.entitlements | grep -q '^group.solutions.ddj.cleanshare$'`.
   - Done: Plist is valid AND the App Group identifier matches the host app.
   - Refs: PLAN.md §2.
 
@@ -395,7 +395,7 @@
   - `mcp__ios-simulator__get_booted_sim_id` — record the UDID (use the latest iPhone runtime if multiple sims are available; prefer iPhone 16 / 17 Pro).
   - Resolve built path: `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -path '*/Debug-iphonesimulator/*' -type d | head -1`.
   - `mcp__ios-simulator__install_app` with that path.
-  - `mcp__ios-simulator__launch_app` with bundle id `dev.cleanshare.app` (or whatever `BUNDLE_PREFIX.app` resolves to from `Config/Local.xcconfig` — read the file if present).
+  - `mcp__ios-simulator__launch_app` with bundle id `solutions.ddj.cleanshare` (or whatever `BUNDLE_PREFIX.app` resolves to from `Config/Local.xcconfig` — read the file if present).
   - Wait ~2 seconds for the SwiftUI scene to render (the simulator MCP tools do not block on launch).
   - Test: `mcp__ios-simulator__ui_describe_all` returns output containing the string `CleanShare` (case-sensitive).
   - Done: `ui_describe_all` output includes both `CleanShare` and `Strip metadata before sharing`.
@@ -835,7 +835,7 @@
   - Replace the stub in `ShareExtension/ShareViewController.swift` with the real flow per PLAN.md §3.1 + §6:
     1. `viewDidLoad`: create a `CleaningProgressModel`, host `CleaningProgressView(progress: model)` via `UIHostingController`, add it as child controller.
     2. Spawn a `Task`:
-       - Open a `Workspace(appGroupID: "group.dev.cleanshare.app")`. Allocate a `JobURLs`.
+       - Open a `Workspace(appGroupID: "group.solutions.ddj.cleanshare")`. Allocate a `JobURLs`.
        - Enumerate `extensionContext?.inputItems` → `NSItemProvider` → for each one, call `loadFileRepresentation(forTypeIdentifier:)`. Hardlink (`FileManager.default.linkItem(at:to:)`) into `jobURLs.inDir`. If hardlink fails across volumes, fall back to `copyItem`.
        - Determine `MediaKind` per file via UTI.
        - Build a `CleaningPipeline`, enqueue items, iterate the event stream — update `model.fraction` from `.progress` events; record cleaned URLs from `.completed`.
@@ -859,7 +859,7 @@
 
 - [x] **3.17** Simulator smoke test: app accepts cleanshare:// URL without crashing
   - 1. `mcp__ios-simulator__open_simulator`; `mcp__ios-simulator__get_booted_sim_id` → record UDID.
-  - 2. `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -path '*/Debug-iphonesimulator/*' -type d | head -1` to resolve `.app`. `mcp__ios-simulator__install_app`. `mcp__ios-simulator__launch_app dev.cleanshare.app`.
+  - 2. `find ~/Library/Developer/Xcode/DerivedData -name 'CleanShare.app' -path '*/Debug-iphonesimulator/*' -type d | head -1` to resolve `.app`. `mcp__ios-simulator__install_app`. `mcp__ios-simulator__launch_app solutions.ddj.cleanshare`.
   - 3. Capture pre-URL screenshot: `mcp__ios-simulator__screenshot` → `screenshots/dev/3.17-pre-url.png`.
   - 4. Open URL via bash: `xcrun simctl openurl <UDID> "cleanshare://handoff?t=nonexistent"`.
   - 5. Wait 2 s. `mcp__ios-simulator__screenshot` → `screenshots/dev/3.17-post-url.png`. `mcp__ios-simulator__ui_describe_all` and confirm "CleanShare" is still visible (the app did NOT crash; it gracefully ignored the missing manifest).
@@ -880,7 +880,7 @@
 ## Phase 4: UI polish
 
 - [x] **4.01** Implement CleaningPreferencesStore (ObservableObject backing Settings + onboarding)
-  - File: `Packages/CleanShareUI/Sources/CleanShareUI/Stores/CleaningPreferencesStore.swift` — `@MainActor public final class CleaningPreferencesStore: ObservableObject`. Uses `UserDefaults(suiteName: "group.dev.cleanshare.app")` as backing store. `@Published` properties matching `CleaningPreferences` fields. Provides a `var current: CleaningPreferences { get set }` computed property that synthesizes a snapshot from the published values.
+  - File: `Packages/CleanShareUI/Sources/CleanShareUI/Stores/CleaningPreferencesStore.swift` — `@MainActor public final class CleaningPreferencesStore: ObservableObject`. Uses `UserDefaults(suiteName: "group.solutions.ddj.cleanshare")` as backing store. `@Published` properties matching `CleaningPreferences` fields. Provides a `var current: CleaningPreferences { get set }` computed property that synthesizes a snapshot from the published values.
   - Also store `onboardingCompletedV1: Bool` and `LivePhotoDefaultMode: LivePhotoMode?` as backing keys.
   - Test: `cd Packages/CleanShareUI && swift build && swift test --filter CleaningPreferencesStoreTests` (one test: init, mutate a flag, re-init from same suite, observe the value persisted).
   - Done: Builds; the persistence round-trip test passes.
@@ -903,7 +903,7 @@
   - Refs: PLAN.md §20 Week 4.
 
 - [x] **4.04** Sim verify onboarding page 1 — visual inspection
-  - 1. `xcrun simctl uninstall <UDID> dev.cleanshare.app` to clear stored prefs (so onboarding shows).
+  - 1. `xcrun simctl uninstall <UDID> solutions.ddj.cleanshare` to clear stored prefs (so onboarding shows).
   - 2. Build + install + launch via the MCP tools.
   - 3. `mcp__ios-simulator__screenshot` → `screenshots/dev/4.04-onboarding-1.png`.
   - 4. `mcp__ios-simulator__ui_describe_all` — confirm strings "Share without leaking" and "Get started" (or "Next") visible.
@@ -947,7 +947,7 @@
   - Refs: PLAN.md §20 Week 4.
 
 - [x] **4.08** Sim verify SettingsView — every toggle visible + GPS confirmation alert
-  - Rebuild + reinstall + launch (skip onboarding by setting prefs first: `xcrun simctl spawn <UDID> defaults write group.dev.cleanshare.app onboardingCompletedV1 -bool YES`).
+  - Rebuild + reinstall + launch (skip onboarding by setting prefs first: `xcrun simctl spawn <UDID> defaults write group.solutions.ddj.cleanshare onboardingCompletedV1 -bool YES`).
   - Tap gear icon via `ui_find_element` + `ui_tap`. `screenshot` → `4.08-settings.png`.
   - `ui_describe_all` — confirm the substrings: "Metadata to keep", "Keep orientation", "Keep ICC", "Keep capture date", "Keep camera make", "Location (GPS)", "Live Photos", "Diagnostics", "About CleanShare".
   - Tap the GPS toggle. `screenshot` → `4.08-gps-alert.png`. Confirm the alert appears with "Keep GPS in shared photos?" headline.
@@ -1227,12 +1227,12 @@
 - [x] **5.02** Write fastlane/Appfile
   - File:
     ```ruby
-    app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
+    app_identifier(["solutions.ddj.cleanshare", "solutions.ddj.cleanshare.ShareExtension"])
     apple_id(ENV["FASTLANE_APPLE_ID"] || "REPLACE_ME@cleanshare.dev")
     team_id(ENV["FASTLANE_TEAM_ID"] || "REPLACE_ME")
     ```
   - The `ENV[…]` fallbacks let CI inject real values without committing them.
-  - Test: `test -f fastlane/Appfile && grep -q 'dev.cleanshare.app' fastlane/Appfile && grep -q 'FASTLANE_APPLE_ID' fastlane/Appfile`.
+  - Test: `test -f fastlane/Appfile && grep -q 'solutions.ddj.cleanshare' fastlane/Appfile && grep -q 'FASTLANE_APPLE_ID' fastlane/Appfile`.
   - Done: File present with both bundle IDs and ENV fallbacks.
   - Refs: PLAN.md §12.1.
 
@@ -1242,7 +1242,7 @@
     git_url(ENV["MATCH_GIT_URL"] || "")
     storage_mode("git")
     type("development")
-    app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
+    app_identifier(["solutions.ddj.cleanshare", "solutions.ddj.cleanshare.ShareExtension"])
     username(ENV["FASTLANE_APPLE_ID"]) if ENV["FASTLANE_APPLE_ID"]
     team_id(ENV["FASTLANE_TEAM_ID"]) if ENV["FASTLANE_TEAM_ID"]
     ```
@@ -1339,7 +1339,7 @@
 - [x] **5.14** Write docs/manual-steps.md (human-only checklist)
   - Captures every action the agent CANNOT do. Format: a markdown checklist with one-line "how" pointers. Required entries:
     - Apple Developer Program enrollment + Team ID recording.
-    - Reserve App Store Connect bundle IDs: `dev.cleanshare.app` AND `dev.cleanshare.app.ShareExtension`.
+    - Reserve App Store Connect bundle IDs: `solutions.ddj.cleanshare` AND `solutions.ddj.cleanshare.ShareExtension`.
     - Create private `cleanshare-signing` GitHub repo (Match storage).
     - Run `bundle exec fastlane match init` + `match appstore` LOCALLY on maintainer's Mac the first time (CI is readonly).
     - Configure GitHub `release` environment secrets: `MATCH_PASSWORD`, `MATCH_GIT_URL`, `MATCH_GIT_BASIC_AUTHORIZATION`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_API_KEY_BASE64`, `FASTLANE_APPLE_ID`, `FASTLANE_TEAM_ID`.
@@ -1682,7 +1682,7 @@
   - Refs: PLAN.md §8.3.
 
 - [x] **8.04** Sim verify sample-diff path on a fresh install
-  - Wipe sim state: `xcrun simctl uninstall <UDID> dev.cleanshare.app`.
+  - Wipe sim state: `xcrun simctl uninstall <UDID> solutions.ddj.cleanshare`.
   - Build, install, launch. Complete onboarding via `ui_find_element` + `ui_tap`.
   - Tap "Try it on a sample photo". `screenshot` → `screenshots/dev/8.04-sample-clean.png`.
   - `ui_describe_all` — confirm BEFORE column contains "GPS" + "MakerApple"; AFTER column does NOT contain those substrings.
@@ -1834,7 +1834,7 @@ Each rolls forward into a v0.1.x patch tag (see 9.99).
     2. Add a parser branch in `CleanShareCore/Sources/CleanShareCore/IO/HandoffURL.swift` recognising `https://cleanshare.dev/handoff?t=<token>` as a handoff URL (the existing `cleanshare://` scheme stays as a backup).
     3. Change `URL.handoff(token:)` to produce the HTTPS form by default; expose a `URL.handoffCustomScheme(token:)` for fallback.
     4. In `ShareViewController.handOff`, try the HTTPS handoff first; if `opened=false`, retry with the custom-scheme URL; if BOTH fail, fall to Files.
-    5. Author `marketing/landing/.well-known/apple-app-site-association` (JSON, no extension) with the `applinks` block declaring `appID = "<TEAM_ID>.dev.cleanshare.app"` and `paths = ["/handoff*"]`. The team ID is read from `Config/Local.xcconfig` `DEVELOPMENT_TEAM_OVERRIDE`. Where it's blank, write the file with `<TEAM_ID>` placeholder + a comment pointing at `docs/manual-steps.md`.
+    5. Author `marketing/landing/.well-known/apple-app-site-association` (JSON, no extension) with the `applinks` block declaring `appID = "<TEAM_ID>.solutions.ddj.cleanshare"` and `paths = ["/handoff*"]`. The team ID is read from `Config/Local.xcconfig` `DEVELOPMENT_TEAM_OVERRIDE`. Where it's blank, write the file with `<TEAM_ID>` placeholder + a comment pointing at `docs/manual-steps.md`.
     6. Update `marketing/landing/pages.yml` workflow (if needed) to deploy `.well-known/` correctly — GitHub Pages serves it from the same directory.
     7. Add to `docs/manual-steps.md` the requirement to substitute the real Team ID before deploying `apple-app-site-association`.
     8. Add an `App/Handoff/HandoffRouter` test: a unit-test on the host app target asserting both URL forms parse to the same token.

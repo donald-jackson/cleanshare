@@ -1,6 +1,6 @@
 name: CleanShare
 options:
-  bundleIdPrefix: dev.cleanshare
+  bundleIdPrefix: solutions.ddj
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
@@ -30,7 +30,7 @@ targets:
       base:
         INFOPLIST_FILE: App/Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: App/CleanShare.entitlements
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX).app
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX)
     dependencies:
       - package: CleanShareCore
       - package: CleanShareUI
@@ -45,7 +45,7 @@ targets:
       base:
         INFOPLIST_FILE: ShareExtension/Info.plist
         CODE_SIGN_ENTITLEMENTS: ShareExtension/ShareExtension.entitlements
-        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX).app.ShareExtension
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_PREFIX).ShareExtension
     dependencies:
       - package: CleanShareCore
       - package: CleanShareUI

@@ -13,7 +13,7 @@ final class CleaningPipelineTests: XCTestCase {
     }
 
     func testProcessesThreeImagesAndYieldsThreeCompletedEvents() async throws {
-        let workspace = try Workspace(appGroupID: "group.dev.cleanshare.app")
+        let workspace = try Workspace(appGroupID: "group.solutions.ddj.cleanshare")
         let pipeline = CleaningPipeline(workspace: workspace, prefs: CleaningPreferences())
 
         let items: [CleaningPipeline.InputItem] = try [

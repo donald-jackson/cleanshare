@@ -8,7 +8,7 @@ import Foundation
 @MainActor
 public final class CleaningPreferencesStore: ObservableObject {
     /// App Group suite shared between host app and share extension.
-    public static let suiteName = "group.dev.cleanshare.app"
+    public static let suiteName = "group.solutions.ddj.cleanshare"
 
     private enum Key {
         static let keepOrientation = "keepOrientation"

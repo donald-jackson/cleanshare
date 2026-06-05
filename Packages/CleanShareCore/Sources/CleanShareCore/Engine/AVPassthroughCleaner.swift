@@ -99,7 +99,7 @@ public struct AVPassthroughCleaner: Cleaner {
 
     private static func pump(_ pair: TrackPump) async throws {
         try Task.checkCancellation()
-        let queue = DispatchQueue(label: "dev.cleanshare.av.pump")
+        let queue = DispatchQueue(label: "solutions.ddj.cleanshare.av.pump")
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             pair.input.requestMediaDataWhenReady(on: queue) {
                 while pair.input.isReadyForMoreMediaData {

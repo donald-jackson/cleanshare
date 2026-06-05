@@ -44,7 +44,7 @@ BUNDLE_PREFIX = dev.alice.cleanshare
   Apple ID this is your personal team. Find it in Xcode → Settings → Accounts, or in the
   Apple Developer portal.
 - `BUNDLE_PREFIX` — a reverse-DNS prefix unique to you (e.g. `dev.alice.cleanshare`).
-  Using your own prefix avoids colliding with the shipping `dev.cleanshare.app` bundle
+  Using your own prefix avoids colliding with the shipping `solutions.ddj.cleanshare` bundle
   IDs, which only the maintainer can provision.
 
 `Config/Debug.xcconfig` consumes these via `#include? "Local.xcconfig"`:
@@ -53,7 +53,7 @@ BUNDLE_PREFIX = dev.alice.cleanshare
 #include? "Local.xcconfig"
 CODE_SIGN_STYLE = Automatic
 DEVELOPMENT_TEAM = $(DEVELOPMENT_TEAM_OVERRIDE)
-PRODUCT_BUNDLE_IDENTIFIER = $(BUNDLE_PREFIX).app
+PRODUCT_BUNDLE_IDENTIFIER = $(BUNDLE_PREFIX)
 ```
 
 With automatic signing on, Xcode requests and manages a development provisioning profile
@@ -67,7 +67,7 @@ but Apple imposes real limits you need to know about:
 - **7-day re-signing.** Apps signed with a free Apple ID expire after 7 days. Re-build
   and re-install from Xcode to renew. (Paid memberships get 1-year profiles.)
 - **No App Groups entitlement.** Free accounts cannot provision the
-  `group.dev.cleanshare.app` App Group. The extension ↔ host workspace and the
+  `group.solutions.ddj.cleanshare` App Group. The extension ↔ host workspace and the
   `cleanshare://handoff?t=<token>` URL-scheme re-share both depend on the shared App Group
   container. When the App Group is unavailable, the extension falls back to handing the
   cleaned file off through `UIDocumentPickerViewController` (the Files picker) instead of
@@ -96,7 +96,7 @@ no signing material ever lands in this repository. See PLAN.md §12.1.
 git_url(ENV["MATCH_GIT_URL"])
 storage_mode("git")
 type("development")
-app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
+app_identifier(["solutions.ddj.cleanshare", "solutions.ddj.cleanshare.ShareExtension"])
 username(ENV["FASTLANE_APPLE_ID"])
 team_id(ENV["FASTLANE_TEAM_ID"])
 ```

@@ -27,7 +27,7 @@ The flow (PLAN.md §6.1):
 
 1. The extension finishes cleaning and writes the receipts/manifest to a
    token-named inbox in the shared App Group container
-   (`group.dev.cleanshare.app`).
+   (`group.solutions.ddj.cleanshare`).
 2. The extension calls
    `extensionContext?.open(URL(string: "cleanshare://handoff?t=<token>")!)`.
 3. On `success == true`, it calls `completeRequest(returningItems: nil)` to
@@ -84,5 +84,5 @@ The handoff degrades gracefully rather than failing outright:
 
 - PLAN.md §6 (Re-Share UX: extension → host handoff)
 - PLAN.md §6.1 (the flow), §6.2 (fallback ladder), §6.3 (Universal Link hardening)
-- App Group `group.dev.cleanshare.app` (shared workspace container)
+- App Group `group.solutions.ddj.cleanshare` (shared workspace container)
 - [[0001-record-architecture-decisions]]

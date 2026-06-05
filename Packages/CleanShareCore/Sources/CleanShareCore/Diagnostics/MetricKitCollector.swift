@@ -10,7 +10,7 @@ import MetricKit
 @MainActor
 public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubscriber {
     /// Process-wide singleton so `subscribe()` / `unsubscribe()` are idempotent.
-    public static let shared = MetricKitCollector(appGroupID: "group.dev.cleanshare.app")
+    public static let shared = MetricKitCollector(appGroupID: "group.solutions.ddj.cleanshare")
 
     private static let maxReports = 5
 

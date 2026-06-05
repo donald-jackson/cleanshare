@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 /// App Group workspace, writes a handoff manifest, then opens the host app to
 /// re-present the system share sheet. See PLAN.md §3.1 and §6.
 final class ShareViewController: UIViewController {
-    private let appGroupID = "group.dev.cleanshare.app"
+    private let appGroupID = "group.solutions.ddj.cleanshare"
     private let progressModel = CleaningProgressModel()
     private var pipeline: CleaningPipeline?
     private var workTask: Task<Void, Never>?
@@ -134,7 +134,7 @@ final class ShareViewController: UIViewController {
             await self.pipeline?.cancel()
             self.workTask?.cancel()
             self.extensionContext?.cancelRequest(
-                withError: NSError(domain: "dev.cleanshare.share", code: NSUserCancelledError)
+                withError: NSError(domain: "solutions.ddj.cleanshare.share", code: NSUserCancelledError)
             )
         }
     }
@@ -167,7 +167,7 @@ final class ShareViewController: UIViewController {
                 }
                 guard let url else {
                     continuation.resume(
-                        throwing: NSError(domain: "dev.cleanshare.share", code: -1)
+                        throwing: NSError(domain: "solutions.ddj.cleanshare.share", code: -1)
                     )
                     return
                 }

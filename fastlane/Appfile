@@ -1,3 +1,3 @@
-app_identifier(["dev.cleanshare.app", "dev.cleanshare.app.ShareExtension"])
+app_identifier(["solutions.ddj.cleanshare", "solutions.ddj.cleanshare.ShareExtension"])
 apple_id(ENV["FASTLANE_APPLE_ID"] || "REPLACE_ME@cleanshare.dev")
 team_id(ENV["FASTLANE_TEAM_ID"] || "REPLACE_ME")

@@ -20,7 +20,7 @@ public struct DiagnosticReport: Identifiable, Sendable {
 /// export. `MetricKitCollector` writes here; the UI reads from here. Nothing is
 /// ever transmitted. See PLAN.md §18.2.
 public enum DiagnosticsStore {
-    static let appGroupID = "group.dev.cleanshare.app"
+    static let appGroupID = "group.solutions.ddj.cleanshare"
 
     /// Resolves `<AppGroup>/Diagnostics/reports.json`, creating the directory if
     /// needed. Falls back to a temp directory when the App Group container is

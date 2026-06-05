@@ -55,7 +55,7 @@ iOS support. The rule is mechanically enforced by
 
 ## App Group
 
-`group.dev.cleanshare.app` (maintainers replace with their own reverse-DNS)
+`group.solutions.ddj.cleanshare` (maintainers replace with their own reverse-DNS)
 backs the extension → host handoff workspace. The share extension cleans files
 into `AppGroup/tmp/job-<uuid>/` and writes a `manifest.json` into
 `AppGroup/inbox/<token>/`; the host app reads it back after being launched.

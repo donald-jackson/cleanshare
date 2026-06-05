@@ -6,7 +6,7 @@ import Foundation
 /// posts the cleaned output URLs to the `ShareSheetCoordinator` so `RootView` can
 /// present the system share sheet. See PLAN.md §6.
 enum HandoffRouter {
-    static let appGroupID = "group.dev.cleanshare.app"
+    static let appGroupID = "group.solutions.ddj.cleanshare"
     private static let cleanupDelay: TimeInterval = 60
 
     /// Returns `false` (silently) when the URL isn't a handoff, the App Group

@@ -18,10 +18,10 @@ Everything below is Apple-side identity, signing, DNS, or community plumbing.
       and `Config/Local.xcconfig` (`DEVELOPMENT_TEAM_OVERRIDE`).
 - [ ] **Reserve the App Store Connect bundle IDs.** How: App Store Connect → Certificates,
       Identifiers & Profiles → Identifiers → register **both**:
-      - `dev.cleanshare.app` (host app)
-      - `dev.cleanshare.app.ShareExtension` (share extension)
-      Enable the **App Groups** capability (`group.dev.cleanshare.app`) on the host ID.
-- [ ] **Create the App Store Connect app record** for `dev.cleanshare.app`. How: App Store
+      - `solutions.ddj.cleanshare` (host app)
+      - `solutions.ddj.cleanshare.ShareExtension` (share extension)
+      Enable the **App Groups** capability (`group.solutions.ddj.cleanshare`) on the host ID.
+- [ ] **Create the App Store Connect app record** for `solutions.ddj.cleanshare`. How: App Store
       Connect → My Apps → "+" → New App. Name "CleanShare", Photo & Video / Utilities, 4+.
 
 ## Code signing (Fastlane Match)
@@ -68,7 +68,7 @@ Add these under Settings → Environments → `release` → Environment secrets 
       `marketing/landing/CNAME` file already contains `cleanshare.dev`.
 - [ ] **Substitute the real Team ID in the Universal Links AASA file before deploying.** How:
       edit `marketing/landing/.well-known/apple-app-site-association` and replace the
-      `<TEAM_ID>` placeholder in `"appID": "<TEAM_ID>.dev.cleanshare.app"` with your Apple
+      `<TEAM_ID>` placeholder in `"appID": "<TEAM_ID>.solutions.ddj.cleanshare"` with your Apple
       **Team ID** (same value as `DEVELOPMENT_TEAM_OVERRIDE` in `Config/Local.xcconfig`). The
       file must stay valid JSON with **no** `.json` extension and no comments — Apple's
       parser rejects both. It is served from `https://cleanshare.dev/.well-known/apple-app-site-association`
