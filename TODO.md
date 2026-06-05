@@ -1861,7 +1861,7 @@ Each rolls forward into a v0.1.x patch tag (see 9.99).
   - **Done:** Section present with all five recipes.
   - **Refs:** This task documents the regression we hit in 9.01 so a real-device check happens before every release.
 
-- [ ] **9.99** Tag v0.1.1 hotfix
+- [x] **9.99** Tag v0.1.1 hotfix
   - Move `[Unreleased]` section content under a new `## [0.1.1] - <today>` heading. Commit `chore(release): v0.1.1 — share-extension reshare hotfix`. Tag `git tag -a v0.1.1 -m "v0.1.1 — share-extension reshare hotfix"`. Do NOT push.
   - **Test:** `git tag --list | grep -q '^v0.1.1$' && grep -q '## \[0.1.1\]' CHANGELOG.md`.
   - **Done:** Tag exists; CHANGELOG bumped.
