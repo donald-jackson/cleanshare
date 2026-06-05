@@ -12,6 +12,10 @@ final class ShareViewController: UIViewController {
     private let progressModel = CleaningProgressModel()
     private var pipeline: CleaningPipeline?
     private var workTask: Task<Void, Never>?
+    /// Job token captured at the end of `runCleaning`. Drives the "Open
+    /// CleanShare" button — when the user taps it we hand this token to the
+    /// host app via the `cleanshare://handoff` URL.
+    private var pendingToken: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,9 +26,11 @@ final class ShareViewController: UIViewController {
 
     private func installProgressView() {
         let host = UIHostingController(
-            rootView: CleaningProgressView(progress: progressModel) { [weak self] in
-                self?.cancel()
-            }
+            rootView: CleaningProgressView(
+                progress: progressModel,
+                onCancel: { [weak self] in self?.cancel() },
+                onContinue: { [weak self] in self?.openHostApp() }
+            )
         )
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
@@ -83,14 +89,16 @@ final class ShareViewController: UIViewController {
             let manifestURL = try await workspace.inboxManifestURL(token: token)
             try ManifestWriter.write(manifest, to: manifestURL)
 
-            // Brief visual closure before dismissing — the user sees a 100%
-            // progress bar settle for ~300 ms instead of the extension blinking
-            // away mid-stream.
+            // Flip the progress view into its success state — checkmark + the
+            // "Cleaned & ready. Open CleanShare to continue." prompt + an
+            // explicit "Open CleanShare" CTA. We deliberately do NOT auto-launch
+            // the host app: iOS 17+ has made that flow unreliable from share
+            // extensions invoked through another app's share sheet, so we
+            // surface the next step honestly and let the user trigger it with
+            // a fresh user gesture (which gives `openURL:` its best shot).
             self.progressModel.fraction = 1.0
-            self.progressModel.currentFile = "Cleaned"
-            try? await Task.sleep(for: .milliseconds(300))
-
-            self.handOff(token: token)
+            self.progressModel.phase = .ready
+            self.pendingToken = token
         } catch is CancellationError {
             // Cancellation already finished the request via cancel().
         } catch {
@@ -98,17 +106,22 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    /// Dismisses the share-extension UI first, then walks the responder chain
-    /// inside the completeRequest completion handler to fire `openURL:` against
-    /// whatever responds to it (effectively UIApplication). This is the pattern
-    /// iOS 17+ requires: the system refuses to switch apps while a share-
-    /// extension view is on screen, so the dismissal MUST come first.
+    /// Invoked when the user taps "Open CleanShare" in the success state of
+    /// the share-extension UI. Dismisses the extension first (iOS 17+ refuses
+    /// app switches while an extension is foregrounded), then walks the
+    /// responder chain inside the dismissal's completion handler to fire
+    /// `openURL:` against whatever responds (effectively UIApplication).
     ///
-    /// The cleaned-output manifest is already persisted to the App Group inbox
-    /// at this point. If iOS still ignores the openURL call (some 17.x builds
-    /// do), `HandoffRouter.applyPendingInbox(...)` picks the manifest up the
-    /// next time the user foregrounds CleanShare.
-    private func handOff(token: String) {
+    /// If iOS still drops the open (some 17.x builds do, even with a fresh
+    /// user gesture), the user's only friction is one extra tap: the manifest
+    /// is already in the App Group inbox and `HandoffRouter.applyPendingInbox`
+    /// auto-presents the share sheet the next time CleanShare comes to the
+    /// foreground — provided the manifest is fresher than 3 minutes.
+    private func openHostApp() {
+        guard let token = self.pendingToken else {
+            extensionContext?.completeRequest(returningItems: nil)
+            return
+        }
         let url = URL.handoffCustomScheme(token: token)
         extensionContext?.completeRequest(returningItems: nil) { [weak self] _ in
             // Hop to the main actor — UIResponder.next is MainActor-isolated and

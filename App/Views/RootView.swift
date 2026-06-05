@@ -15,33 +15,50 @@ struct RootView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                Text(String(localized: "CleanShare"))
-                    .font(.largeTitle).bold()
-                Text(String(localized: "Strip metadata before sharing"))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            VStack(spacing: 0) {
+                Spacer(minLength: 32)
 
-                Button(String(localized: "Try it on a sample photo")) {
-                    self.cleanSamplePhoto()
+                VStack(spacing: 10) {
+                    Text(String(localized: "CleanShare"))
+                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .foregroundStyle(BrandPalette.ink)
+                    Text(String(localized: "Strip metadata before sharing"))
+                        .font(.system(.subheadline, design: .rounded))
+                        .foregroundStyle(.secondary)
                 }
-                .buttonStyle(.borderedProminent)
 
-                Button(String(localized: "Clean photos…")) {
-                    self.showPhotoPicker = true
-                }
-                .buttonStyle(.borderedProminent)
+                Spacer(minLength: 28)
 
-                Button(String(localized: "Try it on a Live Photo (sample)")) {
-                    self.livePhotoOnChoose = { mode in
-                        self.showLivePhotoSheet = false
-                        self.cleanSampleLivePhoto(mode: mode)
+                VStack(spacing: 14) {
+                    Button {
+                        self.showPhotoPicker = true
+                    } label: {
+                        Label(String(localized: "Clean photos…"), systemImage: "wand.and.stars")
                     }
-                    self.showLivePhotoSheet = true
+                    .buttonStyle(CleanSharePrimaryButtonStyle())
+
+                    Button {
+                        self.cleanSamplePhoto()
+                    } label: {
+                        Label(String(localized: "Try on a sample photo"), systemImage: "photo")
+                    }
+                    .buttonStyle(CleanShareSecondaryButtonStyle())
+
+                    Button {
+                        self.livePhotoOnChoose = { mode in
+                            self.showLivePhotoSheet = false
+                            self.cleanSampleLivePhoto(mode: mode)
+                        }
+                        self.showLivePhotoSheet = true
+                    } label: {
+                        Label(String(localized: "Try on a sample Live Photo"), systemImage: "livephoto")
+                    }
+                    .buttonStyle(CleanShareSecondaryButtonStyle())
                 }
-                .buttonStyle(.borderedProminent)
+                .padding(.horizontal, 24)
+
+                Spacer()
             }
-            .padding()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

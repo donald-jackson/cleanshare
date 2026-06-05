@@ -8,6 +8,11 @@ import Foundation
 enum HandoffRouter {
     static let appGroupID = "group.solutions.ddj.cleanshare"
     private static let cleanupDelay: TimeInterval = 60
+    /// Maximum manifest age at which the foreground sweep will auto-present
+    /// the share sheet. Older manifests are ignored on cold-start / scene-
+    /// activate so a user opening CleanShare days later sees a fresh app,
+    /// not a stale share sheet for content they've moved on from.
+    private static let foregroundSweepMaxAge: TimeInterval = 180
 
     /// Returns `false` (silently) when the URL isn't a handoff, the App Group
     /// container is unavailable, or the manifest is missing/unreadable — never
@@ -61,9 +66,15 @@ enum HandoffRouter {
             return lDate > rDate
         }
 
+        let cutoff = Date().addingTimeInterval(-self.foregroundSweepMaxAge)
         for tokenDir in sorted {
             let manifestURL = tokenDir.appendingPathComponent("manifest.json")
             guard let manifest = try? ManifestReader.read(from: manifestURL) else { continue }
+            // Recent share — auto-present. Older ones are ignored: a user
+            // opening CleanShare minutes/hours later treats it as a fresh
+            // launch, not a stale share sheet. (TTL cleanup eventually
+            // removes them.)
+            guard manifest.createdAt >= cutoff else { continue }
             coordinator.pendingURLs = manifest.receipts.map(\.outputURL)
             self.scheduleCleanup(token: manifest.token, root: root)
             return true

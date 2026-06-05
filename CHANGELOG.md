@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Share-extension UX is no longer a gimmick.** After cleaning, the share
+  sheet now shows an honest success state ("Cleaned & ready — open CleanShare
+  to continue") with a brand-styled "Open CleanShare" CTA, instead of trying
+  to auto-launch the host app via responder-chain selector dispatch (which
+  iOS 17+ either drops outright or routes to the Files-export fallback).
+  Manifests are still persisted to the App Group inbox, and tapping the CTA
+  best-effort-launches the host app on a fresh user gesture — but if iOS
+  drops that too, the cost is one extra tap on the CleanShare icon.
+- **Foreground inbox sweep is now age-capped at 3 minutes.** A user opening
+  CleanShare days after a share-extension run gets a fresh app instead of a
+  stale share sheet for content they've moved on from. Recent shares (<3 min
+  old) still auto-present. Older manifests age out via the existing TTL
+  cleanup. `HandoffRouter.foregroundSweepMaxAge` is the knob.
+- **`RootView` repainted with brand-styled buttons.** Replaces the default
+  `.borderedProminent` SwiftUI buttons (flat blue text-only pills) with a
+  proper visual hierarchy: a primary teal→indigo-gradient capsule for "Clean
+  photos…" (the actual job), and two indigo-tinted secondary capsules for
+  the demo entry points. SF Symbol leading icons (`wand.and.stars`, `photo`,
+  `livephoto`). Rounded display weight on the title.
+
+### Added
+
+- `BrandPalette` and `CleanSharePrimaryButtonStyle` / `CleanShareSecondaryButtonStyle`
+  in the `CleanShareUI` package — reusable brand-styling primitives so future
+  views don't redefine the gradient or duplicate the capsule shape.
+- `CleaningPhase` enum on `CleaningProgressModel` + a `.ready` success view in
+  `CleaningProgressView` (gradient checkmark + "Cleaned & ready" prompt +
+  primary "Open CleanShare" CTA).
+
 ### Fixed
 
 - Share-extension handoff now fires `openURL:` **after** `completeRequest`
