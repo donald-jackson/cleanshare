@@ -1850,7 +1850,7 @@ Each rolls forward into a v0.1.x patch tag (see 9.99).
   - **Done:** Entitlements declare the associated domain; AASA JSON parses; HandoffURL exposes both forms; host app builds.
   - **Refs:** PLAN.md §6, §6.3; Apple "Supporting associated domains" doc.
 
-- [ ] **9.03** Add device-side smoke-test recipe to docs/release-process.md
+- [x] **9.03** Add device-side smoke-test recipe to docs/release-process.md
   - **Do:** Append a "Pre-release device smoke test" section to `docs/release-process.md` listing the manual steps a maintainer runs on a real iPhone before each TestFlight upload. Must include:
     1. Share a photo from Photos → CleanShare → verify share sheet appears (NOT Files dialog).
     2. Share a photo from WhatsApp → CleanShare → verify share sheet appears.

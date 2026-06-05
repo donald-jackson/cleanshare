@@ -108,6 +108,40 @@ manual release, which is the default for CleanShare so the maintainer controls t
 
 ---
 
+## Pre-release device smoke test
+
+CI builds the targets and `swift test` covers the Core engine, but the
+extension → host handoff can only be exercised on a real device through the real
+share sheet. We shipped a regression once (9.01) where the extension fell back to
+the Files dialog instead of re-presenting the system share sheet, and no automated
+test caught it. **Run this checklist on a physical iPhone before every TestFlight
+upload.**
+
+Install the build under test (TestFlight or a development build), then:
+
+1. **Photo from Photos app.** Open Photos → pick a photo → Share → **CleanShare**.
+   Verify the **system share sheet** re-appears with the cleaned file (NOT the
+   Files "Save to…" dialog).
+2. **Photo from WhatsApp.** Open WhatsApp → a chat → attach/share a photo →
+   **CleanShare**. Verify the share sheet appears so you can route the cleaned
+   photo onward.
+3. **Live Photo from Photos app.** Open Photos → pick a Live Photo → Share →
+   **CleanShare**. Verify the **consent sheet** appears first (still image vs.
+   keep motion), then the share sheet after you choose.
+4. **1-minute 4K video.** Share a ~1-min 4K clip → **CleanShare**. Verify the
+   share sheet appears within ~1 second (passthrough is near-realtime — a long
+   stall means re-encoding regressed).
+5. **Offline / lossy network.** Settings → Developer →
+   **Network Link Conditioner** = 100% Loss (or enable Airplane Mode), then
+   repeat steps 1–4.
+   CleanShare must still work end to end — it does zero network I/O, so total
+   packet loss must not change any behaviour.
+
+If any step lands on the Files dialog, stalls, or fails, **do not ship** — file
+it against the handoff ladder in `ShareViewController` and re-test.
+
+---
+
 ## Rollback / hotfix
 
 There is no server to roll back. If a shipped build has a serious bug:
