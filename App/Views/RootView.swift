@@ -12,6 +12,8 @@ struct RootView: View {
     @State private var livePhotoOnChoose: (LivePhotoMode) -> Void = { _ in }
     @State private var sampleDiff: SampleDiffPair?
     @State private var showPhotoPicker = false
+    @State private var showInspectPicker = false
+    @State private var inspectTarget: InspectTarget?
 
     var body: some View {
         NavigationStack {
@@ -36,6 +38,13 @@ struct RootView: View {
                         Label(String(localized: "Clean photos…"), systemImage: "wand.and.stars")
                     }
                     .buttonStyle(CleanSharePrimaryButtonStyle())
+
+                    Button {
+                        self.showInspectPicker = true
+                    } label: {
+                        Label(String(localized: "Inspect a photo"), systemImage: "doc.text.magnifyingglass")
+                    }
+                    .buttonStyle(CleanShareSecondaryButtonStyle())
 
                     Button {
                         self.cleanSamplePhoto()
@@ -87,6 +96,22 @@ struct RootView: View {
                 self.cleanPicked(results)
             }
             .ignoresSafeArea()
+        }
+        .sheet(isPresented: self.$showInspectPicker) {
+            PhotoPicker(selectionLimit: 1) { results in
+                self.showInspectPicker = false
+                self.importForInspection(results.first?.itemProvider)
+            }
+            .ignoresSafeArea()
+        }
+        .sheet(item: self.$inspectTarget) { target in
+            MetadataInspectionView(
+                url: target.url,
+                kind: target.kind,
+                onCleanAndShare: {
+                    self.cleanSingleFile(url: target.url, kind: target.kind)
+                }
+            )
         }
         .sheet(isPresented: self.$showLivePhotoSheet) {
             LivePhotoConsentSheet(prefsStore: self.prefsStore, onChoose: self.$livePhotoOnChoose)
@@ -147,6 +172,59 @@ struct RootView: View {
 
                 let pipeline = CleaningPipeline(workspace: workspace, prefs: prefs)
                 await pipeline.enqueue(items)
+
+                var cleaned: [URL] = []
+                for try await event in await pipeline.run() {
+                    if case .completed(_, let receipt) = event {
+                        cleaned.append(receipt.outputURL)
+                    }
+                }
+                guard !cleaned.isEmpty else { return }
+                self.coordinator.pendingURLs = cleaned
+            } catch {
+                // Best-effort: failures leave the UI idle.
+            }
+        }
+    }
+
+    /// Imports a single picked item into a fresh workspace job and presents the
+    /// `MetadataInspectionView`. The file stays in the App Group container so
+    /// the inspector can read it; the regular workspace TTL sweep cleans it up
+    /// later.
+    private func importForInspection(_ provider: NSItemProvider?) {
+        guard let provider else { return }
+        Task {
+            do {
+                let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
+                let job = try await workspace.newJob()
+                guard let item = await importItem(provider, into: job.inDir) else { return }
+                self.inspectTarget = InspectTarget(url: item.sourceURL, kind: item.kind)
+            } catch {
+                // Best-effort: failures leave the UI idle.
+            }
+        }
+    }
+
+    /// Cleans a single file already in the workspace and queues it for the
+    /// share sheet. Used by the inspector's "Clean and share" CTA so the user
+    /// goes from "here's what's hiding" to "here's the cleaned version" in one
+    /// tap, without re-picking.
+    private func cleanSingleFile(url: URL, kind: MediaKind) {
+        let prefs = self.prefsStore.current
+        Task {
+            do {
+                let workspace = try Workspace(appGroupID: CleaningPreferencesStore.suiteName)
+                let job = try await workspace.newJob()
+                let input = job.inDir.appendingPathComponent(url.lastPathComponent)
+                let fileManager = FileManager.default
+                try? fileManager.removeItem(at: input)
+                do {
+                    try fileManager.linkItem(at: url, to: input)
+                } catch {
+                    try fileManager.copyItem(at: url, to: input)
+                }
+                let pipeline = CleaningPipeline(workspace: workspace, prefs: prefs)
+                await pipeline.enqueue([(id: UUID(), sourceURL: input, kind: kind)])
 
                 var cleaned: [URL] = []
                 for try await event in await pipeline.run() {
@@ -258,4 +336,12 @@ private struct SampleDiffPair: Identifiable {
     let id = UUID()
     let beforeURL: URL
     let afterURL: URL
+}
+
+/// File the user picked for inspection. Drives the `MetadataInspectionView`
+/// sheet via `.sheet(item:)`.
+private struct InspectTarget: Identifiable {
+    let id = UUID()
+    let url: URL
+    let kind: MediaKind
 }

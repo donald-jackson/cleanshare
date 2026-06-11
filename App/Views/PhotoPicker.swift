@@ -5,11 +5,14 @@ import SwiftUI
 /// images, videos, and Live Photos, and pinned to `.current` representation mode
 /// so HEIC is never silently transcoded to JPEG. See PLAN.md §3.2.
 struct PhotoPicker: UIViewControllerRepresentable {
+    /// 0 = unlimited; defaults to multi-select for the main "Clean photos…"
+    /// flow. The inspector flow passes 1 to constrain to a single file.
+    var selectionLimit: Int = 0
     let onPicked: ([PHPickerResult]) -> Void
 
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
-        config.selectionLimit = 0
+        config.selectionLimit = self.selectionLimit
         config.preferredAssetRepresentationMode = .current
         config.filter = .any(of: [.images, .videos, .livePhotos])
         let controller = PHPickerViewController(configuration: config)

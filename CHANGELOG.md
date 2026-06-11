@@ -47,6 +47,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **"Inspect a photo" feature.** New secondary CTA on `RootView` that opens
+  a single-select PHPicker; the chosen file is hardlinked into a fresh
+  workspace job and presented in a `MetadataInspectionView` sheet that
+  shows the actual identifying values (decoded GPS coordinates, camera
+  make/model, lens serial, capture date, MakerNote summary, XMP/IPTC/
+  Photoshop fields, etc.) grouped by category with severity dots — red
+  for high-impact fields, amber for medium, indigo for low. Each row is
+  user-readable, not a raw key dump. A "Clean and share" CTA at the
+  bottom runs the file through the regular cleaning pipeline and presents
+  the system share sheet, so the user can go from "here's what's hiding"
+  to "here's the cleaned version, ready to send" in one tap. Video files
+  (MP4/MOV) are inspected via `AVMetadataItem` (location, creation date,
+  make/model/software, Live Photo content identifier, timed-metadata
+  tracks).
+- `MetadataInspector` + `MetadataInspection` / `MetadataField` /
+  `MetadataCategory` / `MetadataSeverity` in `CleanShareCore` — engine
+  side of the new feature. Read-only counterpart to `MetadataAuditor`:
+  the auditor flags raw key names that *survived* cleaning, the
+  inspector decodes raw values that *would leak* if you didn't clean.
+- `MetadataInspectionView` in `CleanShareUI` — sheet UI with loading,
+  loaded, empty-state, and error states.
 - `BrandPalette` and `CleanSharePrimaryButtonStyle` / `CleanShareSecondaryButtonStyle`
   in the `CleanShareUI` package — reusable brand-styling primitives so future
   views don't redefine the gradient or duplicate the capsule shape.
