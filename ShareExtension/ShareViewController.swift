@@ -3,19 +3,21 @@ import CleanShareUI
 import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
+import UserNotifications
 
-/// Entry point for the share extension. Cleans every attached photo/video in the
-/// App Group workspace, writes a handoff manifest, then opens the host app to
-/// re-present the system share sheet. See PLAN.md §3.1 and §6.
+/// Entry point for the share extension. Cleans every attached photo/video in
+/// the App Group workspace, writes a handoff manifest, schedules a local
+/// notification the user taps to continue sharing in the host app, then
+/// dismisses itself. See PLAN.md §3.1 and §6.
 final class ShareViewController: UIViewController {
     private let appGroupID = "group.solutions.ddj.cleanshare"
+    /// Time the success state is shown before the extension dismisses
+    /// itself. Long enough to read "Cleaned", short enough not to feel like a
+    /// stall.
+    private let successDisplayDuration: TimeInterval = 0.8
     private let progressModel = CleaningProgressModel()
     private var pipeline: CleaningPipeline?
     private var workTask: Task<Void, Never>?
-    /// Job token captured at the end of `runCleaning`. Drives the "Open
-    /// CleanShare" button — when the user taps it we hand this token to the
-    /// host app via the `cleanshare://handoff` URL.
-    private var pendingToken: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,8 +30,7 @@ final class ShareViewController: UIViewController {
         let host = UIHostingController(
             rootView: CleaningProgressView(
                 progress: progressModel,
-                onCancel: { [weak self] in self?.cancel() },
-                onContinue: { [weak self] in self?.openHostApp() }
+                onCancel: { [weak self] in self?.cancel() }
             )
         )
         addChild(host)
@@ -89,16 +90,17 @@ final class ShareViewController: UIViewController {
             let manifestURL = try await workspace.inboxManifestURL(token: token)
             try ManifestWriter.write(manifest, to: manifestURL)
 
-            // Flip the progress view into its success state — checkmark + the
-            // "Cleaned & ready. Open CleanShare to continue." prompt + an
-            // explicit "Open CleanShare" CTA. We deliberately do NOT auto-launch
-            // the host app: iOS 17+ has made that flow unreliable from share
-            // extensions invoked through another app's share sheet, so we
-            // surface the next step honestly and let the user trigger it with
-            // a fresh user gesture (which gives `openURL:` its best shot).
+            // Flash the success state ("Cleaned") for a beat so the user sees
+            // confirmation, then post the local notification and dismiss the
+            // extension. The notification is the user-driven hook back into
+            // the host app; the inbox sweep covers the case where the user
+            // denied notification permission.
             self.progressModel.fraction = 1.0
             self.progressModel.phase = .ready
-            self.pendingToken = token
+
+            await self.postReadyNotification(token: token, itemCount: receipts.count)
+            try? await Task.sleep(nanoseconds: UInt64(self.successDisplayDuration * 1_000_000_000))
+            self.extensionContext?.completeRequest(returningItems: nil)
         } catch is CancellationError {
             // Cancellation already finished the request via cancel().
         } catch {
@@ -106,40 +108,29 @@ final class ShareViewController: UIViewController {
         }
     }
 
-    /// Invoked when the user taps "Open CleanShare" in the success state of
-    /// the share-extension UI. Dismisses the extension first (iOS 17+ refuses
-    /// app switches while an extension is foregrounded), then walks the
-    /// responder chain inside the dismissal's completion handler to fire
-    /// `openURL:` against whatever responds (effectively UIApplication).
-    ///
-    /// If iOS still drops the open (some 17.x builds do, even with a fresh
-    /// user gesture), the user's only friction is one extra tap: the manifest
-    /// is already in the App Group inbox and `HandoffRouter.applyPendingInbox`
-    /// auto-presents the share sheet the next time CleanShare comes to the
-    /// foreground — provided the manifest is fresher than 3 minutes.
-    private func openHostApp() {
-        guard let token = self.pendingToken else {
-            extensionContext?.completeRequest(returningItems: nil)
-            return
-        }
-        let url = URL.handoffCustomScheme(token: token)
-        extensionContext?.completeRequest(returningItems: nil) { [weak self] _ in
-            // Hop to the main actor — UIResponder.next is MainActor-isolated and
-            // the completion handler arrives on an arbitrary queue.
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                var responder: UIResponder? = self
-                let selector = NSSelectorFromString("openURL:")
-                while let current = responder {
-                    if current.responds(to: selector) {
-                        _ = current.perform(selector, with: url)
-                        return
-                    }
-                    responder = current.next
-                }
-                NSLog("CleanShare: responder chain exhausted; manifest will be picked up on next CleanShare foreground")
-            }
-        }
+    /// Posts a local notification the user taps to continue sharing in the
+    /// host app. The token is carried in `userInfo` so the host's notification
+    /// delegate can route the tap directly to the right manifest. Requests
+    /// authorization first (idempotent if the user has already answered).
+    private func postReadyNotification(token: String, itemCount: Int) async {
+        let center = UNUserNotificationCenter.current()
+        // Idempotent: if the user already answered, the existing setting wins
+        // and no prompt is shown. If they denied, .add(_:) will silently fail
+        // — that's fine, the host-app inbox sweep is the backup.
+        _ = try? await center.requestAuthorization(options: [.alert, .sound])
+
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "Cleaned & ready to share")
+        content.body = itemCount > 1
+            ? String(localized: "Tap to share \(itemCount) cleaned files via CleanShare.")
+            : String(localized: "Tap to share your cleaned file via CleanShare.")
+        content.sound = .default
+        content.categoryIdentifier = URL.handoffNotificationCategory
+        content.userInfo = [URL.handoffNotificationTokenKey: token]
+        // Token doubles as the request id — re-posting for the same job would
+        // be a bug, but this guarantees no duplicates either way.
+        let request = UNNotificationRequest(identifier: token, content: content, trigger: nil)
+        try? await center.add(request)
     }
 
     private func cancel() {

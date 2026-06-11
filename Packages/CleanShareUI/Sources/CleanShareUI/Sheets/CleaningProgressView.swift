@@ -25,30 +25,28 @@ public final class CleaningProgressModel: ObservableObject {
     }
 }
 
-/// Share-extension sheet — shows live cleaning progress, then a "Cleaned &
-/// ready" success state with a primary CTA that re-opens (or asks the user
-/// to open) the CleanShare host app so they can finish sharing.
+/// Share-extension sheet — shows live cleaning progress, then a brief
+/// "Cleaned & ready" success state before the extension dismisses itself
+/// and posts a local notification the user taps to continue sharing inside
+/// the CleanShare host app.
 ///
-/// We deliberately do NOT try to auto-launch the host app via private API
-/// gymnastics: iOS 17+ has made that flow unreliable from share extensions
-/// invoked through another app's share sheet. Instead, the user gets a clear
-/// instruction and an explicit fresh-user-gesture "Open CleanShare" tap —
-/// which gives `extensionContext.open` / responder-chain `openURL:` their
-/// best shot at actually launching the app. If iOS still drops the launch,
-/// the host app's foreground inbox sweep picks the manifest up on next open.
+/// We deliberately do NOT try to auto-launch the host app from the extension:
+/// iOS 17+ has made every "extension switches to host" path
+/// (`extensionContext.open`, responder-chain `openURL:`, Universal Links from
+/// a foreground extension) unreliable when the extension was invoked through
+/// another app's share sheet. The notification is the user-driven gesture
+/// that iOS does honour, and the host app's foreground inbox sweep is the
+/// belt-and-braces backup if the user denied notifications.
 public struct CleaningProgressView: View {
     @ObservedObject var progress: CleaningProgressModel
     private let onCancel: (() -> Void)?
-    private let onContinue: (() -> Void)?
 
     public init(
         progress: CleaningProgressModel,
-        onCancel: (() -> Void)? = nil,
-        onContinue: (() -> Void)? = nil
+        onCancel: (() -> Void)? = nil
     ) {
         self.progress = progress
         self.onCancel = onCancel
-        self.onContinue = onContinue
     }
 
     public var body: some View {
@@ -77,38 +75,29 @@ public struct CleaningProgressView: View {
     }
 
     private var readyView: some View {
-        VStack(spacing: 22) {
+        VStack(spacing: 18) {
             ZStack {
                 Circle()
                     .fill(BrandPalette.gradient)
-                    .frame(width: 92, height: 92)
-                    .shadow(color: BrandPalette.indigo.opacity(0.30), radius: 16, x: 0, y: 8)
+                    .frame(width: 84, height: 84)
+                    .shadow(color: BrandPalette.indigo.opacity(0.30), radius: 14, x: 0, y: 6)
                 Image(systemName: "checkmark")
-                    .font(.system(size: 42, weight: .semibold))
+                    .font(.system(size: 38, weight: .semibold))
                     .foregroundStyle(.white)
             }
 
-            VStack(spacing: 6) {
-                Text("Cleaned & ready")
-                    .font(.system(.title2, design: .rounded, weight: .semibold))
-                Text("Open CleanShare to continue sharing.")
-                    .font(.callout)
+            VStack(spacing: 4) {
+                Text("Cleaned")
+                    .font(.system(.title3, design: .rounded, weight: .semibold))
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Tap the CleanShare notification to keep sharing.")
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-            }
-
-            if let onContinue = self.onContinue {
-                Button(action: onContinue) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.up.forward.app.fill")
-                        Text("Open CleanShare")
-                    }
-                }
-                .buttonStyle(CleanSharePrimaryButtonStyle())
-                .padding(.top, 4)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 24)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
     }
 }

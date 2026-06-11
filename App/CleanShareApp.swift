@@ -2,6 +2,7 @@ import SwiftUI
 
 @main
 struct CleanShareApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var coordinator = ShareSheetCoordinator()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -13,10 +14,12 @@ struct CleanShareApp: App {
                     HandoffRouter.handle(url, coordinator: self.coordinator)
                 }
                 .task {
-                    // First-launch inbox sweep: if a previous share-extension
-                    // run left a manifest behind because iOS dropped its
-                    // openURL handoff, pick it up now and present the share
-                    // sheet immediately.
+                    // Attach the coordinator to the notification router (so a
+                    // tap on the share-ready notification routes back into
+                    // the share-sheet flow), request notification permission,
+                    // then sweep the App Group inbox in case a previous
+                    // extension run left a manifest behind.
+                    CleanShareNotificationCenter.shared.attach(coordinator: self.coordinator)
                     HandoffRouter.applyPendingInbox(coordinator: self.coordinator)
                 }
         }

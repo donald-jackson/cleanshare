@@ -40,6 +40,13 @@ public extension URL {
         return url
     }
 
+    /// Identifiers shared between the share extension (which posts the
+    /// "Cleaned & ready" local notification) and the host app (which routes a
+    /// tap on that notification back into the share-sheet flow). Lives here so
+    /// both targets see the same string constants without duplication.
+    static let handoffNotificationCategory = "cs.readyToShare"
+    static let handoffNotificationTokenKey = "cs.token"
+
     /// Extracts the job token from either handoff form, or `nil` for any other URL.
     static func handoffToken(from url: URL) -> String? {
         let isUniversalLink = url.scheme == "https"

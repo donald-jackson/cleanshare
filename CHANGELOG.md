@@ -9,14 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Share-extension UX is no longer a gimmick.** After cleaning, the share
-  sheet now shows an honest success state ("Cleaned & ready — open CleanShare
-  to continue") with a brand-styled "Open CleanShare" CTA, instead of trying
-  to auto-launch the host app via responder-chain selector dispatch (which
-  iOS 17+ either drops outright or routes to the Files-export fallback).
-  Manifests are still persisted to the App Group inbox, and tapping the CTA
-  best-effort-launches the host app on a fresh user gesture — but if iOS
-  drops that too, the cost is one extra tap on the CleanShare icon.
+- **Share extension now hands off via a local notification, not an in-extension
+  CTA.** After cleaning, the extension flashes a compact "Cleaned" success
+  state for ~800 ms, posts a `UNNotificationRequest` carrying the job token
+  in `userInfo`, then calls `completeRequest` so the share-sheet window
+  dismisses on its own. Tapping the notification opens CleanShare and the
+  notification-center delegate routes the token straight into
+  `HandoffRouter.handle`, which presents the system share sheet. The
+  previous "Open CleanShare" CTA inside the extension never worked
+  reliably on iOS 17+ and the headline / button labels truncated badly on
+  iPhone 17 Pro Max (where the share-extension window is narrower than a
+  full-width sheet) — both problems are now moot because the extension
+  dismisses itself.
+- **Notification permission is requested at first launch of the host app**
+  (and idempotently re-requested by the extension the first time it tries
+  to post a "Cleaned & ready" notification). If the user denies,
+  `HandoffRouter.applyPendingInbox` still picks up the manifest on next
+  foreground — the notification is the preferred re-entry, not the only one.
 - **Foreground inbox sweep is now age-capped at 3 minutes.** A user opening
   CleanShare days after a share-extension run gets a fresh app instead of a
   stale share sheet for content they've moved on from. Recent shares (<3 min
@@ -35,8 +44,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in the `CleanShareUI` package — reusable brand-styling primitives so future
   views don't redefine the gradient or duplicate the capsule shape.
 - `CleaningPhase` enum on `CleaningProgressModel` + a `.ready` success view in
-  `CleaningProgressView` (gradient checkmark + "Cleaned & ready" prompt +
-  primary "Open CleanShare" CTA).
+  `CleaningProgressView` (gradient checkmark + brief "Cleaned" confirmation
+  before the extension dismisses).
+- `CleanShareNotificationCenter` + `AppDelegate` in the host app — registers
+  as `UNUserNotificationCenter.delegate` early enough to catch cold-launch
+  notification taps, buffers the token if the coordinator isn't attached yet,
+  and replays it on attach. Suppresses the banner when the app is in the
+  foreground (the share sheet is presented instead).
+- `URL.handoffNotificationCategory` / `URL.handoffNotificationTokenKey` in
+  `CleanShareCore` — single source of truth for the identifier strings the
+  extension stamps into a `UNNotificationRequest` and the host reads from the
+  tap response.
 
 ### Fixed
 
