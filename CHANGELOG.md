@@ -86,6 +86,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **"Keep location (GPS)" and "Keep camera make & model" Settings toggles
+  were silently dead.** The property sanitizer `kCFNull`'d every sensitive
+  ImageIO dictionary on the way out but only re-added orientation and
+  `DateTimeOriginal` — so flipping either toggle in Settings had no effect
+  on the cleaned output. Reported by a user who turned on Keep GPS,
+  cleaned via Inspect → Clean and share, and got a stripped output.
+  Sanitizer now re-attaches the GPS dictionary verbatim when `keepGPS`,
+  and a `{Make, Model}`-subset TIFF dict when `keepCameraMakeModel`.
+  Regression covered by `PreferenceAddBackTests`.
 - Share-extension handoff now fires `openURL:` **after** `completeRequest`
   dismisses the share-extension view (the iOS 17+ order requirement —
   previous releases tried it before dismissal, which iOS silently dropped).

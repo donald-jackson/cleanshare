@@ -43,16 +43,44 @@ func sanitizedFrameProperties(
 
     let srcProps = CGImageSourceCopyPropertiesAtIndex(src, frameIndex, nil) as? [CFString: Any]
 
-    // Add-back allowlist.
+    // Add-back allowlist. Each prefs.keepX flag re-attaches the exact field
+    // the user opted into — never a whole sensitive dictionary unless the
+    // entire dictionary is in scope (GPS).
     if prefs.keepOrientation,
        let orientation = srcProps?[kCGImagePropertyOrientation] {
         out[kCGImagePropertyOrientation] = orientation // root-level — NOT inside TIFF/EXIF subdicts
+    }
+    if prefs.keepGPS,
+       let gps = srcProps?[kCGImagePropertyGPSDictionary] as? [CFString: Any],
+       !gps.isEmpty {
+        // GPS dictionary as a whole: coordinates, altitude, fix timestamp,
+        // direction, speed. The Settings toggle warns the user this exposes
+        // location, so re-attach the source's GPS verbatim.
+        out[kCGImagePropertyGPSDictionary] = gps
     }
     if prefs.keepCaptureDate,
        let exif = srcProps?[kCGImagePropertyExifDictionary] as? [CFString: Any],
        let date = exif[kCGImagePropertyExifDateTimeOriginal] {
         out[kCGImagePropertyExifDictionary] = [kCGImagePropertyExifDateTimeOriginal: date]
     }
+    if prefs.keepCameraMakeModel,
+       let tiff = srcProps?[kCGImagePropertyTIFFDictionary] as? [CFString: Any] {
+        // Just Make and Model — not Software, Artist, Copyright, DateTime
+        // (those are separate concerns covered by other prefs / always stripped).
+        var subset: [CFString: Any] = [:]
+        if let make = tiff[kCGImagePropertyTIFFMake] { subset[kCGImagePropertyTIFFMake] = make }
+        if let model = tiff[kCGImagePropertyTIFFModel] { subset[kCGImagePropertyTIFFModel] = model }
+        if !subset.isEmpty {
+            out[kCGImagePropertyTIFFDictionary] = subset
+        }
+    }
+    // `prefs.keepCustomXMP` is currently a no-op: round-tripping the XMP
+    // packet through `CGImageSourceCopyPropertiesAtIndex` /
+    // `CGImageDestinationAddImage` doesn't actually rewrite the packet on
+    // most encoders (ImageIO expects `CGImageMetadata` for that, via
+    // `CGImageDestinationAddImageAndMetadata`). Not exposed in Settings
+    // either, so silently ignoring it doesn't surprise any user yet —
+    // tracked for a future change.
     // ICC profile travels with CGImage.colorSpace — no key needed.
 
     return out
