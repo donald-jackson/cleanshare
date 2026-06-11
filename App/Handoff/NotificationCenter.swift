@@ -6,12 +6,12 @@ import UserNotifications
 /// Routes "Tap to continue sharing" notification taps from the share extension
 /// back into the host app's share-sheet presentation flow.
 ///
-/// The share extension is reachable from another app's share sheet long before
-/// the user has ever opened CleanShare itself — so notification authorization
-/// is requested lazily at first launch of the host app, and the share
-/// extension also requests it (idempotent) the first time it tries to post.
-/// If the user denies, the host app's `HandoffRouter.applyPendingInbox` still
-/// picks the manifest up on next foreground.
+/// Notification permission is **not** requested from here — that happens
+/// inside the onboarding flow (see `OnboardingView.notificationsPage`), where
+/// the user gets an explainer first. If the user denies, the host app's
+/// `HandoffRouter.applyPendingInbox` still picks the manifest up on next
+/// foreground, but onboarding will hold the user on the explainer until they
+/// flip the toggle in Settings — CleanShare is not useful without it.
 @MainActor
 final class CleanShareNotificationCenter: NSObject {
     static let shared = CleanShareNotificationCenter()
@@ -22,15 +22,11 @@ final class CleanShareNotificationCenter: NSObject {
     /// `attach(coordinator:)` so the share sheet still presents.
     private var pendingToken: String?
 
-    /// Wire the coordinator and request permission. Replays any token a
-    /// cold-launch notification tap left behind.
+    /// Wire the coordinator so notification taps route into the share-sheet
+    /// flow. Replays any token a cold-launch notification tap left behind.
     func attach(coordinator: ShareSheetCoordinator) {
         self.coordinator = coordinator
         UNUserNotificationCenter.current().delegate = self
-        Task { @MainActor in
-            _ = try? await UNUserNotificationCenter.current()
-                .requestAuthorization(options: [.alert, .sound])
-        }
         if let token = self.pendingToken {
             self.pendingToken = nil
             self.deliver(token: token, coordinator: coordinator)

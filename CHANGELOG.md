@@ -21,11 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   iPhone 17 Pro Max (where the share-extension window is narrower than a
   full-width sheet) — both problems are now moot because the extension
   dismisses itself.
-- **Notification permission is requested at first launch of the host app**
-  (and idempotently re-requested by the extension the first time it tries
-  to post a "Cleaned & ready" notification). If the user denies,
-  `HandoffRouter.applyPendingInbox` still picks up the manifest on next
-  foreground — the notification is the preferred re-entry, not the only one.
+- **Notification permission is now gated behind an explainer page** in the
+  onboarding flow instead of firing a cold system prompt at first launch.
+  `OnboardingView` gains a fourth page ("One quick step") that tells the user
+  CleanShare sends one notification per share and is only ever used for
+  sharing — then the user taps **Allow notifications** to trigger the system
+  prompt. Granting completes onboarding; denying flips the same page into a
+  follow-up state ("Notifications are turned off … please enable them in
+  Settings to continue") with an **Open Settings** deep link, and a
+  `scenePhase`-based re-check finishes onboarding automatically when the
+  user returns from Settings with notifications enabled. The host app no
+  longer auto-requests authorization in `CleanShareNotificationCenter.attach`,
+  and the privacy page's CTA changes from "Get started" to "Continue".
 - **Foreground inbox sweep is now age-capped at 3 minutes.** A user opening
   CleanShare days after a share-extension run gets a fresh app instead of a
   stale share sheet for content they've moved on from. Recent shares (<3 min

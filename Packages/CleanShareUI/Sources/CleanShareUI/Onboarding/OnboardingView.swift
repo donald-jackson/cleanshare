@@ -1,12 +1,22 @@
 import SwiftUI
+import UserNotifications
+#if os(iOS)
+import UIKit
+#endif
 
-/// First-run onboarding flow: a three-page paged `TabView` that introduces the
-/// app, explains the share flow, and states the privacy posture before handing
-/// off to the main UI. See PLAN.md §14.2.
+/// First-run onboarding flow: paged `TabView` that introduces the app, explains
+/// the share flow, states the privacy posture, and then asks for notification
+/// permission — the only way CleanShare can tell the user "your photos are
+/// cleaned and ready to share" once the share-extension UI dismisses itself.
+/// See PLAN.md §14.2.
 public struct OnboardingView: View {
     @ObservedObject private var prefsStore: CleaningPreferencesStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
     @State private var selection: Int = 0
+    @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
+    @State private var requestInFlight: Bool = false
 
     /// Teal → indigo brand gradient (PLAN.md §14.2).
     private static let brandGradient = LinearGradient(
@@ -18,6 +28,11 @@ public struct OnboardingView: View {
         endPoint: .bottom
     )
 
+    private static let teal = Color(red: 0.098, green: 0.706, blue: 0.690)
+    private static let indigo = Color(red: 0.231, green: 0.247, blue: 0.722)
+
+    private static let notificationsPageIndex = 3
+
     public init(prefsStore: CleaningPreferencesStore) {
         self.prefsStore = prefsStore
     }
@@ -25,6 +40,14 @@ public struct OnboardingView: View {
     public var body: some View {
         self.pagedTabView
             .ignoresSafeArea()
+            .task { await self.refreshNotificationStatus() }
+            .onChange(of: self.scenePhase) { _, newPhase in
+                // User may have flipped the Notifications toggle in Settings
+                // and come back. Re-check so we can let them through.
+                if newPhase == .active {
+                    Task { await self.refreshNotificationStatus() }
+                }
+            }
     }
 
     @ViewBuilder
@@ -33,6 +56,7 @@ public struct OnboardingView: View {
             self.welcomePage.tag(0)
             self.howPage.tag(1)
             self.privacyPage.tag(2)
+            self.notificationsPage.tag(Self.notificationsPageIndex)
         }
         #if os(iOS)
         tabs
@@ -47,7 +71,7 @@ public struct OnboardingView: View {
         self.page {
             Image(systemName: "lock.shield.fill")
                 .font(.system(size: 84))
-                .foregroundStyle(Color(red: 0.098, green: 0.706, blue: 0.690))
+                .foregroundStyle(Self.teal)
                 .padding(28)
                 .background(.white, in: Circle())
             Text("Share without leaking")
@@ -87,17 +111,52 @@ public struct OnboardingView: View {
                 self.bullet("Source open at github.com/<placeholder>/cleanshare.")
             }
             Button {
-                self.prefsStore.onboardingCompletedV1 = true
-                self.dismiss()
+                withAnimation { self.selection = Self.notificationsPageIndex }
             } label: {
-                Text("Get started")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .foregroundStyle(Color(red: 0.231, green: 0.247, blue: 0.722))
+                self.whitePillLabel(text: "Continue", systemImage: "arrow.right")
             }
             .padding(.top, 12)
+        }
+    }
+
+    private var notificationsPage: some View {
+        self.page {
+            Image(systemName: "bell.badge.fill")
+                .font(.system(size: 84))
+                .foregroundStyle(Self.teal)
+                .padding(28)
+                .background(.white, in: Circle())
+            Text("One quick step")
+                .font(.largeTitle.weight(.bold))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("CleanShare sends one notification per share — to tell you your photos are cleaned and ready to forward. That's the only thing notifications are ever used for.")
+                .font(.callout)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .foregroundStyle(.white.opacity(0.92))
+
+            if self.notificationStatus == .denied {
+                Text("Notifications are turned off for CleanShare. The app can't tell you when your share is ready without them — please enable them in Settings to continue.")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .foregroundStyle(.white.opacity(0.92))
+                    .padding(.top, 4)
+                Button {
+                    self.openSystemSettings()
+                } label: {
+                    self.whitePillLabel(text: "Open Settings", systemImage: "gear")
+                }
+            } else {
+                Button {
+                    self.requestNotificationPermission()
+                } label: {
+                    self.whitePillLabel(text: "Allow notifications", systemImage: "bell.fill")
+                }
+                .disabled(self.requestInFlight)
+                .opacity(self.requestInFlight ? 0.5 : 1.0)
+            }
         }
     }
 
@@ -121,6 +180,18 @@ public struct OnboardingView: View {
         .foregroundStyle(.white)
     }
 
+    private func whitePillLabel(text: String, systemImage: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: systemImage)
+            Text(text)
+        }
+        .font(.headline)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 14)
+        .background(.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .foregroundStyle(Self.indigo)
+    }
+
     private func page(@ViewBuilder _ content: () -> some View) -> some View {
         ZStack {
             Self.brandGradient.ignoresSafeArea()
@@ -133,5 +204,46 @@ public struct OnboardingView: View {
             .padding(.bottom, 64)
             .foregroundStyle(.white)
         }
+    }
+
+    // MARK: - Notification permission
+
+    private func refreshNotificationStatus() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        self.notificationStatus = settings.authorizationStatus
+        // If the user enabled notifications via Settings and came back to the
+        // app while sitting on the notifications page, finish onboarding.
+        if (settings.authorizationStatus == .authorized
+            || settings.authorizationStatus == .provisional)
+            && self.selection == Self.notificationsPageIndex {
+            self.complete()
+        }
+    }
+
+    private func requestNotificationPermission() {
+        guard !self.requestInFlight else { return }
+        self.requestInFlight = true
+        Task {
+            let granted = (try? await UNUserNotificationCenter.current()
+                .requestAuthorization(options: [.alert, .sound])) ?? false
+            await self.refreshNotificationStatus()
+            self.requestInFlight = false
+            if granted {
+                self.complete()
+            }
+        }
+    }
+
+    private func openSystemSettings() {
+        #if os(iOS)
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            self.openURL(url)
+        }
+        #endif
+    }
+
+    private func complete() {
+        self.prefsStore.onboardingCompletedV1 = true
+        self.dismiss()
     }
 }
