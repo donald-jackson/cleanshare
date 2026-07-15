@@ -70,7 +70,9 @@ public struct SettingsView: View {
                 get: { self.diagnosticsEnabled },
                 set: { newValue in
                     self.diagnosticsEnabled = newValue
-                    #if canImport(MetricKit)
+                    // MetricKit payload APIs are iOS-only even where the module
+                    // imports (macOS); gate on the platform. See MetricKitCollector.
+                    #if os(iOS)
                     if newValue {
                         MetricKitCollector.subscribe()
                     } else {

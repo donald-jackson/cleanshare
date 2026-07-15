@@ -1,0 +1,5 @@
+# Keeps the ShareExtensionTests source directory present in a fresh checkout.
+# project.yml declares a `ShareExtensionTests` unit-test target whose `sources`
+# point here; without this file the empty directory is dropped by git and
+# `xcodegen` fails on CI with "missing source directory". Remove once real
+# share-extension tests land in this folder.

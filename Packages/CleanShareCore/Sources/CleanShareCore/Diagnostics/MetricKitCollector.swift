@@ -1,4 +1,9 @@
-#if canImport(MetricKit)
+// MetricKit's module imports on macOS, but MXMetricPayload and the
+// MXMetricManagerSubscriber callbacks are unavailable there — so gating on
+// `canImport` lets this file compile into the macOS test host and then fail to
+// build. Diagnostics is an iOS-only feature; gate on the platform, not module
+// presence. (Keeps `swift test` green on the macOS CI host.)
+#if os(iOS)
 import Foundation
 import MetricKit
 
