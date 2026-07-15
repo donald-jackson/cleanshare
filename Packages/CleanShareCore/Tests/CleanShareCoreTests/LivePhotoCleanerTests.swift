@@ -99,6 +99,26 @@ final class LivePhotoCleanerTests: XCTestCase {
         XCTAssertEqual(videoLeaks, [], "video leaked: \(videoLeaks)")
     }
 
+    /// Fail-closed proof: the pairing token that `.preservePairing` deliberately
+    /// re-adds is itself flagged as a leak when the caller does NOT allow it —
+    /// so the allowlist gate is load-bearing, and any *other* survivor would make
+    /// `cleanPair`'s post-injection audit throw.
+    func testPreservedPairingTokenIsALeakUnlessExplicitlyAllowed() async throws {
+        let outDir = self.makeOutDir()
+        defer { try? FileManager.default.removeItem(at: outDir) }
+
+        _ = try await LivePhotoCleaner().clean(
+            still: self.fixtureURL("livephoto", "heic"),
+            video: self.fixtureURL("livephoto", "mov"),
+            outDir: outDir,
+            mode: .preservePairing,
+            prefs: CleaningPreferences()
+        )
+        let videoOut = outDir.appendingPathComponent("livephoto.mov")
+        let leaks = try await MetadataAuditor.auditVideo(url: videoOut, allowing: [])
+        XCTAssertEqual(leaks, [MetadataAuditor.livePhotoContentIdentifier])
+    }
+
     func testRepairWithFreshIDInjectsNewUUID() async throws {
         let outDir = self.makeOutDir()
         defer { try? FileManager.default.removeItem(at: outDir) }

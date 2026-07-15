@@ -1,3 +1,4 @@
+import AVFoundation
 @testable import CleanShareCore
 import XCTest
 
@@ -32,8 +33,37 @@ final class AVPassthroughCleanerTests: XCTestCase {
 
         XCTAssertTrue(receipt.leakedKeys.isEmpty, "receipt leaked: \(receipt.leakedKeys)")
 
-        let leaks = try MetadataAuditor.audit(url: output, kind: .mp4, allowing: [])
+        // Video MUST be audited with the async video verifier — the synchronous
+        // `audit(kind:.mp4)` returns [] unconditionally and proves nothing.
+        let leaks = try await MetadataAuditor.auditVideo(url: output, allowing: [])
         XCTAssertEqual(leaks, [], "auditor leaked: \(leaks)")
+    }
+
+    /// Guards the verifier itself: the dirty fixture carries an encoder tag and a
+    /// 3GPP `loci` GPS box, so auditing it WITHOUT cleaning must report a leak.
+    /// If this returns empty, the video verifier has a coverage gap and every
+    /// "clean" claim built on it is hollow.
+    func testAuditVideoDetectsMetadataInUncleanedFixture() async throws {
+        let dirty = try fixtureURL("h264_short", "mp4")
+        let leaks = try await MetadataAuditor.auditVideo(url: dirty, allowing: [])
+        XCTAssertFalse(leaks.isEmpty, "verifier failed to detect metadata in the dirty fixture")
+    }
+
+    /// The raw box-tree scan must see the `loci` GPS box that AVFoundation's
+    /// metadata API hides — the exact blind spot that let GPS pass unverified.
+    func testLocationBoxScanDetectsGPSInDirtyFixtureButNotCleanedOutput() async throws {
+        let dirty = try fixtureURL("h264_short", "mp4")
+        XCTAssertTrue(
+            MetadataAuditor.locationBoxes(in: dirty).contains("loci"),
+            "raw scan missed the dirty fixture's loci GPS box"
+        )
+
+        let (_, output) = try await clean("h264_short", "mp4")
+        defer { try? FileManager.default.removeItem(at: output) }
+        XCTAssertEqual(
+            MetadataAuditor.locationBoxes(in: output), [],
+            "cleaned output still carries a location box"
+        )
     }
 
     func testH264PassthroughDoesNotReencode() async throws {

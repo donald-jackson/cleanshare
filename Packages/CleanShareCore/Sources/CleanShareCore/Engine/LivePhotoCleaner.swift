@@ -70,9 +70,22 @@ public struct LivePhotoCleaner: Sendable {
     ) async throws -> (still: CleanReceipt, video: CleanReceipt?) {
         let stillReceipt = try await ImageIOCleaner().clean(input: still, output: stillOut, prefs: prefs)
         try self.injectStillIdentifier(identifier, into: stillOut)
+        // Re-verify: injecting the pairing token rewrites the file, so confirm the
+        // MakerApple identifier is the *only* thing re-introduced (fail closed).
+        let stillLeaks = try MetadataAuditor.audit(
+            url: stillOut, kind: stillReceipt.kind,
+            allowing: prefs.allowedKeys().union(["{MakerApple}"])
+        )
+        guard stillLeaks.isEmpty else { throw CleanerError.leakDetected(keys: stillLeaks) }
 
         let videoReceipt = try await AVPassthroughCleaner().clean(input: video, output: videoOut, prefs: prefs)
         try self.injectContentIdentifier(identifier, into: videoOut)
+        // Re-verify: the content-identifier re-mux must not have carried anything
+        // else across; the pairing token is the one allowed survivor.
+        let videoLeaks = try await MetadataAuditor.auditVideo(
+            url: videoOut, allowing: [MetadataAuditor.livePhotoContentIdentifier]
+        )
+        guard videoLeaks.isEmpty else { throw CleanerError.leakDetected(keys: videoLeaks) }
 
         return (stillReceipt, videoReceipt)
     }

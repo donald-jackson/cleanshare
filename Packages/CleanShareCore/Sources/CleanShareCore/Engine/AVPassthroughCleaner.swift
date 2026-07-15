@@ -82,6 +82,15 @@ public struct AVPassthroughCleaner: Cleaner {
             throw CleanerError.avFailed(reason: writer.error?.localizedDescription)
         }
 
+        // Fail closed: verify the cleaned container carries no residual metadata.
+        // Passthrough builds a fresh container with empty writer/track metadata,
+        // so a clean output has none — but we never certify without checking.
+        let leaked = try await MetadataAuditor.auditVideo(url: output, allowing: [])
+        guard leaked.isEmpty else {
+            try? FileManager.default.removeItem(at: output)
+            throw CleanerError.leakDetected(keys: leaked)
+        }
+
         let kind: MediaKind = isMOV ? .mov : .mp4
         let elapsedMS = Int((DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000)
 

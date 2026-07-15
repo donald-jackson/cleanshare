@@ -63,12 +63,19 @@ final class FuzzTests: XCTestCase {
     }
 
     /// Asserts the receipt/output is leak-free. Used only on the success path.
-    private func assertLeakFree(_ receipt: CleanReceipt, output: URL, kind: MediaKind) throws {
+    private func assertLeakFree(_ receipt: CleanReceipt, output: URL, kind: MediaKind) async throws {
         XCTAssertTrue(
             receipt.leakedKeys.isEmpty,
             "receipt reported leaks on fuzzed input: \(receipt.leakedKeys)"
         )
-        let leaks = try MetadataAuditor.audit(url: output, kind: kind, allowing: [])
+        // Video must use the async verifier — the sync `audit(kind:.mp4)` returns
+        // [] unconditionally and would make this assertion vacuous.
+        let leaks: [String] = switch kind {
+        case .mp4, .mov, .livePhoto:
+            try await MetadataAuditor.auditVideo(url: output, allowing: [])
+        default:
+            try MetadataAuditor.audit(url: output, kind: kind, allowing: [])
+        }
         XCTAssertEqual(leaks, [], "auditor found residual metadata on fuzzed input: \(leaks)")
     }
 
@@ -99,7 +106,7 @@ final class FuzzTests: XCTestCase {
 
             do {
                 let receipt = try await clean(input, output)
-                try assertLeakFree(receipt, output: output, kind: kind)
+                try await assertLeakFree(receipt, output: output, kind: kind)
             } catch {
                 // Rejected the malformed input — acceptable. (See doc comment.)
                 XCTAssertNotNil(error, "variant \(variantIndex) of \(name).\(ext)")
