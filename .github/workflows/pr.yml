@@ -34,13 +34,18 @@ jobs:
       - name: Generate Xcode project
         run: ./scripts/generate-project.sh
 
-      - name: Build (iOS Simulator, no signing)
+      - name: Build (iOS, no signing)
+        # Build against the generic iOS *device* SDK, not the Simulator. The
+        # pinned Xcode 16 on GitHub's macos-15 runner doesn't have the iOS 18
+        # simulator runtime installed, so a 'platform=iOS Simulator' destination
+        # can't resolve. This is a pure compile-check (build, not run): it needs
+        # no simulator runtime and verifies exactly the same thing.
         run: |
           set -o pipefail
           xcodebuild \
             -project CleanShare.xcodeproj \
             -scheme CleanShare \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'generic/platform=iOS' \
             -configuration Debug \
             build \
             CODE_SIGN_IDENTITY="" \
