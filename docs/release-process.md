@@ -14,8 +14,7 @@ binary uploaded to App Store Connect plus its metadata, screenshots, and review 
 
 Before tagging, on `main` with a clean working tree:
 
-- [ ] `main` is green: PR CI (`pr.yml`), CodeQL (`codeql.yml`), and the nightly build all
-      passing.
+- [ ] `main` is green: PR CI (`pr.yml`) and CodeQL (`codeql.yml`) passing.
 - [ ] `make verify-strip` passes locally (metadata is actually stripped from fixtures).
 - [ ] `bash scripts/check-no-trackers.sh` passes (no forbidden third-party SDK symbols).
 - [ ] `CHANGELOG.md` has an entry for the version you're about to cut.
@@ -72,14 +71,11 @@ gh run watch
 After `pilot` uploads, the build appears in **App Store Connect → TestFlight**. Apple
 processes the binary (a few minutes to an hour). Once processing finishes:
 
-- Verify the build shows up under the internal/Nightly TestFlight group.
+- Verify the build shows up under the internal TestFlight group.
 - Smoke-test on a real device through TestFlight: run the share-sheet flow on a photo and a
   video, confirm the cleaned output and that the share sheet re-presents.
 - Provide export-compliance answers if prompted (CleanShare does no non-exempt
   encryption).
-
-The optional `nightly.yml` workflow uploads `main` to a "Nightly" TestFlight group every
-day; that path uses the same signing but is not part of a tagged release.
 
 ---
 
