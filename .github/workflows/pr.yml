@@ -19,8 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+      # CleanShare is developed against the Swift 6.3 toolchain (Xcode 26). Its use
+      # of the current concurrency model — e.g. Sendable system types such as
+      # UNNotificationSettings crossing actor boundaries — does not compile under
+      # the older Xcode 16 / Swift 6.0.
+      - name: Select Xcode 26.3
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
 
       - name: Install build tools
         run: brew install xcodegen swiftformat swiftlint xcbeautify
@@ -61,8 +65,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+      # CleanShare is developed against the Swift 6.3 toolchain (Xcode 26). Its use
+      # of the current concurrency model — e.g. Sendable system types such as
+      # UNNotificationSettings crossing actor boundaries — does not compile under
+      # the older Xcode 16 / Swift 6.0.
+      - name: Select Xcode 26.3
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
 
       - name: Install audit tools
         run: brew install exiftool ffmpeg
