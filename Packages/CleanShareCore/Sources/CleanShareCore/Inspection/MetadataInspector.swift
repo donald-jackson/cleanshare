@@ -18,9 +18,9 @@ public enum MetadataInspector {
     public static func inspect(url: URL, kind: MediaKind) async throws -> MetadataInspection {
         switch kind {
         case .jpeg, .heic, .heif, .png, .gif, .webp, .tiff, .dng, .livePhoto:
-            return try self.inspectImage(url: url)
+            try self.inspectImage(url: url)
         case .mp4, .mov:
-            return try await self.inspectVideo(url: url)
+            try await self.inspectVideo(url: url)
         }
     }
 
@@ -65,13 +65,51 @@ public enum MetadataInspector {
                 severity: .medium
             ))
         }
-        if let ps = props["{Photoshop}" as CFString] as? [CFString: Any], !ps.isEmpty {
-            fields.append(self.summarise(ps, label: "Photoshop", category: .authoring, severity: .medium))
+        if let photoshop = props["{Photoshop}" as CFString] as? [CFString: Any], !photoshop.isEmpty {
+            fields.append(self.summarise(photoshop, label: "Photoshop", category: .authoring, severity: .medium))
+        }
+        if let png = props[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
+            fields.append(contentsOf: self.extractPNG(png))
         }
 
         fields.append(contentsOf: self.extractMakerNotes(props))
 
         return MetadataInspection(fields: fields)
+    }
+}
+
+// MARK: - Image field extraction
+
+extension MetadataInspector {
+    /// PNG `tEXt`/`iTXt` chunks carry authorship and timestamps that are
+    /// invisible to the Exif/TIFF/GPS extractors above — so without this a PNG
+    /// exported by an editor would be reported "already clean" when it still
+    /// names its author. The cleaner + auditor already strip `{PNG}`; this makes
+    /// the pre-clean inspector's coverage match.
+    private static func extractPNG(_ png: [CFString: Any]) -> [MetadataField] {
+        var out: [MetadataField] = []
+        func text(_ key: CFString) -> String? {
+            (png[key] as? String).flatMap { $0.isEmpty ? nil : $0 }
+        }
+        if let author = text(kCGImagePropertyPNGAuthor) {
+            out.append(.init(category: .authoring, label: "Author (PNG)", value: author, severity: .high))
+        }
+        if let copyright = text(kCGImagePropertyPNGCopyright) {
+            out.append(.init(category: .authoring, label: "Copyright (PNG)", value: copyright, severity: .high))
+        }
+        if let title = text(kCGImagePropertyPNGTitle) {
+            out.append(.init(category: .authoring, label: "Title (PNG)", value: title, severity: .medium))
+        }
+        if let description = text(kCGImagePropertyPNGDescription) {
+            out.append(.init(category: .authoring, label: "Description (PNG)", value: description, severity: .medium))
+        }
+        if let software = text(kCGImagePropertyPNGSoftware) {
+            out.append(.init(category: .authoring, label: "Software (PNG)", value: software, severity: .medium))
+        }
+        if let created = text(kCGImagePropertyPNGCreationTime) {
+            out.append(.init(category: .capture, label: "Creation time (PNG)", value: created, severity: .medium))
+        }
+        return out
     }
 
     private static func extractGPS(_ gps: [CFString: Any]) -> [MetadataField] {
@@ -104,7 +142,7 @@ public enum MetadataInspector {
             out.append(.init(
                 category: .location,
                 label: "Position fix timestamp",
-                value: [date, time].compactMap { $0 }.joined(separator: " "),
+                value: [date, time].compactMap(\.self).joined(separator: " "),
                 severity: .high
             ))
         }
@@ -177,13 +215,28 @@ public enum MetadataInspector {
             out.append(.init(category: .capture, label: "ISO", value: "\(iso)", severity: .low))
         }
         if let fnum = (exif[kCGImagePropertyExifFNumber] as? NSNumber)?.doubleValue {
-            out.append(.init(category: .capture, label: "Aperture", value: String(format: "f/%.1f", fnum), severity: .low))
+            out.append(.init(
+                category: .capture,
+                label: "Aperture",
+                value: String(format: "f/%.1f", fnum),
+                severity: .low
+            ))
         }
         if let exposure = (exif[kCGImagePropertyExifExposureTime] as? NSNumber)?.doubleValue {
-            out.append(.init(category: .capture, label: "Shutter speed", value: self.formatExposure(exposure), severity: .low))
+            out.append(.init(
+                category: .capture,
+                label: "Shutter speed",
+                value: self.formatExposure(exposure),
+                severity: .low
+            ))
         }
         if let focal = (exif[kCGImagePropertyExifFocalLength] as? NSNumber)?.doubleValue {
-            out.append(.init(category: .capture, label: "Focal length", value: String(format: "%.1f mm", focal), severity: .low))
+            out.append(.init(
+                category: .capture,
+                label: "Focal length",
+                value: String(format: "%.1f mm", focal),
+                severity: .low
+            ))
         }
         return out
     }
@@ -204,7 +257,11 @@ public enum MetadataInspector {
             (kCGImagePropertyMakerCanonDictionary, "Canon"),
             (kCGImagePropertyMakerFujiDictionary, "Fujifilm"),
             (kCGImagePropertyMakerOlympusDictionary, "Olympus"),
-            (kCGImagePropertyMakerPentaxDictionary, "Pentax")
+            (kCGImagePropertyMakerPentaxDictionary, "Pentax"),
+            (kCGImagePropertyMakerMinoltaDictionary, "Minolta"),
+            // Sony has no ImageIO constant; match its raw dictionary key so a Sony
+            // MakerNote isn't silently reported as "already clean".
+            ("{MakerSony}" as CFString, "Sony")
         ]
         for (key, brand) in others {
             if let dict = props[key] as? [CFString: Any], !dict.isEmpty {
@@ -242,9 +299,11 @@ public enum MetadataInspector {
         }
         return String(format: "%.1f s", seconds)
     }
+}
 
-    // MARK: - Video
+// MARK: - Video
 
+extension MetadataInspector {
     private static func inspectVideo(url: URL) async throws -> MetadataInspection {
         let asset = AVURLAsset(url: url)
         var fields: [MetadataField] = []
@@ -268,10 +327,22 @@ public enum MetadataInspector {
                     severity: .high
                 ))
             }
-            let trackMetadata = (try? await track.load(.metadata)) ?? []
+            let trackMetadata = await (try? track.load(.metadata)) ?? []
             for item in trackMetadata {
                 if let field = await self.mapVideoItem(item) { append(field) }
             }
+        }
+
+        // Location user-data boxes (3GPP `loci`, QuickTime `©xyz`/`gps `) that
+        // AVFoundation's metadata API doesn't surface — otherwise a video with a
+        // `loci` GPS box would be reported as carrying nothing identifying.
+        for box in MetadataAuditor.locationBoxes(in: url) {
+            append(.init(
+                category: .location,
+                label: "GPS location (\(box.trimmingCharacters(in: .whitespaces)) box)",
+                value: "Location metadata stored in the video container",
+                severity: .high
+            ))
         }
 
         return MetadataInspection(fields: fields)
@@ -292,7 +363,12 @@ public enum MetadataInspector {
              AVMetadataIdentifier.commonIdentifierCreationDate.rawValue:
             if let date = dateValue {
                 let formatter = ISO8601DateFormatter()
-                return .init(category: .capture, label: "Created", value: formatter.string(from: date), severity: .medium)
+                return .init(
+                    category: .capture,
+                    label: "Created",
+                    value: formatter.string(from: date),
+                    severity: .medium
+                )
             } else if let value = stringValue, !value.isEmpty {
                 return .init(category: .capture, label: "Created", value: value, severity: .medium)
             }
