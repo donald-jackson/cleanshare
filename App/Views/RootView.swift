@@ -107,11 +107,10 @@ struct RootView: View {
         .sheet(item: self.$inspectTarget) { target in
             MetadataInspectionView(
                 url: target.url,
-                kind: target.kind,
-                onCleanAndShare: {
-                    self.cleanSingleFile(url: target.url, kind: target.kind)
-                }
-            )
+                kind: target.kind
+            ) {
+                self.cleanSingleFile(url: target.url, kind: target.kind)
+            }
         }
         .sheet(isPresented: self.$showLivePhotoSheet) {
             LivePhotoConsentSheet(prefsStore: self.prefsStore, onChoose: self.$livePhotoOnChoose)
@@ -125,7 +124,9 @@ struct RootView: View {
             }
         }
     }
+}
 
+extension RootView {
     /// Cleans the bundled sample photo and presents a BEFORE / AFTER metadata diff.
     private func cleanSamplePhoto() {
         guard let sample = Bundle.main.url(forResource: "Sample-DirtyPhoto", withExtension: "jpg") else {

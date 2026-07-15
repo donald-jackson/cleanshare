@@ -150,11 +150,15 @@ public struct MetadataInspectionView: View {
                 .foregroundStyle(BrandPalette.teal)
             Text(String(localized: "No identifying metadata found"))
                 .font(.system(.headline, design: .rounded, weight: .semibold))
-            Text(String(localized: "Either it was already stripped, or this file format doesn't carry the usual fields. You can share it as-is."))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+            Text(
+                String(
+                    localized: "Either it was already stripped, or this file format doesn't carry the usual fields. You can share it as-is."
+                )
+            )
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .padding(20)

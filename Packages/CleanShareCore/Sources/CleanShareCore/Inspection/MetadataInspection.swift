@@ -9,12 +9,14 @@ public struct MetadataInspection: Sendable {
         self.fields = fields
     }
 
-    public var isEmpty: Bool { self.fields.isEmpty }
+    public var isEmpty: Bool {
+        self.fields.isEmpty
+    }
 
     /// Number of fields whose severity counts as "would identify the user"
     /// (high or medium). Drives the inspector view's headline summary.
     public var identifyingCount: Int {
-        self.fields.filter { $0.severity != .low }.count
+        self.fields.count { $0.severity != .low }
     }
 
     /// Groups the fields by category in the canonical UI order. Categories

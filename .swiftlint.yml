@@ -37,6 +37,17 @@ function_body_length:
 function_parameter_count:
   # LivePhotoCleaner.cleanPair takes still+out, video+out, identifier, prefs (6).
   warning: 6
+line_length:
+  # swiftformat (`--maxwidth 120`, enforced by `swiftformat --lint` in CI) already
+  # wraps every *code* line to <=120, so this rule can only ever fire on a single
+  # unbreakable string literal. Those are SwiftUI `LocalizedStringKey` /
+  # `String(localized:)` UI strings that double as the localization key — splitting
+  # or concatenating them breaks string-catalog extraction. Longest reviewed copy
+  # string is 176 cols; allow headroom. Runaway code lines are still caught by
+  # swiftformat, and the 200-col hard error remains.
+  warning: 180
+  error: 200
+  ignores_urls: true
 
 custom_rules:
   forbidden_addImageFromSource:

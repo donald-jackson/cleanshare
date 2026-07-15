@@ -41,7 +41,7 @@ final class CleanShareNotificationCenter: NSObject {
 
 extension CleanShareNotificationCenter: UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
+        _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping @Sendable () -> Void
     ) {
@@ -63,8 +63,8 @@ extension CleanShareNotificationCenter: UNUserNotificationCenterDelegate {
     /// route already presents the share sheet, so the banner would just be
     /// noise on top of the user's current screen.
     nonisolated func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification,
         withCompletionHandler completionHandler: @escaping @Sendable (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([])
@@ -77,8 +77,8 @@ extension CleanShareNotificationCenter: UNUserNotificationCenterDelegate {
 /// from cold.
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+        _: UIApplication,
+        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = CleanShareNotificationCenter.shared
         return true
