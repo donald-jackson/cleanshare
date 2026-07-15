@@ -19,6 +19,13 @@ set -euo pipefail
 # all of them. Anchored on the distinctive vendor token; case-insensitive.
 FORBIDDEN='Firebase|Mixpanel|Amplitude|Sentry|Bugsnag|Crashlytics|FBSDK|FacebookCore|AppsFlyer|Branch\.io'
 
+# Forbidden NETWORKING symbols. CleanShare makes zero network calls; this is the
+# mechanical enforcement of that promise (the "verified by CI" in the marketing).
+# Case-sensitive (these are exact API names). `URL(` is intentionally NOT here —
+# the app builds file: and handoff URLs constantly; it's network *I/O* that's
+# banned, not the URL type. Lines marked "// FORBIDDEN:" are exempt.
+NETWORK='URLSession|URLRequest|NWConnection|NWListener|NWPathMonitor|NWBrowser|import[[:space:]]+Network|CFSocket|CFStream|CFHTTP|getaddrinfo|gethostbyname|\.dataTask|\.downloadTask|\.uploadTask'
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
@@ -36,6 +43,14 @@ if [ "${#src_dirs[@]}" -gt 0 ]; then
     if [ -n "$matches" ]; then
         echo "FORBIDDEN tracker symbol(s) found in source:" >&2
         printf '%s\n' "$matches" >&2
+        status=1
+    fi
+
+    # Network-symbol scan (case-sensitive, exact API names). Only Swift sources.
+    net_matches="$(grep -rnE "$NETWORK" "${src_dirs[@]}" --include='*.swift' 2>/dev/null | grep -v '// FORBIDDEN:' || true)"
+    if [ -n "$net_matches" ]; then
+        echo "FORBIDDEN networking symbol(s) found in source (CleanShare must make no network calls):" >&2
+        printf '%s\n' "$net_matches" >&2
         status=1
     fi
 fi

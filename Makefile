@@ -6,7 +6,7 @@ DERIVED_DATA ?= ~/Library/Developer/Xcode/DerivedData
 
 NO_SIGN := CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-.PHONY: bootstrap gen build test lint format verify-strip clean screenshots
+.PHONY: bootstrap gen build test lint format verify-strip check-trackers clean screenshots
 
 bootstrap:
 	./scripts/bootstrap.sh
@@ -38,6 +38,9 @@ verify-strip:
 	  ./Packages/CleanShareCore/.build/debug/cleanshare-cli clean "$$f" "tests/fixtures/cleaned/$$(basename $$f)" || exit 1; \
 	done
 	bash scripts/verify-metadata-stripped.sh tests/fixtures/cleaned/*
+
+check-trackers:
+	bash scripts/check-no-trackers.sh
 
 clean:
 	rm -rf $(DERIVED_DATA)/CleanShare-* .build CleanShare.xcodeproj

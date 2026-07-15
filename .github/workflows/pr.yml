@@ -67,3 +67,6 @@ jobs:
 
       - name: Verify metadata stripped
         run: make verify-strip
+
+      - name: No trackers / no network calls
+        run: bash scripts/check-no-trackers.sh
