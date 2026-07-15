@@ -2,7 +2,7 @@
 
 > Source for `fastlane/metadata/en-US/release_notes.txt`. App Store Connect caps this field at 4000 chars. Per PLAN.md §16, the heading version must match `CFBundleShortVersionString`.
 
-## v1.0.0 — Initial release
+## v0.1.0 — Initial release
 
 Welcome to CleanShare — strip the hidden metadata from your photos and videos before you share them. Everything happens on your device; nothing is uploaded, and no account is required.
 

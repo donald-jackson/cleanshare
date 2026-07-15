@@ -108,7 +108,7 @@ public struct OnboardingView: View {
                 self.bullet("No accounts.")
                 self.bullet("No analytics.")
                 self.bullet("No network.")
-                self.bullet("Source open at github.com/<placeholder>/cleanshare.")
+                self.bullet("Source open at github.com/donald-jackson/cleanshare.")
             }
             Button {
                 withAnimation { self.selection = Self.notificationsPageIndex }
@@ -130,19 +130,23 @@ public struct OnboardingView: View {
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("CleanShare sends one notification per share — to tell you your photos are cleaned and ready to forward. That's the only thing notifications are ever used for.")
-                .font(.callout)
+            Text(
+                "CleanShare sends one notification per share — to tell you your photos are cleaned and ready to forward. That's the only thing notifications are ever used for."
+            )
+            .font(.callout)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            .foregroundStyle(.white.opacity(0.92))
+
+            if self.notificationStatus == .denied {
+                Text(
+                    "Notifications are turned off for CleanShare. The app can't tell you when your share is ready without them — please enable them in Settings to continue."
+                )
+                .font(.footnote)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(.white.opacity(0.92))
-
-            if self.notificationStatus == .denied {
-                Text("Notifications are turned off for CleanShare. The app can't tell you when your share is ready without them — please enable them in Settings to continue.")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundStyle(.white.opacity(0.92))
-                    .padding(.top, 4)
+                .padding(.top, 4)
                 Button {
                     self.openSystemSettings()
                 } label: {
@@ -213,9 +217,9 @@ public struct OnboardingView: View {
         self.notificationStatus = settings.authorizationStatus
         // If the user enabled notifications via Settings and came back to the
         // app while sitting on the notifications page, finish onboarding.
-        if (settings.authorizationStatus == .authorized
-            || settings.authorizationStatus == .provisional)
-            && self.selection == Self.notificationsPageIndex {
+        if settings.authorizationStatus == .authorized
+            || settings.authorizationStatus == .provisional,
+            self.selection == Self.notificationsPageIndex {
             self.complete()
         }
     }
@@ -224,7 +228,7 @@ public struct OnboardingView: View {
         guard !self.requestInFlight else { return }
         self.requestInFlight = true
         Task {
-            let granted = (try? await UNUserNotificationCenter.current()
+            let granted = await (try? UNUserNotificationCenter.current()
                 .requestAuthorization(options: [.alert, .sound])) ?? false
             await self.refreshNotificationStatus()
             self.requestInFlight = false

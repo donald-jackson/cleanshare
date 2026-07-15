@@ -23,7 +23,7 @@ CleanShare fixes that from inside the iOS share sheet. Pick a photo, tap Share, 
 - No analytics or telemetry that leaves the device (optional MetricKit diagnostics stay on-device, opt-in).
 - No network access at all — verified by CI on every commit, which fails the build if the app makes a single request.
 - Ships with an App Store privacy label of "Data Not Collected."
-- Fully MIT-licensed, auditable source: https://github.com/cleanshare/cleanshare
+- Fully MIT-licensed, auditable source: https://github.com/donald-jackson/cleanshare
 
 **Pricing:** Free, no in-app purchases.
 

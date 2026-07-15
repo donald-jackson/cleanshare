@@ -27,8 +27,8 @@ public struct AboutView: View {
 
     private var sourceURL: URL {
         let string = Bundle.main.object(forInfoDictionaryKey: "CleanShareSourceURL") as? String
-            ?? "https://github.com/<placeholder>/cleanshare"
-        return URL(string: string) ?? URL(string: "https://github.com/<placeholder>/cleanshare")!
+            ?? "https://github.com/donald-jackson/cleanshare"
+        return URL(string: string) ?? URL(string: "https://github.com/donald-jackson/cleanshare")!
     }
 
     public var body: some View {

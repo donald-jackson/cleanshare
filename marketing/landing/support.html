@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CleanShare — Support</title>
+  <meta name="description" content="Get help with CleanShare: report a bug, request a feature, or read the FAQ. CleanShare is free, open source, and works entirely on-device." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: "#19B4B0",
+            indigo: "#3B3FB8",
+            ink: "#0B0F1A",
+            paper: "#F8FAFC",
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="font-sans bg-paper text-ink antialiased">
+
+  <header class="hero-gradient text-white">
+    <nav class="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
+      <a href="/" class="text-xl font-extrabold tracking-tight">CleanShare</a>
+      <a href="https://github.com/donald-jackson/cleanshare" class="text-sm font-medium opacity-90 hover:opacity-100 transition">GitHub</a>
+    </nav>
+    <div class="max-w-3xl mx-auto px-6 pt-8 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">Support</h1>
+      <p class="mt-4 text-lg text-white/90">
+        CleanShare has no accounts and collects no data — most questions are answered below.
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-6 py-16 space-y-12">
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Report a bug or request a feature</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        The fastest way to reach the maintainers is a GitHub issue. Please include your device
+        model, iOS version, and the file type you were cleaning.
+      </p>
+      <p class="mt-4">
+        <a href="https://github.com/donald-jackson/cleanshare/issues/new/choose"
+           class="inline-flex items-center gap-2 rounded-full bg-indigo px-5 py-3 text-sm font-semibold text-white hover:opacity-90 transition">
+          Open an issue on GitHub
+        </a>
+      </p>
+      <p class="mt-3 text-sm text-ink/60">
+        Found a case where metadata survived cleaning? Use the "Privacy leak report" issue
+        template — those are treated as the highest priority.
+      </p>
+      <p class="mt-3 text-sm text-ink/60">
+        Not on GitHub? Email
+        <a href="mailto:apple@ddj.solutions" class="text-indigo font-medium hover:underline">apple@ddj.solutions</a>
+        and we'll help.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Common questions</h2>
+      <ul class="mt-3 space-y-3 text-base leading-relaxed text-ink/80 list-disc pl-5">
+        <li>
+          <strong>Where did my cleaned photo go?</strong> After cleaning, CleanShare opens the
+          system share sheet so you can send the cleaned copy anywhere. Your original is never
+          modified.
+        </li>
+        <li>
+          <strong>Does it work on iPad?</strong> Yes — CleanShare is a universal app for iPhone
+          and iPad on iOS/iPadOS 17.0 and later.
+        </li>
+        <li>
+          <strong>Why does the destination app still show a date?</strong> See the
+          <a href="/faq" class="text-indigo font-medium hover:underline">FAQ</a> — apps often add
+          their own timestamps after you share; CleanShare removes the metadata embedded in the
+          file itself.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-indigo">Privacy</h2>
+      <p class="mt-3 text-base leading-relaxed text-ink/80">
+        CleanShare works entirely on your device, makes no network connections, and collects no
+        data. Read the full <a href="/privacy" class="text-indigo font-medium hover:underline">privacy policy</a>,
+        or audit the source yourself at
+        <a href="https://github.com/donald-jackson/cleanshare" class="text-indigo font-medium hover:underline">github.com/donald-jackson/cleanshare</a>.
+      </p>
+    </section>
+  </main>
+
+  <footer class="border-t border-ink/10">
+    <div class="max-w-5xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/70">
+      <span>&copy; 2026 CleanShare contributors · MIT licensed</span>
+      <nav class="flex items-center gap-6">
+        <a href="/support" class="hover:text-indigo transition">Support</a>
+        <a href="/privacy" class="hover:text-indigo transition">Privacy</a>
+        <a href="/faq" class="hover:text-indigo transition">FAQ</a>
+        <a href="https://github.com/donald-jackson/cleanshare" class="hover:text-indigo transition">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+</body>
+</html>

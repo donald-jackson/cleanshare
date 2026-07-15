@@ -22,7 +22,7 @@ It's fast. Photos clean instantly and video uses lossless passthrough — no re-
 
 CleanShare makes a simple privacy promise: no accounts, no analytics, no network. Nothing leaves your device, ever. This isn't just a claim — it's verified by CI on every commit, which fails the build if the app makes a single network request or leaves any metadata behind.
 
-CleanShare is free and open source under the MIT license. Read every line, audit the privacy guarantees yourself, or contribute: https://github.com/cleanshare/cleanshare
+CleanShare is free and open source under the MIT license. Read every line, audit the privacy guarantees yourself, or contribute: https://github.com/donald-jackson/cleanshare
 
 ## Tags / Categories
 

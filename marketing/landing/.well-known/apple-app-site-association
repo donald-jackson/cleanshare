@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appID": "<TEAM_ID>.dev.cleanshare.app",
+        "appID": "<TEAM_ID>.solutions.ddj.cleanshare",
         "paths": [ "/handoff*" ]
       }
     ]
