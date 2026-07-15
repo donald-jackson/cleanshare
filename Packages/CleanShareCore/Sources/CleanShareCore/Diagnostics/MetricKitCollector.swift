@@ -13,7 +13,7 @@ import MetricKit
 /// App Group container. Nothing is ever transmitted — export is a manual user
 /// action elsewhere in the UI. See PLAN.md §18.2.
 @MainActor
-public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubscriber {
+public final class MetricKitCollector: NSObject, MXMetricManagerSubscriber {
     /// Process-wide singleton so `subscribe()` / `unsubscribe()` are idempotent.
     public static let shared = MetricKitCollector(appGroupID: "group.solutions.ddj.cleanshare")
 
@@ -52,12 +52,19 @@ public final class MetricKitCollector: NSObject, @MainActor MXMetricManagerSubsc
 
     // MARK: - MXMetricManagerSubscriber
 
-    public func didReceive(_ payloads: [MXMetricPayload]) {
-        self.persist(payloads.map { $0.jsonRepresentation() })
+    /// MetricKit invokes these on an arbitrary queue, so they must satisfy the
+    /// subscriber protocol's nonisolated requirement. Serialize the (non-Sendable)
+    /// payloads to `Data` here, then hop to the main actor to persist. A plain
+    /// nonisolated method (rather than a `@MainActor` isolated conformance) keeps
+    /// this compiling on Swift 6.0 / Xcode 16 as well as newer toolchains.
+    public nonisolated func didReceive(_ payloads: [MXMetricPayload]) {
+        let serialized = payloads.map { $0.jsonRepresentation() }
+        Task { @MainActor in self.persist(serialized) }
     }
 
-    public func didReceive(_ payloads: [MXDiagnosticPayload]) {
-        self.persist(payloads.map { $0.jsonRepresentation() })
+    public nonisolated func didReceive(_ payloads: [MXDiagnosticPayload]) {
+        let serialized = payloads.map { $0.jsonRepresentation() }
+        Task { @MainActor in self.persist(serialized) }
     }
 
     // MARK: - Persistence
