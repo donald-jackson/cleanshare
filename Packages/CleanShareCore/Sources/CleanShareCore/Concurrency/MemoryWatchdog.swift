@@ -1,5 +1,17 @@
 import Foundation
 
+// The current process's mach task port. `mach_task_self_` is a global `var` the
+// kernel sets once at process start and never mutates, so reading it is safe —
+// but Swift 6.0's strict concurrency refuses to let actor-isolated code touch a
+// global `var`. Capture it once here. Newer toolchains annotate the symbol as
+// `Sendable`, so there the plain `let` is clean; older ones (Xcode 16 / Swift
+// 6.0, used in CI) need the explicit `nonisolated(unsafe)` opt-out.
+#if compiler(>=6.3)
+private let machTaskSelf = mach_task_self_
+#else
+private nonisolated(unsafe) let machTaskSelf = mach_task_self_
+#endif
+
 /// A footprint threshold crossing observed by the ``MemoryWatchdog``.
 public enum MemoryEvent: Sendable, Equatable {
     case warning(megabytes: Int)
@@ -27,7 +39,7 @@ public actor MemoryWatchdog {
         )
         let result = withUnsafeMutablePointer(to: &info) {
             $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
-                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
+                task_info(machTaskSelf, task_flavor_t(MACH_TASK_BASIC_INFO), $0, &count)
             }
         }
         guard result == KERN_SUCCESS else { return 0 }
