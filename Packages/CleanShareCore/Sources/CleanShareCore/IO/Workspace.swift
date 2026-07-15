@@ -32,6 +32,13 @@ public actor Workspace {
         }
     }
 
+    /// Roots the workspace at an explicit directory. Used by unit tests, where
+    /// the App Group container is either absent or (on a machine that also ran a
+    /// signed build) present but not writable by the unsigned test process.
+    init(rootDirectory: URL) {
+        self.root = rootDirectory
+    }
+
     private var tmpDir: URL {
         self.root.appendingPathComponent("tmp", isDirectory: true)
     }

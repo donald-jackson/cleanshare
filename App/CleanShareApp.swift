@@ -21,6 +21,7 @@ struct CleanShareApp: App {
                     // extension run left a manifest behind.
                     CleanShareNotificationCenter.shared.attach(coordinator: self.coordinator)
                     HandoffRouter.applyPendingInbox(coordinator: self.coordinator)
+                    HandoffRouter.sweepExpiredJobs()
                 }
         }
         .onChange(of: self.scenePhase) { _, newPhase in
@@ -29,6 +30,7 @@ struct CleanShareApp: App {
             // icon after a share-extension run.
             if newPhase == .active {
                 HandoffRouter.applyPendingInbox(coordinator: self.coordinator)
+                HandoffRouter.sweepExpiredJobs()
             }
         }
     }

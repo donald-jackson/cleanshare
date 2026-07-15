@@ -36,6 +36,13 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).ShareViewController</string>
 	</dict>
+	<!-- The extension makes no network connections; ATS is locked down to -->
+	<!-- document and enforce that intent. -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
 	<!-- Required by iOS for the extension to invoke NSExtensionContext.open() with a -->
 	<!-- cleanshare:// URL. Without this declaration, iOS silently calls back with    -->
 	<!-- opened=false from the share-sheet of another app (WhatsApp, Messages, etc.), -->

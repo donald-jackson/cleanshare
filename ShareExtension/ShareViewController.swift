@@ -29,9 +29,8 @@ final class ShareViewController: UIViewController {
     private func installProgressView() {
         let host = UIHostingController(
             rootView: CleaningProgressView(
-                progress: progressModel,
-                onCancel: { [weak self] in self?.cancel() }
-            )
+                progress: progressModel
+            ) { [weak self] in self?.cancel() }
         )
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,7 +63,9 @@ final class ShareViewController: UIViewController {
                 return
             }
 
-            let pipeline = CleaningPipeline(workspace: workspace, prefs: CleaningPreferences())
+            // Honour the user's saved Settings (from the shared App Group suite)
+            // instead of always cleaning with hard-coded defaults.
+            let pipeline = CleaningPipeline(workspace: workspace, prefs: CleaningPreferences.loadFromAppGroup())
             self.pipeline = pipeline
             await pipeline.enqueue(items)
 
@@ -84,6 +85,24 @@ final class ShareViewController: UIViewController {
             }
 
             try Task.checkCancellation()
+
+            // Fail closed on the UX, too: if nothing cleaned successfully (e.g. a
+            // leak was detected and the file discarded), never post a "ready to
+            // share" notification for an empty job — tell the user it failed.
+            guard !receipts.isEmpty else {
+                self.progressModel.phase = .failed
+                try? await Task.sleep(nanoseconds: UInt64(self.successDisplayDuration * 1_000_000_000))
+                self.extensionContext?.cancelRequest(
+                    withError: NSError(
+                        domain: "solutions.ddj.cleanshare.share",
+                        code: 2,
+                        userInfo: [NSLocalizedDescriptionKey: String(
+                            localized: "CleanShare couldn't clean the selected item."
+                        )]
+                    )
+                )
+                return
+            }
 
             let token = job.id.uuidString
             let manifest = Manifest(token: token, receipts: receipts)
@@ -209,4 +228,3 @@ final class ShareViewController: UIViewController {
         return nil
     }
 }
-

@@ -82,6 +82,22 @@ enum HandoffRouter {
         return false
     }
 
+    /// Orphan TTL: a share whose handoff the user never completed (denied
+    /// notifications and never reopened the app) leaves cleaned copies of their
+    /// media in the App Group container. 10 minutes is far beyond any in-flight
+    /// handoff yet keeps the "nothing persists" promise. See PLAN.md §5.3, §9.
+    private static let orphanTTL: TimeInterval = 600
+
+    /// Sweeps orphaned job/inbox directories older than `orphanTTL` from the App
+    /// Group container. Called on cold start and foreground so no cleaned user
+    /// media lingers after an abandoned share. Reuses `Workspace.cleanupExpired`.
+    static func sweepExpiredJobs() {
+        Task {
+            guard let workspace = try? Workspace(appGroupID: self.appGroupID) else { return }
+            try? await workspace.cleanupExpired(olderThan: self.orphanTTL)
+        }
+    }
+
     private static func containerRoot() -> URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: self.appGroupID)
     }

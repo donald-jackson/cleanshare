@@ -19,8 +19,8 @@ public extension URL {
     static func handoff(token: String) -> URL {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = handoffAssociatedDomain
-        components.path = handoffPath
+        components.host = self.handoffAssociatedDomain
+        components.path = self.handoffPath
         components.queryItems = [URLQueryItem(name: "t", value: token)]
         guard let url = components.url else {
             preconditionFailure("https handoff components are always a valid URL")
@@ -48,14 +48,21 @@ public extension URL {
     static let handoffNotificationTokenKey = "cs.token"
 
     /// Extracts the job token from either handoff form, or `nil` for any other URL.
+    ///
+    /// The token is required to be a well-formed UUID. Job tokens are always
+    /// `UUID().uuidString`, so this rejects nothing legitimate — but it prevents a
+    /// crafted `…/handoff?t=../../…` from being used as a path component when the
+    /// host app resolves `inbox/<token>/manifest.json` and later deletes that
+    /// directory. Fails closed on any non-UUID input.
     static func handoffToken(from url: URL) -> String? {
         let isUniversalLink = url.scheme == "https"
-            && url.host == handoffAssociatedDomain
-            && url.path == handoffPath
+            && url.host == self.handoffAssociatedDomain
+            && url.path == self.handoffPath
         let isCustomScheme = url.scheme == "cleanshare" && url.host == "handoff"
         guard isUniversalLink || isCustomScheme else { return nil }
-        let token = URLComponents(url: url, resolvingAgainstBaseURL: false)?
-            .queryItems?.first { $0.name == "t" }
-        return token?.value
+        let value = URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?.first { $0.name == "t" }?.value
+        guard let value, UUID(uuidString: value) != nil else { return nil }
+        return value
     }
 }

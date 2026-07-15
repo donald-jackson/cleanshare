@@ -13,7 +13,9 @@ final class CleaningPipelineTests: XCTestCase {
     }
 
     func testProcessesThreeImagesAndYieldsThreeCompletedEvents() async throws {
-        let workspace = try Workspace(appGroupID: "group.solutions.ddj.cleanshare")
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("CleanShareTests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let workspace = Workspace(rootDirectory: root)
         let pipeline = CleaningPipeline(workspace: workspace, prefs: CleaningPreferences())
 
         let items: [CleaningPipeline.InputItem] = try [

@@ -1,10 +1,12 @@
 import SwiftUI
 
 /// Stages the share-extension UI walks through: in-progress while cleaning,
-/// then `.ready` once the manifest has been written to the App Group inbox.
+/// `.ready` once the manifest has been written to the App Group inbox, or
+/// `.failed` if nothing could be cleaned (fail closed — never a false "ready").
 public enum CleaningPhase: Sendable {
     case cleaning
     case ready
+    case failed
 }
 
 /// Observable progress state driven by the cleaning pipeline.
@@ -55,7 +57,34 @@ public struct CleaningProgressView: View {
             self.cleaningView
         case .ready:
             self.readyView
+        case .failed:
+            self.failedView
         }
+    }
+
+    private var failedView: some View {
+        VStack(spacing: 18) {
+            ZStack {
+                Circle()
+                    .fill(Color(.systemGray5))
+                    .frame(width: 84, height: 84)
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.orange)
+            }
+            VStack(spacing: 4) {
+                Text("Couldn't clean")
+                    .font(.system(.title3, design: .rounded, weight: .semibold))
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Nothing was shared. Your original file was left untouched.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
     }
 
     private var cleaningView: some View {

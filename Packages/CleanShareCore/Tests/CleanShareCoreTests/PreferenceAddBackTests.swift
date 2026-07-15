@@ -28,8 +28,7 @@ final class PreferenceAddBackTests: XCTestCase {
         _ = try await ImageIOCleaner().clean(input: input, output: output, prefs: prefs)
 
         let source = try XCTUnwrap(CGImageSourceCreateWithURL(output as CFURL, nil))
-        let props = try XCTUnwrap(CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any])
-        return props
+        return try XCTUnwrap(CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any])
     }
 
     // MARK: - keepGPS
